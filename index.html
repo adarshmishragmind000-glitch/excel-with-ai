@@ -99,6 +99,196 @@
         <details><summary>How can I receive a certificate?<span>+</span></summary><p>Certificate eligibility can be based on completion, assessments and admin approval. Verification will be enabled once the backend is connected.</p></details>
       </div>
     </section>
+    <!-- PUBLIC AI EXCEL FORMULA HELPER -->
+<section id="aiFormulaHelper" class="ai-formula-section">
+  <div class="ai-formula-card">
+    <span class="ai-formula-tag">✦ AI POWERED LEARNING</span>
+    <h2>Excel AI Formula Helper</h2>
+    <p>Ask any Excel question. Learn formulas with simple examples.</p>
+
+    <label for="formulaLanguage">Explanation Language</label>
+    <select id="formulaLanguage">
+      <option value="Hindi">हिंदी (Hindi)</option>
+      <option value="English">English</option>
+      <option value="Hinglish">Hinglish</option>
+    </select>
+
+    <label for="formulaQuestion">What do you want to do in Excel?</label>
+    <textarea
+      id="formulaQuestion"
+      rows="4"
+      maxlength="2000"
+      placeholder="Example: A1 se A10 tak total nikalne ka formula batao..."
+    ></textarea>
+
+    <div class="formula-examples">
+      <button type="button" data-question="A1 se A10 tak total kaise nikalein?">➕ Total</button>
+      <button type="button" data-question="Excel mein percentage kaise nikalein?">％ Percentage</button>
+      <button type="button" data-question="IF formula example ke saath samjhao.">IF Formula</button>
+      <button type="button" data-question="VLOOKUP ko example ke saath samjhao.">VLOOKUP</button>
+    </div>
+
+    <button type="button" id="askFormulaAI" class="formula-ask-btn">
+      ✨ Explain My Formula
+    </button>
+
+    <p id="formulaStatus" role="status" aria-live="polite"></p>
+
+    <div id="formulaAnswer" class="formula-answer" hidden></div>
+  </div>
+</section>
+
+<style>
+.ai-formula-section {
+  padding: 55px 18px;
+  background: #f3f6ff;
+}
+.ai-formula-card {
+  max-width: 820px;
+  margin: auto;
+  padding: 30px;
+  background: white;
+  border: 1px solid #dfe5f2;
+  border-radius: 22px;
+  box-shadow: 0 12px 35px #152b4d12;
+}
+.ai-formula-tag {
+  color: #5145cd;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.ai-formula-card h2 {
+  margin: 12px 0;
+  font-size: clamp(25px, 4vw, 36px);
+}
+.ai-formula-card p {
+  line-height: 1.7;
+}
+.ai-formula-card label {
+  display: block;
+  margin: 18px 0 8px;
+  font-weight: 700;
+}
+.ai-formula-card textarea,
+.ai-formula-card select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  color: #172033;
+  font: inherit;
+}
+.formula-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+.formula-examples button {
+  padding: 9px 12px;
+  border: 1px solid #d8def0;
+  border-radius: 20px;
+  background: #f7f8ff;
+  cursor: pointer;
+}
+.formula-ask-btn {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 11px;
+  background: #5145cd;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.formula-ask-btn:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.formula-answer {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #f7f8fc;
+  color: #172033;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.formula-answer code {
+  font-weight: 700;
+}
+@media (max-width: 600px) {
+  .ai-formula-card { padding: 20px 15px; }
+}
+</style>
+
+<script>
+(() => {
+  const question = document.getElementById("formulaQuestion");
+  const language = document.getElementById("formulaLanguage");
+  const askButton = document.getElementById("askFormulaAI");
+  const status = document.getElementById("formulaStatus");
+  const answer = document.getElementById("formulaAnswer");
+
+  if (!question || !language || !askButton || !status || !answer) return;
+
+  document.querySelectorAll("#aiFormulaHelper [data-question]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        question.value = button.dataset.question || "";
+        question.focus();
+      });
+    });
+
+  askButton.addEventListener("click", async () => {
+    const text = question.value.trim();
+
+    if (!text) {
+      status.textContent = "Please enter your Excel question first.";
+      question.focus();
+      return;
+    }
+
+    askButton.disabled = true;
+    askButton.textContent = "⏳ Preparing explanation...";
+    status.textContent = "AI is preparing your answer...";
+    answer.hidden = true;
+    answer.textContent = "";
+
+    try {
+      const response = await fetch("/api/formula", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: text,
+          language: language.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to get an answer.");
+      }
+
+      answer.textContent = data.answer;
+      answer.hidden = false;
+      status.textContent = "✓ Explanation ready.";
+    } catch (error) {
+      status.textContent =
+        error.message || "Something went wrong. Please try again.";
+    } finally {
+      askButton.disabled = false;
+      askButton.textContent = "✨ Explain My Formula";
+    }
+  });
+})();
+</script>
   </main>
 
   <footer class="footer"><div class="section-wrap footer-inner"><a class="brand" href="#home"><span class="brand-mark">X<span>✦</span></span><span>excel<span class="brand-muted">with</span><b>AI</b><small>LEARN • AUTOMATE • GROW</small></span></a><p>Practical Excel and AI skills for real work.</p><div class="footer-links"><a href="#courses">Courses</a><a href="#features">Features</a><a href="#faq">FAQ</a><a href="#" data-open="loginModal">Student login</a></div><small>© <span id="year"></span> Excel with AI. Built for learning.</small></div></footer>
