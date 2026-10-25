@@ -20,7 +20,7 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-// Your existing Firebase project
+// Existing Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
   authDomain: "excel-with-ai.firebaseapp.com",
@@ -38,6 +38,7 @@ const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
 let registrationInProgress = false;
+let dashboardUserId = null;
 
 if ($("#year")) $("#year").textContent = new Date().getFullYear();
 
@@ -58,9 +59,9 @@ $("#menuToggle")?.addEventListener("click", () =>
   $("#mainNav")?.classList.toggle("open")
 );
 
-$$(".nav a").forEach(a => a.addEventListener("click", () =>
-  $("#mainNav")?.classList.remove("open")
-));
+$$(".nav a").forEach(a =>
+  a.addEventListener("click", () => $("#mainNav")?.classList.remove("open"))
+);
 
 function openModal(id) {
   const modal = document.getElementById(id);
@@ -103,17 +104,17 @@ document.addEventListener("keydown", event => {
   }
 });
 
-function toast(message) {
+function toast(text) {
   const el = $("#toast");
   if (!el) return;
 
-  el.textContent = message;
+  el.textContent = text;
   el.classList.add("show");
   clearTimeout(toast.timer);
   toast.timer = setTimeout(() => el.classList.remove("show"), 3500);
 }
 
-function message(id, text) {
+function showMessage(id, text) {
   const el = document.getElementById(id);
   if (!el) return;
 
@@ -123,39 +124,38 @@ function message(id, text) {
 
 function clearMessage(id) {
   const el = document.getElementById(id);
-  if (el) {
-    el.textContent = "";
-    el.hidden = true;
-  }
+  if (!el) return;
+
+  el.textContent = "";
+  el.hidden = true;
 }
 
 function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
-  }[ch]));
+  }[char]));
 }
 
 function explainError(error) {
   const errors = {
-    "auth/email-already-in-use": "Account already exists. Please log in.",
-    "auth/invalid-email": "Email/account ID format is incorrect.",
-    "auth/weak-password": "Password must contain at least 6 characters.",
+    "auth/email-already-in-use": "This account already exists. Please log in instead.",
+    "auth/invalid-email": "The account ID or email format is invalid.",
+    "auth/weak-password": "Password must be at least 6 characters.",
     "auth/invalid-credential": "Student ID/email or password is incorrect.",
-    "auth/operation-not-allowed": "Enable Email/Password in Firebase Authentication settings.",
+    "auth/operation-not-allowed": "Enable Email/Password in Firebase Authentication.",
     "auth/too-many-requests": "Too many attempts. Please wait and try again.",
     "auth/network-request-failed": "Check your internet connection.",
-    "permission-denied": "Firestore Rules blocked this action. Check and publish the correct Rules.",
+    "permission-denied": "Firestore Rules blocked this action. Check the published Rules.",
     "unavailable": "Firebase is temporarily unavailable. Try again."
   };
 
-  return errors[error.code] || error.message || "An unexpected error occurred.";
+  return errors[error.code] || error.message || "Something went wrong.";
 }
 
-// Student ID login uses a private-format Firebase Auth email.
 function makeStudentId() {
   return "STU" + Math.floor(100000 + Math.random() * 900000);
 }
@@ -164,8 +164,17 @@ function studentAuthEmail(studentId) {
   return `${studentId.toLowerCase()}@students.excelwithai.com`;
 }
 
+function studentIdFromAuthEmail(email) {
+  const match = String(email || "").match(
+    /^((?:stu)\d{6})@students\.excelwithai\.com$/i
+  );
+
+  return match ? match[1].toUpperCase() : "";
+}
+
 async function getRole(uid) {
   const snap = await getDoc(doc(db, "userRoles", uid));
+
   return snap.exists() && snap.data().role === "admin"
     ? "admin"
     : "student";
@@ -176,9 +185,79 @@ async function getProfile(uid) {
   return snap.exists() ? snap.data() : null;
 }
 
-// REGISTRATION: creates Firebase Auth account and Firestore records.
+// Show a polished Student ID success screen.
+// Adds a Copy ID button without needing another HTML edit.
+function showRegistrationSuccess(studentId, warning = "") {
+  const form = $("#enrollForm");
+  const success = $("#enrollSuccess");
+  const idElement = $("#newStudentId");
+
+  if (form) form.hidden = true;
+  if (success) success.hidden = false;
+  if (idElement) idElement.textContent = studentId;
+
+  let copyButton = $("#copyStudentId");
+
+  if (!copyButton && idElement) {
+    copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.id = "copyStudentId";
+    copyButton.className = "btn btn-outline btn-full";
+    copyButton.textContent = "Copy Student ID";
+    idElement.insertAdjacentElement("afterend", copyButton);
+  }
+
+  if (copyButton) {
+    copyButton.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(studentId);
+        copyButton.textContent = "✓ Student ID Copied";
+        toast("Student ID copied successfully.");
+      } catch {
+        window.prompt("Copy your Student ID:", studentId);
+      }
+    };
+  }
+
+  const note = $("#registrationWarning");
+  if (note) note.remove();
+
+  if (warning && success) {
+    const warningElement = document.createElement("p");
+    warningElement.id = "registrationWarning";
+    warningElement.className = "inline-message";
+    warningElement.textContent = warning;
+    success.appendChild(warningElement);
+  }
+
+  const loginButton = $("#goToStudentLogin");
+
+  if (loginButton) {
+    loginButton.onclick = async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.warn("Sign out before login:", error);
+      }
+
+      closeModal($("#enrollModal"));
+      openModal("loginModal");
+
+      const loginInput = $('#loginForm [name="email"]');
+      if (loginInput) loginInput.value = studentId;
+
+      const passwordInput = $('#loginForm [name="password"]');
+      passwordInput?.focus();
+    };
+  }
+}
+
+// Registration form: Firebase Authentication + Firestore.
 $("#enrollForm")?.addEventListener("submit", async event => {
   event.preventDefault();
+
+  if (registrationInProgress) return;
+
   clearMessage("enrollMessage");
 
   const form = event.currentTarget;
@@ -194,27 +273,34 @@ $("#enrollForm")?.addEventListener("submit", async event => {
   const note = String(data.get("message") || "").trim();
 
   if (!name || !phone || !course || password.length < 6) {
-    message("enrollMessage", "Fill in your name, mobile, course and password (minimum 6 characters).");
+    showMessage(
+      "enrollMessage",
+      "Enter your name, mobile number, course and password (minimum 6 characters)."
+    );
     return;
   }
 
   if (!/^[0-9+() -]{10,16}$/.test(phone)) {
-    message("enrollMessage", "Please enter a valid mobile number.");
+    showMessage("enrollMessage", "Please enter a valid mobile number.");
     return;
   }
 
   registrationInProgress = true;
-  button.disabled = true;
-  button.textContent = "Creating account…";
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Creating your account…";
+  }
 
   let accountCreated = false;
+  let studentId = "";
+  let uid = "";
 
   try {
-    let studentId;
     let credential;
 
-    // Firebase Auth prevents duplicate synthetic login IDs.
-    for (let attempt = 0; attempt < 5; attempt++) {
+    // Firebase Auth prevents duplicate synthetic login addresses.
+    for (let attempt = 0; attempt < 10; attempt++) {
       studentId = makeStudentId();
 
       try {
@@ -223,21 +309,27 @@ $("#enrollForm")?.addEventListener("submit", async event => {
           studentAuthEmail(studentId),
           password
         );
+
         accountCreated = true;
+        uid = credential.user.uid;
         break;
       } catch (error) {
-        if (error.code !== "auth/email-already-in-use" || attempt === 4) {
+        if (
+          error.code !== "auth/email-already-in-use" ||
+          attempt === 9
+        ) {
           throw error;
         }
       }
     }
 
-    if (!credential) throw new Error("Could not create an account. Please retry.");
+    if (!credential) throw new Error("Could not create account. Please try again.");
 
     await updateProfile(credential.user, { displayName: name });
 
-    await setDoc(doc(db, "studentProfiles", credential.user.uid), {
-      uid: credential.user.uid,
+    // Save each student's own profile.
+    await setDoc(doc(db, "studentProfiles", uid), {
+      uid,
       studentId,
       name,
       phone,
@@ -247,10 +339,11 @@ $("#enrollForm")?.addEventListener("submit", async event => {
       createdAt: serverTimestamp()
     });
 
+    // Save the enrollment request for Admin review.
     const requestRef = doc(collection(db, "enrollmentRequests"));
 
     await setDoc(requestRef, {
-      studentUid: credential.user.uid,
+      studentUid: uid,
       studentId,
       name,
       phone,
@@ -262,45 +355,34 @@ $("#enrollForm")?.addEventListener("submit", async event => {
       createdAt: serverTimestamp()
     });
 
-    form.hidden = true;
-    $("#enrollSuccess").hidden = false;
-    $("#newStudentId").textContent = studentId;
+    showRegistrationSuccess(studentId);
+    toast("Registration successful! Save your Student ID.");
 
-    $("#goToStudentLogin")?.addEventListener("click", async () => {
-      // Keep the new account signed in, but show the login screen.
-      try {
-        await signOut(auth);
-        closeModal($("#enrollModal"));
-        openModal("loginModal");
-
-        const loginInput = $('#loginForm [name="email"]');
-        if (loginInput) loginInput.value = studentId;
-      } catch (error) {
-        message("enrollMessage", explainError(error));
-      }
-    }, { once: true });
-
-    toast("Registration successful. Save your Student ID.");
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Registration failed:", error);
 
-    if (accountCreated) {
-      message(
-        "enrollMessage",
-        "Your login account was created, but saving all records failed. Do not register again. Check Firestore Rules. Error: " +
-        explainError(error)
+    // If Firebase Auth created the account, don't ask the student
+    // to register again. Show the generated ID and the real error.
+    if (accountCreated && studentId) {
+      showRegistrationSuccess(
+        studentId,
+        "Your login account was created, but saving the profile or enrollment request failed. Save this ID. Do not register again. Error: " +
+          explainError(error)
       );
     } else {
-      message("enrollMessage", explainError(error));
+      showMessage("enrollMessage", explainError(error));
     }
   } finally {
     registrationInProgress = false;
-    button.disabled = false;
-    button.textContent = "Register & Get Student ID ↗";
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Register & Get Student ID ↗";
+    }
   }
 });
 
-// Course buttons open registration form.
+// Course buttons open the enrollment popup.
 $$("[data-course]").forEach(button => {
   button.addEventListener("click", () => {
     const select = $("#courseSelect");
@@ -327,6 +409,7 @@ function renderDashboard(user) {
   }
 
   const isAdmin = user.role === "admin";
+  const studentId = user.studentId || "";
 
   view.innerHTML = `
     <div class="dashboard-top">
@@ -334,14 +417,17 @@ function renderDashboard(user) {
         <div class="eyebrow">EXCEL WITH AI · ${isAdmin ? "ADMIN CONSOLE" : "STUDENT SPACE"}</div>
         <h1>${isAdmin ? "Admin Dashboard" : "Student Dashboard"}</h1>
         <p>Welcome, ${escapeHtml(user.name)}.</p>
-        <small>${escapeHtml(user.studentId || user.email || "")}</small>
+        <small>${escapeHtml(isAdmin ? (user.email || "") : studentId)}</small>
       </div>
       <button class="btn btn-outline" id="logoutBtn">Log out ↗</button>
     </div>
 
     <div class="dashboard-stats">
-      <article><span>${isAdmin ? "Enrollment requests" : "Student ID"}</span>
-        <strong>${isAdmin ? "Firebase" : escapeHtml(user.studentId || "—")}</strong></article>
+      <article>
+        <span>${isAdmin ? "Enrollment requests" : "Your Student ID"}</span>
+        <strong>${isAdmin ? "Admin" : escapeHtml(studentId || "Not available")}</strong>
+        ${!isAdmin && studentId ? '<button class="btn btn-outline btn-sm" id="dashboardCopyId">Copy ID</button>' : ""}
+      </article>
       <article><span>Account</span><strong>Active</strong></article>
       <article><span>Course</span><strong>${isAdmin ? "Admin" : escapeHtml(user.course || "Pending review")}</strong></article>
     </div>
@@ -349,11 +435,10 @@ function renderDashboard(user) {
     ${isAdmin ? `
       <div class="dashboard-panel">
         <div class="panel-heading">
-          <div><h2>Student Enrollment Requests</h2>
-          <p>Requests saved in Firebase Firestore.</p></div>
+          <div><h2>Student Enrollment Requests</h2><p>Registration requests saved in Firebase.</p></div>
           <button class="btn btn-outline" id="refreshRequests">Refresh</button>
         </div>
-        <div id="requestList">Loading…</div>
+        <div id="requestList">Loading requests…</div>
       </div>
     ` : `
       <div class="dashboard-panel">
@@ -365,8 +450,8 @@ function renderDashboard(user) {
           <div class="course-icon">✦</div>
           <div class="learner-course-main">
             <h3>${escapeHtml(user.course || "Course pending approval")}</h3>
-            <p>Your Student ID: <strong>${escapeHtml(user.studentId || "—")}</strong></p>
-            <p>Course access may require Admin approval.</p>
+            <p>Your Student ID: <strong>${escapeHtml(studentId || "Not available")}</strong></p>
+            <p>Keep your Student ID and password safe. Course access may require Admin approval.</p>
           </div>
         </div>
       </div>
@@ -375,13 +460,24 @@ function renderDashboard(user) {
 
   if ($("main")) $("main").hidden = true;
   if ($("footer")) $("footer").hidden = true;
+
   view.hidden = false;
   $("#mainNav")?.classList.remove("open");
   view.scrollIntoView({ behavior: "smooth", block: "start" });
 
+  $("#dashboardCopyId")?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(studentId);
+      toast("Student ID copied.");
+    } catch {
+      window.prompt("Copy your Student ID:", studentId);
+    }
+  });
+
   $("#logoutBtn")?.addEventListener("click", async () => {
     try {
       await signOut(auth);
+      dashboardUserId = null;
       showWebsite();
       toast("Logged out successfully.");
     } catch (error) {
@@ -392,6 +488,8 @@ function renderDashboard(user) {
   if (isAdmin) {
     const loadRequests = async () => {
       const list = $("#requestList");
+      if (!list) return;
+
       list.textContent = "Loading enrollment requests…";
 
       try {
@@ -413,8 +511,8 @@ function renderDashboard(user) {
               <div>
                 <strong>${escapeHtml(r.name)}</strong>
                 <small>Student ID: ${escapeHtml(r.studentId)}</small>
-                <small>${escapeHtml(r.email || "No email")} · ${escapeHtml(r.phone)}</small>
-                <small>Course: ${escapeHtml(r.course)}</small>
+                <small>${escapeHtml(r.email || "No email")} · ${escapeHtml(r.phone || "")}</small>
+                <small>Course: ${escapeHtml(r.course || "")}</small>
                 <small>Payment: ${escapeHtml(r.paymentRef || "Not provided")}</small>
               </div>
               <span class="status-pill">${escapeHtml(r.status || "Pending review")}</span>
@@ -429,12 +527,14 @@ function renderDashboard(user) {
         $$("[data-status]", list).forEach(button => {
           button.addEventListener("click", async () => {
             button.disabled = true;
+
             try {
               await updateDoc(doc(db, "enrollmentRequests", button.dataset.id), {
                 status: button.dataset.status,
                 reviewedAt: serverTimestamp(),
                 reviewedBy: auth.currentUser.uid
               });
+
               toast("Request updated: " + button.dataset.status);
               await loadRequests();
             } catch (error) {
@@ -454,7 +554,7 @@ function renderDashboard(user) {
   }
 }
 
-// LOGIN: students may use Student ID; Admin uses their existing email.
+// Login: Student ID or existing Admin email.
 $("#loginForm")?.addEventListener("submit", async event => {
   event.preventDefault();
   clearMessage("loginMessage");
@@ -467,7 +567,7 @@ $("#loginForm")?.addEventListener("submit", async event => {
   const password = String(data.get("password") || "");
 
   if (!loginValue || !password) {
-    message("loginMessage", "Enter your Student ID/email and password.");
+    showMessage("loginMessage", "Enter your Student ID/email and password.");
     return;
   }
 
@@ -486,6 +586,9 @@ $("#loginForm")?.addEventListener("submit", async event => {
     const role = await getRole(firebaseUser.uid);
     const profile = await getProfile(firebaseUser.uid);
 
+    const studentId = profile?.studentId || studentIdFromAuthEmail(firebaseUser.email);
+
+    dashboardUserId = firebaseUser.uid;
     closeModal($("#loginModal"));
     form.reset();
 
@@ -496,30 +599,38 @@ $("#loginForm")?.addEventListener("submit", async event => {
         : (profile?.name || firebaseUser.displayName || "Student"),
       email: profile?.contactEmail || firebaseUser.email,
       uid: firebaseUser.uid,
-      studentId: profile?.studentId || "",
+      studentId,
       course: profile?.course || ""
     });
   } catch (error) {
-    console.error("Login error:", error);
-    message("loginMessage", explainError(error));
+    console.error("Login failed:", error);
+    showMessage("loginMessage", explainError(error));
   } finally {
     button.disabled = false;
     button.textContent = "Continue";
   }
 });
 
-// Restore the dashboard after refresh.
+// Restore the dashboard after page refresh.
 onAuthStateChanged(auth, async firebaseUser => {
   if (registrationInProgress) return;
 
   if (!firebaseUser) {
+    dashboardUserId = null;
     showWebsite();
+    return;
+  }
+
+  if (dashboardUserId === firebaseUser.uid && $("#dashboardView") && !$("#dashboardView").hidden) {
     return;
   }
 
   try {
     const role = await getRole(firebaseUser.uid);
     const profile = await getProfile(firebaseUser.uid);
+    const studentId = profile?.studentId || studentIdFromAuthEmail(firebaseUser.email);
+
+    dashboardUserId = firebaseUser.uid;
 
     renderDashboard({
       role,
@@ -528,7 +639,7 @@ onAuthStateChanged(auth, async firebaseUser => {
         : (profile?.name || firebaseUser.displayName || "Student"),
       email: profile?.contactEmail || firebaseUser.email,
       uid: firebaseUser.uid,
-      studentId: profile?.studentId || "",
+      studentId,
       course: profile?.course || ""
     });
   } catch (error) {
