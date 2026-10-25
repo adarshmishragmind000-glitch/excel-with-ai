@@ -1,390 +1,259 @@
 
-/* Excel with AI - Home Learning Tools
-   Standalone module; does not modify existing Firebase code. */
-
 (() => {
   "use strict";
 
+  const root = document.getElementById("learningToolsRoot");
+  if (!root || root.dataset.initialized === "true") return;
+  root.dataset.initialized = "true";
+
   const formulas = [
-    {
-      name: "SUM",
-      category: "Basic",
-      syntax: "=SUM(A1:A10)",
-      example: "A1 से A10 तक सभी numbers जोड़ता है।"
-    },
-    {
-      name: "AVERAGE",
-      category: "Basic",
-      syntax: "=AVERAGE(A1:A10)",
-      example: "दिए गए numbers का average निकालता है।"
-    },
-    {
-      name: "MAX",
-      category: "Basic",
-      syntax: "=MAX(A1:A10)",
-      example: "सबसे बड़ी value बताता है।"
-    },
-    {
-      name: "MIN",
-      category: "Basic",
-      syntax: "=MIN(A1:A10)",
-      example: "सबसे छोटी value बताता है।"
-    },
-    {
-      name: "COUNT",
-      category: "Basic",
-      syntax: "=COUNT(A1:A10)",
-      example: "Numbers वाली cells गिनता है।"
-    },
-    {
-      name: "COUNTA",
-      category: "Basic",
-      syntax: "=COUNTA(A1:A10)",
-      example: "खाली न होने वाली cells गिनता है।"
-    },
-    {
-      name: "IF",
-      category: "Logical",
-      syntax: '=IF(A1>=33,"Pass","Fail")',
-      example: "A1 में 33 या अधिक होने पर Pass, अन्यथा Fail।"
-    },
-    {
-      name: "COUNTIF",
-      category: "Logical",
-      syntax: '=COUNTIF(A1:A20,"Pass")',
-      example: "Range में Pass लिखी cells गिनता है।"
-    },
-    {
-      name: "SUMIF",
-      category: "Logical",
-      syntax: '=SUMIF(A1:A10,"Pen",B1:B10)',
-      example: "जहाँ A में Pen हो, वहाँ B की values जोड़ता है।"
-    },
-    {
-      name: "VLOOKUP",
-      category: "Lookup",
-      syntax: "=VLOOKUP(E2,A2:C20,3,FALSE)",
-      example: "पहले column में E2 खोजकर तीसरे column का result देता है।"
-    },
-    {
-      name: "INDEX + MATCH",
-      category: "Lookup",
-      syntax: "=INDEX(B2:B20,MATCH(E2,A2:A20,0))",
-      example: "A column में E2 खोजकर B column से matching value देता है।"
-    },
-    {
-      name: "CONCATENATE",
-      category: "Text",
-      syntax: '=CONCATENATE(A2," ",B2)',
-      example: "दो cells के text के बीच space जोड़ता है।"
-    },
-    {
-      name: "LEFT",
-      category: "Text",
-      syntax: "=LEFT(A2,3)",
-      example: "Text के बाईं ओर से 3 characters निकालता है।"
-    },
-    {
-      name: "LEN",
-      category: "Text",
-      syntax: "=LEN(A2)",
-      example: "Text में characters की संख्या बताता है।"
-    },
-    {
-      name: "TODAY",
-      category: "Date",
-      syntax: "=TODAY()",
-      example: "आज की तारीख दिखाता है।"
-    }
+    ["SUM", "Basic", "=SUM(A1:A10)", "A1 से A10 तक numbers जोड़ें।"],
+    ["AVERAGE", "Basic", "=AVERAGE(A1:A10)", "Average निकालें।"],
+    ["MAX", "Basic", "=MAX(A1:A10)", "सबसे बड़ी value निकालें।"],
+    ["MIN", "Basic", "=MIN(A1:A10)", "सबसे छोटी value निकालें।"],
+    ["COUNT", "Basic", "=COUNT(A1:A10)", "Numeric cells गिनें।"],
+    ["COUNTA", "Basic", "=COUNTA(A1:A10)", "Non-empty cells गिनें।"],
+    ["IF", "Logical", '=IF(A1>=33,"Pass","Fail")', "Condition के अनुसार Pass या Fail।"],
+    ["COUNTIF", "Logical", '=COUNTIF(A1:A20,"Pass")', "Pass वाली entries गिनें।"],
+    ["SUMIF", "Logical", '=SUMIF(A1:A10,"Pen",B1:B10)', "Condition के अनुसार numbers जोड़ें।"],
+    ["VLOOKUP", "Lookup", "=VLOOKUP(E2,A2:C20,3,FALSE)", "पहले column में खोजकर तीसरे column से result लें।"],
+    ["INDEX + MATCH", "Lookup", "=INDEX(B2:B20,MATCH(E2,A2:A20,0))", "Matching value खोजें।"],
+    ["LEFT", "Text", "=LEFT(A2,3)", "बाईं ओर से 3 characters लें।"],
+    ["LEN", "Text", "=LEN(A2)", "Text की length निकालें।"],
+    ["CONCATENATE", "Text", '=CONCATENATE(A2," ",B2)', "दो cells के text को जोड़ें।"],
+    ["TODAY", "Date", "=TODAY()", "आज की तारीख दिखाएँ।"],
+    ["ROUND", "Math", "=ROUND(A1,2)", "Number को 2 decimal places तक round करें।"]
   ];
 
   const questions = [
-    {
-      q: "A1 से A10 तक numbers जोड़ने का सही formula कौन-सा है?",
-      options: ["=ADD(A1:A10)", "=SUM(A1:A10)", "=TOTAL(A1:A10)", "=PLUS(A1:A10)"],
-      answer: 1,
-      explanation: "SUM range के numbers को जोड़ता है।"
-    },
-    {
-      q: "Average निकालने के लिए कौन-सा function है?",
-      options: ["SUM", "COUNT", "AVERAGE", "MAX"],
-      answer: 2,
-      explanation: "AVERAGE दिए गए numeric values का औसत निकालता है।"
-    },
-    {
-      q: "Pass/Fail दिखाने के लिए कौन-सा function उपयोगी है?",
-      options: ["IF", "LEFT", "MAX", "TODAY"],
-      answer: 0,
-      explanation: "IF condition के आधार पर अलग result देता है।"
-    },
-    {
-      q: "सबसे बड़ी value निकालने के लिए?",
-      options: ["MIN", "MAX", "COUNT", "LEN"],
-      answer: 1,
-      explanation: "MAX सबसे बड़ी numeric value देता है।"
-    },
-    {
-      q: "खाली न होने वाली cells गिनने के लिए?",
-      options: ["COUNT", "COUNTA", "SUM", "MIN"],
-      answer: 1,
-      explanation: "COUNTA non-empty cells गिनता है।"
-    },
-    {
-      q: "आज की तारीख के लिए कौन-सा formula है?",
-      options: ["=DATE NOW", "=TODAY()", "=CURRENT()", "=TIME()"],
-      answer: 1,
-      explanation: "TODAY() current date देता है।"
-    },
-    {
-      q: "Text की लंबाई पता करने वाला function?",
-      options: ["LEFT", "RIGHT", "LEN", "IF"],
-      answer: 2,
-      explanation: "LEN characters की संख्या बताता है।"
-    },
-    {
-      q: "किसी condition के आधार पर जोड़ने के लिए?",
-      options: ["SUMIF", "COUNT", "MAX", "LEFT"],
-      answer: 0,
-      explanation: "SUMIF condition पूरी करने वाली values जोड़ता है।"
-    },
-    {
-      q: "VLOOKUP में FALSE का सामान्य अर्थ क्या है?",
-      options: ["Approximate match", "Exact match", "Delete value", "Sort data"],
-      answer: 1,
-      explanation: "FALSE exact match माँगता है।"
-    },
-    {
-      q: "Numbers वाली cells गिनने के लिए?",
-      options: ["COUNTA", "COUNT", "SUMIF", "LEN"],
-      answer: 1,
-      explanation: "COUNT numeric cells गिनता है।"
-    }
+    { q: "Numbers जोड़ने का सही formula?", o: ["=ADD(A1:A10)", "=SUM(A1:A10)", "=TOTAL(A1:A10)", "=PLUS(A1:A10)"], a: 1, e: "SUM numbers जोड़ता है।" },
+    { q: "Average के लिए कौन-सा function है?", o: ["COUNT", "MAX", "AVERAGE", "MIN"], a: 2, e: "AVERAGE औसत निकालता है।" },
+    { q: "Pass/Fail के लिए कौन-सा function उपयोगी है?", o: ["IF", "LEFT", "MAX", "LEN"], a: 0, e: "IF condition के अनुसार result देता है।" },
+    { q: "सबसे बड़ी value निकालने के लिए?", o: ["MIN", "MAX", "COUNT", "LEN"], a: 1, e: "MAX सबसे बड़ी value देता है।" },
+    { q: "Non-empty cells गिनने के लिए?", o: ["COUNT", "COUNTA", "SUM", "MIN"], a: 1, e: "COUNTA भरी हुई cells गिनता है।" },
+    { q: "आज की तारीख के लिए formula?", o: ["=NOWDATE()", "=TODAY()", "=CURRENT()", "=DATE NOW"], a: 1, e: "TODAY() वर्तमान तारीख देता है।" },
+    { q: "Text की length निकालने के लिए?", o: ["LEFT", "RIGHT", "LEN", "IF"], a: 2, e: "LEN characters की संख्या बताता है।" },
+    { q: "Condition के आधार पर जोड़ने के लिए?", o: ["SUMIF", "COUNT", "MAX", "LEFT"], a: 0, e: "SUMIF condition पूरी करने वाली values जोड़ता है।" },
+    { q: "VLOOKUP में FALSE क्या बताता है?", o: ["Approximate match", "Exact match", "Delete", "Sort"], a: 1, e: "FALSE exact match के लिए है।" },
+    { q: "Numeric cells गिनने के लिए?", o: ["COUNTA", "COUNT", "SUMIF", "LEN"], a: 1, e: "COUNT numeric cells गिनता है।" }
   ];
 
-  function init() {
-    const root = document.getElementById("learningToolsRoot");
-    if (!root || root.dataset.initialized === "true") return;
-    root.dataset.initialized = "true";
+  const esc = value => String(value).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
 
-    const escapeHtml = (value) =>
-      String(value).replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]);
+  const jumpCard = (id, icon, title, description) => `
+    <button type="button" class="hl-card" data-toggle="${id}"
+      aria-expanded="false" aria-controls="${id}">
+      <span class="hl-icon">${icon}</span>
+      <span class="hl-card-text">
+        <strong>${title}</strong>
+        <small>${description}</small>
+      </span>
+      <span class="hl-chevron" aria-hidden="true">⌄</span>
+    </button>`;
 
-    let questionIndex = 0;
-    let score = 0;
-    let answered = false;
-    let correctCount = 0;
+  root.innerHTML = `
+    <section class="learning-tools-section hl-home">
+      <div class="hl-welcome">
+        <span class="hl-eyebrow">YOUR LEARNING SPACE</span>
+        <h2>Learn Excel Smarter.</h2>
+        <p>Learn • Practice • Improve</p>
+      </div>
 
-    root.innerHTML = `
-      <section class="learning-tools-section" id="learningDashboard">
-        <h2 class="learning-tools-heading">🚀 Your Learning Dashboard</h2>
-        <p class="learning-tools-subtitle">
-          Learn Excel formulas, practice questions and improve your skills.
-        </p>
+      <div class="hl-grid">
+        ${jumpCard("hlDashboard", "📊", "Learning Dashboard", "View your practice progress")}
+        ${jumpCard("hlFormulas", "📚", "Formula Library", "Search and copy formulas")}
+        ${jumpCard("hlPractice", "🎯", "Excel Practice Zone", "Practice MCQ questions")}
+        ${jumpCard("hlTips", "✨", "Quick Excel Tips", "Useful shortcuts and tips")}
+      </div>
+    </section>
 
-        <div class="learning-tools-grid">
-          <article class="learning-tool-card">
-            <div class="learning-tool-icon">📊</div>
-            <h3>Learning Progress</h3>
-            <p id="learningProgressText">Your practice progress will appear here.</p>
-            <div class="learning-progress-track">
-              <div class="learning-progress-fill" id="learningProgressFill"></div>
-            </div>
-            <p id="learningScoreText">Practice score: 0</p>
-          </article>
+    <section id="hlDashboard" class="hl-panel learning-tools-section" hidden>
+      <h2>📊 Learning Dashboard</h2>
+      <p id="hlProgress">Your practice progress will appear here.</p>
+      <div class="learning-progress-track">
+        <div id="hlProgressFill" class="learning-progress-fill"></div>
+      </div>
+      <p id="hlScore">Score: 0</p>
+      <button type="button" class="learning-tool-button" data-toggle="hlFormulas">Explore Formulas</button>
+    </section>
 
-          <article class="learning-tool-card">
-            <div class="learning-tool-icon">📚</div>
-            <h3>Formula Library</h3>
-            <p>Search formulas, see examples and copy syntax.</p>
-            <button class="learning-tool-button" data-jump="formulaLibrary">
-              Explore Formulas
-            </button>
-          </article>
+    <section id="hlFormulas" class="hl-panel learning-tools-section" hidden>
+      <h2>📚 Formula Library</h2>
+      <p>Search by formula name, category or purpose.</p>
+      <input id="hlSearch" class="formula-search-input" type="search"
+        placeholder="Search SUM, IF, Lookup, Text..." aria-label="Search formulas">
+      <div id="hlFormulaList" class="formula-list"></div>
+      <p id="hlCopyFeedback" class="learning-feedback" aria-live="polite"></p>
+    </section>
 
-          <article class="learning-tool-card">
-            <div class="learning-tool-icon">🎯</div>
-            <h3>Excel Practice Zone</h3>
-            <p>Practice multiple-choice Excel questions.</p>
-            <button class="learning-tool-button" data-jump="excelPractice">
-              Start Practice
-            </button>
-          </article>
+    <section id="hlPractice" class="hl-panel learning-tools-section" hidden>
+      <h2>🎯 Excel Practice Zone</h2>
+      <p id="hlCounter"></p>
+      <article class="learning-tool-card">
+        <h3 id="hlQuestion"></h3>
+        <div id="hlOptions"></div>
+        <p id="hlFeedback" class="learning-feedback" aria-live="polite"></p>
+        <button type="button" class="learning-tool-button" id="hlCheck">Check Answer</button>
+        <button type="button" class="learning-tool-button" id="hlNext" hidden>Next Question</button>
+        <button type="button" class="learning-tool-button" id="hlRetry" hidden>Try Again</button>
+      </article>
+    </section>
 
-          <article class="learning-tool-card">
-            <div class="learning-tool-icon">✨</div>
-            <h3>Keep Learning</h3>
-            <p>Learn one formula and solve a few questions every day.</p>
-            <button class="learning-tool-button" data-jump="formulaLibrary">
-              Start Learning
-            </button>
-          </article>
-        </div>
-      </section>
+    <section id="hlTips" class="hl-panel learning-tools-section" hidden>
+      <h2>✨ Quick Excel Tips</h2>
+      <div class="hl-tip"><strong>Ctrl + C</strong><p>Copy selected cells or text.</p></div>
+      <div class="hl-tip"><strong>Ctrl + V</strong><p>Paste copied content.</p></div>
+      <div class="hl-tip"><strong>Ctrl + Z</strong><p>Undo the last action.</p></div>
+      <div class="hl-tip"><strong>Alt + =</strong><p>Quickly insert AutoSum in many Excel layouts.</p></div>
+      <div class="hl-tip"><strong>F2</strong><p>Edit the active cell.</p></div>
+    </section>
+  `;
 
-      <section class="learning-tools-section" id="formulaLibrary">
-        <h2 class="learning-tools-heading">📚 Excel Formula Library</h2>
-        <p class="learning-tools-subtitle">
-          Search by formula name, category or purpose.
-        </p>
-        <input class="formula-search-input" id="formulaSearch"
-          type="search" placeholder="Search SUM, IF, Lookup, Text...">
-        <div class="formula-list" id="formulaList"></div>
-        <p class="learning-feedback" id="formulaFeedback" aria-live="polite"></p>
-      </section>
+  const panels = [...root.querySelectorAll(".hl-panel")];
+  const cardButtons = [...root.querySelectorAll("[data-toggle]")];
 
-      <section class="learning-tools-section" id="excelPractice">
-        <h2 class="learning-tools-heading">🎯 Excel Practice Zone</h2>
-        <p class="learning-tools-subtitle" id="practiceCounter"></p>
-        <article class="learning-tool-card">
-          <h3 id="practiceQuestion"></h3>
-          <div id="practiceOptions"></div>
-          <p class="learning-feedback" id="practiceFeedback" aria-live="polite"></p>
-          <button class="learning-tool-button" id="checkAnswer">Check Answer</button>
-          <button class="learning-tool-button" id="nextQuestion" hidden>Next Question</button>
-          <button class="learning-tool-button" id="restartPractice" hidden>Try Again</button>
-        </article>
-      </section>
-    `;
+  function togglePanel(id) {
+    const panel = root.querySelector("#" + id);
+    if (!panel) return;
 
-    function renderFormulas(search = "") {
-      const list = root.querySelector("#formulaList");
-      const term = search.toLowerCase().trim();
-      const matches = formulas.filter((item) =>
-        `${item.name} ${item.category} ${item.syntax} ${item.example}`
-          .toLowerCase().includes(term)
-      );
-
-      list.innerHTML = matches.length
-        ? matches.map((item) => `
-          <article class="formula-item">
-            <h3>${escapeHtml(item.name)}
-              <small>· ${escapeHtml(item.category)}</small>
-            </h3>
-            <code class="formula-code">${escapeHtml(item.syntax)}</code>
-            <p>${escapeHtml(item.example)}</p>
-            <button class="learning-tool-button"
-              data-copy-formula="${escapeHtml(item.syntax)}">Copy Formula</button>
-          </article>
-        `).join("")
-        : "<p>No formulas found. Try another search.</p>";
-    }
-
-    function updateProgress() {
-      const percent = Math.round((correctCount / questions.length) * 100);
-      root.querySelector("#learningProgressText").textContent =
-        `${correctCount} of ${questions.length} questions answered correctly`;
-      root.querySelector("#learningProgressFill").style.width = `${percent}%`;
-      root.querySelector("#learningScoreText").textContent =
-        `Practice score: ${score}`;
-    }
-
-    function renderQuestion() {
-      answered = false;
-      const question = questions[questionIndex];
-      root.querySelector("#practiceCounter").textContent =
-        `Question ${questionIndex + 1} of ${questions.length}`;
-      root.querySelector("#practiceQuestion").textContent = question.q;
-      root.querySelector("#practiceFeedback").textContent = "";
-      root.querySelector("#checkAnswer").hidden = false;
-      root.querySelector("#nextQuestion").hidden = true;
-      root.querySelector("#restartPractice").hidden = true;
-
-      root.querySelector("#practiceOptions").innerHTML =
-        question.options.map((option, index) => `
-          <label style="display:block;padding:10px;margin:8px 0;border:1px solid #475569;border-radius:9px;">
-            <input type="radio" name="excelPracticeAnswer" value="${index}">
-            ${escapeHtml(option)}
-          </label>
-        `).join("");
-    }
-
-    root.addEventListener("click", async (event) => {
-      const jumpButton = event.target.closest("[data-jump]");
-      if (jumpButton) {
-        root.querySelector(`#${jumpButton.dataset.jump}`)
-          ?.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-
-      const copyButton = event.target.closest("[data-copy-formula]");
-      if (copyButton) {
-        const formula = copyButton.dataset.copyFormula;
-        const feedback = root.querySelector("#formulaFeedback");
-        try {
-          await navigator.clipboard.writeText(formula);
-          feedback.textContent = `Copied: ${formula}`;
-        } catch {
-          feedback.textContent =
-            "Clipboard access blocked. Please select and copy the formula manually.";
-        }
-        return;
-      }
-
-      if (event.target.closest("#checkAnswer")) {
-        if (answered) return;
-        const selected = root.querySelector(
-          'input[name="excelPracticeAnswer"]:checked'
-        );
-        const feedback = root.querySelector("#practiceFeedback");
-
-        if (!selected) {
-          feedback.textContent = "Please select an answer first.";
-          return;
-        }
-
-        answered = true;
-        const question = questions[questionIndex];
-        if (Number(selected.value) === question.answer) {
-          score += 10;
-          correctCount++;
-          feedback.textContent = `✅ Correct! ${question.explanation}`;
-        } else {
-          feedback.textContent =
-            `❌ Not quite. Correct answer: ${question.options[question.answer]}. ${question.explanation}`;
-        }
-
-        root.querySelector("#checkAnswer").hidden = true;
-        root.querySelector("#nextQuestion").hidden =
-          questionIndex === questions.length - 1;
-        root.querySelector("#restartPractice").hidden =
-          questionIndex !== questions.length - 1;
-        updateProgress();
-        return;
-      }
-
-      if (event.target.closest("#nextQuestion")) {
-        questionIndex++;
-        renderQuestion();
-        return;
-      }
-
-      if (event.target.closest("#restartPractice")) {
-        questionIndex = 0;
-        score = 0;
-        correctCount = 0;
-        updateProgress();
-        renderQuestion();
-      }
+    const willOpen = panel.hidden;
+    panels.forEach(item => {
+      item.hidden = true;
+    });
+    cardButtons.forEach(button => {
+      button.setAttribute("aria-expanded", "false");
     });
 
-    root.querySelector("#formulaSearch").addEventListener("input", (event) => {
-      renderFormulas(event.target.value);
-    });
-
-    renderFormulas();
-    updateProgress();
-    renderQuestion();
+    if (willOpen) {
+      panel.hidden = false;
+      root.querySelectorAll(`[data-toggle="${id}"]`).forEach(button => {
+        button.setAttribute("aria-expanded", "true");
+      });
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
+  root.addEventListener("click", async event => {
+    const toggle = event.target.closest("[data-toggle]");
+    if (toggle) {
+      togglePanel(toggle.dataset.toggle);
+      return;
+    }
+
+    const copy = event.target.closest("[data-copy]");
+    if (copy) {
+      const formula = formulas[Number(copy.dataset.copy)].slice(2, 3)[0];
+      const feedback = root.querySelector("#hlCopyFeedback");
+      try {
+        await navigator.clipboard.writeText(formula);
+        feedback.textContent = "Copied: " + formula;
+      } catch {
+        feedback.textContent = "Copy blocked by browser. Select and copy: " + formula;
+      }
+      return;
+    }
+
+    if (event.target.closest("#hlCheck")) {
+      if (answered) return;
+      const selected = root.querySelector('input[name="hlAnswer"]:checked');
+      const feedback = root.querySelector("#hlFeedback");
+      if (!selected) {
+        feedback.textContent = "पहले एक answer चुनें।";
+        return;
+      }
+
+      answered = true;
+      const question = questions[index];
+      if (Number(selected.value) === question.a) {
+        score += 10;
+        correct++;
+        feedback.textContent = "✅ Correct! " + question.e;
+      } else {
+        feedback.textContent = "❌ सही उत्तर: " + question.o[question.a] + ". " + question.e;
+      }
+
+      localStorage.setItem("hlPracticeScore", String(score));
+      localStorage.setItem("hlPracticeCorrect", String(correct));
+      updateProgress();
+      root.querySelector("#hlCheck").hidden = true;
+      root.querySelector("#hlNext").hidden = index === questions.length - 1;
+      root.querySelector("#hlRetry").hidden = index !== questions.length - 1;
+      return;
+    }
+
+    if (event.target.closest("#hlNext")) {
+      index++;
+      renderQuestion();
+      return;
+    }
+
+    if (event.target.closest("#hlRetry")) {
+      index = 0;
+      score = 0;
+      correct = 0;
+      localStorage.setItem("hlPracticeScore", "0");
+      localStorage.setItem("hlPracticeCorrect", "0");
+      updateProgress();
+      renderQuestion();
+    }
+  });
+
+  let index = 0;
+  let score = Number(localStorage.getItem("hlPracticeScore")) || 0;
+  let correct = Number(localStorage.getItem("hlPracticeCorrect")) || 0;
+  let answered = false;
+
+  function updateProgress() {
+    const percent = Math.round((correct / questions.length) * 100);
+    root.querySelector("#hlProgress").textContent =
+      `${correct} of ${questions.length} questions answered correctly`;
+    root.querySelector("#hlProgressFill").style.width = percent + "%";
+    root.querySelector("#hlScore").textContent = "Practice score: " + score;
   }
+
+  function renderFormulas(term = "") {
+    const list = root.querySelector("#hlFormulaList");
+    const query = term.toLowerCase().trim();
+    const matches = formulas
+      .map((f, i) => ({ f, i }))
+      .filter(({ f }) => f.join(" ").toLowerCase().includes(query));
+
+    list.innerHTML = matches.length ? matches.map(({ f, i }) => `
+      <article class="formula-item">
+        <h3>${esc(f[0])} <small>· ${esc(f[1])}</small></h3>
+        <code class="formula-code">${esc(f[2])}</code>
+        <p>${esc(f[3])}</p>
+        <button type="button" class="learning-tool-button" data-copy="${i}">Copy Formula</button>
+      </article>
+    `).join("") : "<p>No formulas found. Try another search.</p>";
+  }
+
+  function renderQuestion() {
+    answered = false;
+    const q = questions[index];
+    root.querySelector("#hlCounter").textContent =
+      `Question ${index + 1} of ${questions.length}`;
+    root.querySelector("#hlQuestion").textContent = q.q;
+    root.querySelector("#hlFeedback").textContent = "";
+    root.querySelector("#hlOptions").innerHTML = q.o.map((option, i) => `
+      <label class="hl-option">
+        <input type="radio" name="hlAnswer" value="${i}">
+        ${esc(option)}
+      </label>
+    `).join("");
+    root.querySelector("#hlCheck").hidden = false;
+    root.querySelector("#hlNext").hidden = true;
+    root.querySelector("#hlRetry").hidden = true;
+  }
+
+  root.querySelector("#hlSearch").addEventListener("input", event => {
+    renderFormulas(event.target.value);
+  });
+
+  renderFormulas();
+  renderQuestion();
+  updateProgress();
 })();
