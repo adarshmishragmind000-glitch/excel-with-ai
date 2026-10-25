@@ -1,0 +1,66 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Details | Excel with AI Admin</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { padding: 24px; }
+    .details-box {
+      max-width: 850px;
+      margin: 30px auto;
+      padding: 24px;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      background: #111c32;
+      color: #f8fafc;
+      overflow-wrap: anywhere;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .detail-item {
+      padding: 14px;
+      border: 1px solid #334155;
+      border-radius: 10px;
+    }
+    .detail-item small {
+      display: block;
+      color: #a5b4cc;
+      margin-bottom: 7px;
+    }
+    .detail-item strong { overflow-wrap: anywhere; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    #message { white-space: pre-wrap; }
+    @media(max-width:600px) {
+      body { padding: 12px; }
+      .details-box { padding: 16px; }
+      .details-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="details-box">
+    <div class="actions">
+      <button class="btn btn-outline" id="backBtn" type="button">
+        ← Back to Admin Panel
+      </button>
+      <button class="btn btn-outline" id="logoutBtn" type="button">
+        Log out
+      </button>
+    </div>
+
+    <h1>Student Details</h1>
+    <p id="message">Checking admin access...</p>
+    <section id="studentDetails" class="details-grid" hidden></section>
+    <h2>Enrollment / Payment Details</h2>
+    <section id="enrollmentDetails" class="details-grid" hidden></section>
+  </main>
+
+  <script type="module" src="student-details.js"></script>
+</body>
+</html>
