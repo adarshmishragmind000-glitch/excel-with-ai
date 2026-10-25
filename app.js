@@ -639,25 +639,27 @@ function renderDashboard(user) {
    $("main").hidden = true;
   }
 
-  // Make Admin sections collapsible to keep the dashboard compact.
-  if (admin) {
-    const panel = view.querySelector(".dashboard-panel");
+  // Make Admin Student Records collapsible.
+if (admin) {
+  const panel = view.querySelector(".dashboard-panel");
 
-    if (panel && !panel.closest("details.admin-accordion")) {
-      const details = document.createElement("details");
-      details.className = "admin-accordion";
+  if (panel && !panel.closest("details.admin-accordion")) {
+    const details = document.createElement("details");
+    details.className = "admin-accordion";
 
-      const summary = document.createElement("summary");
-      summary.innerHTML = `
-        <span class="admin-accordion-title">📋 Student Records</span>
-        <span class="admin-accordion-hint">Click to open / close</span>
-      `;
+    const summary = document.createElement("summary");
+    summary.innerHTML = `
+      <span class="admin-accordion-title">📋 Student Records</span>
+      <span class="admin-accordion-hint">Click to open / close</span>
+    `;
 
-      panel.parentNode.insertBefore(details, panel);
-      details.appendChild(summary);
-      details.appendChild(panel);
-    }
+    details.open = false;
+
+    panel.parentNode.insertBefore(details, panel);
+    details.appendChild(summary);
+    details.appendChild(panel);
   }
+}
 
   if ($("footer")) {
     $("footer").hidden = true;
