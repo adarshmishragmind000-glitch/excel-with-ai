@@ -813,296 +813,184 @@
 }
 
 
-/* ===== Mobile responsive safety fixes (added 25 Oct 2026) ===== */
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: clip;
-}
+/* ==========================================================
+   EXCEL WITH AI — FINAL MOBILE RESPONSIVE OVERRIDES
+   Keep this block at the VERY END of the existing stylesheet.
+   ========================================================== */
 
-img, video, iframe, canvas, svg {
-  max-width: 100%;
-}
+/* Prevent intrinsic-width content from forcing the page wider */
+html { width: 100%; max-width: 100%; overflow-x: clip; }
+body { width: 100%; max-width: 100%; min-width: 0; overflow-x: clip; }
+main, header, footer, section, nav, article, aside, div, form { min-width: 0; }
+img, video, iframe, canvas, svg { max-width: 100%; }
+input, select, textarea, button { max-width: 100%; }
 
-.section-wrap,
-.hero-copy,
-.hero-centered,
-.hero-premium,
-.hero-pillar-wrap,
-.mentor-section,
-.mentor-card,
-.mentor-content,
-.dashboard-view,
-.dashboard-panel,
-.dashboard-top,
-.panel-heading {
-  min-width: 0;
-}
-
-h1, h2, h3, p, a, button, span, strong, small {
+/* Long headings, URLs, labels and user-provided text must wrap */
+h1, h2, h3, h4, p, a, span, small, strong, label, button,
+.dashboard-view, .dashboard-panel, .course-body, .project-info,
+.mentor-content, .hero-centered, .hero-pillar, .modal,
+.live-class-popup, .inline-message, #enrollMessage {
   overflow-wrap: anywhere;
+  word-break: normal;
 }
 
-@media (max-width: 760px) {
-  .section-wrap {
-    width: calc(100% - 32px);
-  }
+/* Fluid page gutters and containers */
+.section-wrap { width: min(1160px, calc(100% - 40px)); }
+.hero, .hero-premium, .dashboard-view, .mentor-section,
+.cta-section, .section-pad { min-width: 0; }
+.hero-premium h1, .hero h1 {
+  max-width: 100%;
+  font-size: clamp(2rem, 6.5vw, 4.75rem);
+  line-height: 1.08;
+  letter-spacing: clamp(-2.5px, -0.5vw, -1px);
+  text-wrap: balance;
+}
+.hero-premium .hero-sub, .hero-sub { max-width: 100%; }
+.hero-actions { min-width: 0; }
+.hero-actions .btn { min-width: 0; }
 
-  .topbar {
-    gap: 8px;
-    padding-inline: 12px;
-  }
+/* Make fixed live-class popup a compact, scrollable card on phones */
+.live-class-popup {
+  width: min(350px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: min(70dvh, 480px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  right: 12px;
+  top: 82px;
+  padding: 16px;
+}
+.live-class-popup * { min-width: 0; }
+.live-class-popup .live-class-title { font-size: clamp(15px, 4vw, 18px); line-height: 1.35; }
+.live-class-popup p { overflow-wrap: anywhere; }
 
-  .brand {
-    min-width: 0;
-    max-width: 58%;
-    font-size: 14px;
-    letter-spacing: -.4px;
-  }
+/* Popups and dialogs fit the visible viewport */
+.modal-backdrop { padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); }
+.modal {
+  width: min(540px, 100%);
+  max-width: 100%;
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: clamp(18px, 4vw, 32px);
+}
+.modal form, .modal label, .modal input, .modal select, .modal textarea { min-width: 0; }
 
-  .brand > span:last-child {
-    min-width: 0;
-    flex-wrap: wrap;
-    row-gap: 2px;
-  }
+/* Dashboard and admin pages */
+.dashboard-view { width: 100%; max-width: 100%; }
+.dashboard-view .dashboard-stats,
+.dashboard-view .resource-grid,
+.dashboard-view .admin-tool-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.dashboard-view .dashboard-panel,
+.dashboard-view .dashboard-stats article,
+.dashboard-view .request-row { min-width: 0; }
+.dashboard-view .request-row > div:first-child { min-width: 0; }
+.dashboard-view .request-actions { min-width: 0; }
 
-  .brand-muted {
-    font-size: 11px;
-  }
+/* Tablets and smaller laptops */
+@media (max-width: 900px) {
+  .section-wrap { width: calc(100% - 32px); }
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .hero-visual { width: 100%; max-width: 570px; }
+  .hero-pillar-wrap { grid-template-columns: minmax(0, 1fr); }
+  .hero-pillar, .pillar-connect { transform: none; }
+  .mentor-card { grid-template-columns: minmax(0, 1fr); }
+  .mentor-content { width: 100%; }
+}
 
-  .brand small {
-    font-size: 6px;
-    letter-spacing: 1px;
-  }
+/* Phones */
+@media (max-width: 700px) {
+  .section-wrap { width: calc(100% - 28px); }
+  .topbar { width: 100%; max-width: 100%; padding-inline: 12px; gap: 8px; }
+  .brand { min-width: 0; max-width: 48%; gap: 7px; font-size: clamp(12px, 3.5vw, 16px); letter-spacing: -.4px; }
+  .brand > span:last-child { min-width: 0; flex-wrap: wrap; }
+  .brand-muted { font-size: 10px; }
+  .brand small { letter-spacing: .8px; font-size: 6px; }
+  .brand-mark { flex: 0 0 32px; width: 32px; height: 32px; }
+  .nav-actions { min-width: 0; margin: 0 2px 0 auto; gap: 5px; }
+  .nav-actions .btn { white-space: normal; line-height: 1.2; padding: 8px 9px; font-size: 10px; }
+  .menu-toggle { flex: 0 0 auto; padding: 4px; }
+  .nav { max-width: 100vw; }
 
-  .nav-actions {
-    gap: 6px;
-    margin-right: 4px;
-  }
-
-  .nav-actions .btn {
-    white-space: normal;
-    max-width: 112px;
-    text-align: center;
-  }
-
-  .hero-premium h1,
-  .hero h1 {
-    max-width: 100%;
-    font-size: clamp(34px, 8.5vw, 48px);
+  .hero { padding-top: 34px; padding-bottom: 34px; gap: 8px; }
+  .hero-premium { padding-top: 42px; padding-bottom: 35px; }
+  .hero-premium h1, .hero h1 {
+    font-size: clamp(30px, 8.5vw, 43px);
     line-height: 1.12;
-    letter-spacing: -1.5px;
-    overflow-wrap: anywhere;
-    hyphens: auto;
+    letter-spacing: -1.25px;
+    margin: 18px 0 15px;
   }
+  .hero-sub, .hero-premium .hero-sub { font-size: 13px; line-height: 1.7; }
+  .hero-actions { gap: 9px; }
+  .hero-actions .btn { flex: 0 1 auto; }
+  .hero-visual { min-height: 0; transform: none; margin: 12px auto 0; padding: 22px 6px 38px; }
+  .dashboard-window { width: 100%; max-width: 420px; transform: none; animation: none; }
+  .float-chip { max-width: 45%; padding: 7px 9px; gap: 6px; }
+  .chip-ai { top: 0; right: 0; }
+  .chip-excel { left: 0; bottom: 48px; }
+  .chip-progress { right: 0; bottom: 0; }
+  .orbit-one, .orbit-two { max-width: 95%; }
 
-  .hero-premium .hero-sub,
-  .hero-sub {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-  }
+  .trust-strip { gap: 16px; padding: 20px 0; }
+  .trust-items { width: 100%; gap: 12px 16px; }
+  .section-pad { padding-top: 54px; padding-bottom: 54px; }
+  .section-heading { gap: 12px; margin-bottom: 24px; }
+  .section-heading h2, h2 { letter-spacing: -1.2px; }
+  .course-grid, .project-grid, .feature-grid { grid-template-columns: minmax(0, 1fr); }
+  .course-card:last-child, .project-card:last-child { grid-column: auto; }
+  .course-body, .project-info { padding: 17px; }
+  .course-body p { min-height: 0; }
+  .feature-card { padding: 20px; }
 
-  .hero-actions {
-    width: 100%;
-    gap: 10px;
-  }
+  .hero-pillar-wrap { margin-top: 28px; gap: 12px; }
+  .hero-pillar, .pillar-connect { padding: 19px; }
+  .mentor-section { padding: 24px 14px; margin: 0 auto 22px; }
+  .mentor-card { padding: 20px 16px; gap: 22px; }
+  .mentor-photo-wrap { max-width: 250px; }
+  .mentor-content h2 { font-size: clamp(26px, 7vw, 32px); letter-spacing: -1px; }
+  .mentor-description { font-size: 12px; }
+  .mentor-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  .mentor-primary-btn { justify-content: center; }
 
-  .hero-actions .btn {
-    max-width: 100%;
-    white-space: normal;
-  }
+  .cta-card { padding: 38px 16px 32px; }
+  .cta-card h2 { font-size: clamp(28px, 7.5vw, 36px); }
+  .footer-inner { align-items: flex-start; }
+  .footer-links { width: 100%; gap: 12px 16px; }
 
-  .hero-pillar-wrap {
-    width: 100%;
-  }
-
-  .hero-visual {
-    width: 100%;
-    max-width: 100%;
-    transform: none;
-    min-height: 0;
-    padding: 24px 0 38px;
-    margin-bottom: 0;
-  }
-
-  .dashboard-window {
-    width: 100%;
-    max-width: 420px;
-    transform: none;
-  }
-
-  .chip-ai {
-    right: 0;
-  }
-
-  .chip-excel {
-    left: 0;
-  }
-
-  .chip-progress {
-    right: 0;
-  }
-
-  .float-chip {
-    max-width: 48%;
-    padding: 8px 10px;
-  }
-
-  .section-heading h2,
-  .cta-card h2 {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    letter-spacing: -1.5px;
-  }
-
-  .course-card,
-  .project-card,
-  .feature-card,
-  .dashboard-stats article,
-  .dashboard-panel {
-    min-width: 0;
-  }
-
-  .course-body,
-  .project-info {
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  .mentor-section {
-    width: 100%;
-    max-width: 100%;
-    padding-inline: 16px;
-  }
-
-  .mentor-card {
-    width: 100%;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .mentor-content h2 {
-    font-size: clamp(27px, 7vw, 32px);
-    overflow-wrap: anywhere;
-  }
-
-  .dashboard-view {
-    width: 100%;
-    padding-inline: 16px !important;
-  }
-
-  .dashboard-view .dashboard-stats {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .dashboard-view .dashboard-panel,
-  .dashboard-view .dashboard-stats article {
-    min-width: 0;
-    padding: 16px !important;
-  }
-
-  .dashboard-view .request-row,
-  .dashboard-view .request-actions {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .dashboard-view .request-actions button {
-    max-width: 100%;
-    white-space: normal;
-  }
-
-  .modal-backdrop {
-    padding: 12px;
-    align-items: flex-start;
-  }
-
-  .modal {
-    width: 100%;
-    max-width: 540px;
-    max-height: calc(100dvh - 24px);
-    margin-block: auto;
-    padding: 24px 18px;
-  }
+  .dashboard-view { padding: 22px 14px !important; }
+  .dashboard-view .dashboard-stats,
+  .dashboard-view .resource-grid,
+  .dashboard-view .admin-tool-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-view .dashboard-panel { padding: 15px !important; }
+  .dashboard-view .dashboard-top h1 { font-size: clamp(27px, 7vw, 36px); }
+  .dashboard-view .request-row { padding: 13px !important; gap: 12px; }
+  .dashboard-view .request-actions button { flex: 1 1 auto; }
+  .learner-course { padding: 14px; gap: 12px; }
+  .form-row { grid-template-columns: minmax(0, 1fr); }
 
   .live-class-popup {
-    top: max(76px, env(safe-area-inset-top));
+    top: calc(74px + env(safe-area-inset-top));
     right: 12px;
-    left: auto;
-    width: min(350px, calc(100vw - 24px));
+    width: min(340px, calc(100vw - 24px));
     max-width: calc(100vw - 24px);
-    max-height: min(72dvh, 520px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 16px;
+    max-height: 58dvh;
+    padding: 14px;
     border-radius: 14px;
   }
-
-  .live-class-title {
-    font-size: 17px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-  }
-
-  .live-class-popup p {
-    overflow-wrap: anywhere;
-  }
-
-  .live-class-popup a {
-    max-width: 100%;
-    white-space: normal;
-    text-align: center;
-  }
-
-  .footer-links {
-    min-width: 0;
-    gap: 12px;
-  }
+  .modal-backdrop { align-items: flex-start; }
+  .modal { margin: auto 0; padding: 20px 16px; }
 }
 
 @media (max-width: 380px) {
-  .topbar {
-    padding-inline: 9px;
-  }
-
-  .brand {
-    max-width: 52%;
-    font-size: 12px;
-  }
-
-  .brand-mark {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-    font-size: 18px;
-  }
-
-  .nav-actions .btn {
-    padding: 8px 9px;
-    font-size: 9px;
-    max-width: 92px;
-  }
-
-  .menu-toggle {
-    font-size: 22px;
-    padding: 2px;
-  }
-
-  .hero-premium h1,
-  .hero h1 {
-    font-size: clamp(31px, 8.4vw, 36px);
-    letter-spacing: -1.2px;
-  }
-
-  .float-chip {
-    gap: 6px;
-    padding: 7px;
-  }
-
-  .chip-progress {
-    bottom: 0;
-  }
-
-  .modal h2 {
-    font-size: 23px;
-  }
+  .section-wrap { width: calc(100% - 22px); }
+  .topbar { padding-inline: 8px; gap: 5px; }
+  .brand { max-width: 44%; font-size: 11px; }
+  .brand-muted { font-size: 9px; }
+  .nav-actions .btn { max-width: 86px; padding: 7px; font-size: 9px; }
+  .hero-premium h1, .hero h1 { font-size: clamp(28px, 8.2vw, 32px); letter-spacing: -1px; }
+  .hero-actions .btn { padding: 10px 11px; font-size: 10px; }
+  .mini-dash { padding: 13px; }
+  .metric { padding: 9px; }
+  .metric b { font-size: 19px; }
+  .float-chip { font-size: 9px; }
+  .live-class-popup { right: 8px; width: calc(100vw - 16px); max-width: calc(100vw - 16px); }
 }
