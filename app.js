@@ -1,9 +1,26 @@
-document.documentElement.classList.add("js-enabled");
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-// Firebase web config from the user's Excel with AI project. Web config is not a server secret.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+// Your existing Firebase project
 const firebaseConfig = {
   apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
   authDomain: "excel-with-ai.firebaseapp.com",
@@ -12,101 +29,519 @@ const firebaseConfig = {
   messagingSenderId: "615391443440",
   appId: "1:615391443440:web:92b3a15f0e4596abc50535"
 };
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
 
-const $ = (s, root=document) => root.querySelector(s);
-const $$ = (s, root=document) => [...root.querySelectorAll(s)];
-$("#year").textContent = new Date().getFullYear();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const observer = new IntersectionObserver(entries => {
-  entries.forEach((entry, index) => {
-    if (entry.isIntersecting) {
-      entry.target.style.transitionDelay = `${Math.min(index % 4, 3) * 80}ms`;
-      entry.target.classList.add("visible");
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
-$$(".reveal").forEach(el => observer.observe(el));
+const $ = (s, root = document) => root.querySelector(s);
+const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-$("#menuToggle").addEventListener("click", () => $("#mainNav").classList.toggle("open"));
-$$(".nav a").forEach(a => a.addEventListener("click", () => $("#mainNav").classList.remove("open")));
+let registrationInProgress = false;
+
+if ($("#year")) $("#year").textContent = new Date().getFullYear();
+
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  $$(".reveal").forEach(el => observer.observe(el));
+}
+
+$("#menuToggle")?.addEventListener("click", () =>
+  $("#mainNav")?.classList.toggle("open")
+);
+
+$$(".nav a").forEach(a => a.addEventListener("click", () =>
+  $("#mainNav")?.classList.remove("open")
+));
+
 function openModal(id) {
-  const el = document.getElementById(id); if (!el) return;
-  el.classList.add("open"); el.setAttribute("aria-hidden", "false"); document.body.classList.add("modal-open");
-  const first = el.querySelector("input"); if (first) setTimeout(() => first.focus(), 80);
-}
-function closeModal(el) {
-  const modal = el.closest(".modal-backdrop"); if (!modal) return;
-  modal.classList.remove("open"); modal.setAttribute("aria-hidden", "true"); document.body.classList.remove("modal-open");
-}
-$$("[data-open]").forEach(btn => btn.addEventListener("click", () => openModal(btn.dataset.open)));
-$$("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn)));
-$$(".modal-backdrop").forEach(backdrop => backdrop.addEventListener("click", e => { if (e.target === backdrop) closeModal(backdrop); }));
-document.addEventListener("keydown", e => { if (e.key === "Escape") $$(".modal-backdrop.open").forEach(closeModal); });
-function toast(message) {
-  const el = $("#toast"); el.textContent = message; el.classList.add("show");
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove("show"), 3300);
-}
-$$("[data-course]").forEach(btn => btn.addEventListener("click", () => { $("#courseSelect").value = btn.dataset.course; openModal("enrollModal"); }));
+  const modal = document.getElementById(id);
+  if (!modal) return;
 
-// Enrollment requests remain local demo data until we wire the full protected workflow.
-$("#enrollForm").addEventListener("submit", e => {
-  e.preventDefault(); const form = new FormData(e.currentTarget);
-  const request = { id:`DEMO-${Date.now()}`, name:String(form.get("name")||"").trim(), phone:String(form.get("phone")||"").trim(), email:String(form.get("email")||"").trim(), course:String(form.get("course")||""), paymentRef:String(form.get("paymentRef")||"").trim(), message:String(form.get("message")||"").trim(), status:"Pending review", createdAt:new Date().toISOString(), demoOnly:true };
-  const key = "excelWithAiDemoEnrollmentRequests"; const saved = JSON.parse(localStorage.getItem(key) || "[]"); saved.push(request); localStorage.setItem(key, JSON.stringify(saved));
-  e.currentTarget.hidden = true; $("#enrollSuccess").hidden = false;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+}
+
+function closeModal(element) {
+  const modal = element?.closest(".modal-backdrop");
+  if (!modal) return;
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+$$("[data-open]").forEach(button => {
+  button.addEventListener("click", event => {
+    if (event.currentTarget.tagName === "A") event.preventDefault();
+    openModal(event.currentTarget.dataset.open);
+  });
 });
+
+$$("[data-close]").forEach(button =>
+  button.addEventListener("click", () => closeModal(button))
+);
+
+$$(".modal-backdrop").forEach(backdrop => {
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) closeModal(backdrop);
+  });
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    $$(".modal-backdrop.open").forEach(closeModal);
+  }
+});
+
+function toast(message) {
+  const el = $("#toast");
+  if (!el) return;
+
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 3500);
+}
+
+function message(id, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.textContent = text;
+  el.hidden = false;
+}
+
+function clearMessage(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = "";
+    el.hidden = true;
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[ch]));
+}
+
+function explainError(error) {
+  const errors = {
+    "auth/email-already-in-use": "Account already exists. Please log in.",
+    "auth/invalid-email": "Email/account ID format is incorrect.",
+    "auth/weak-password": "Password must contain at least 6 characters.",
+    "auth/invalid-credential": "Student ID/email or password is incorrect.",
+    "auth/operation-not-allowed": "Enable Email/Password in Firebase Authentication settings.",
+    "auth/too-many-requests": "Too many attempts. Please wait and try again.",
+    "auth/network-request-failed": "Check your internet connection.",
+    "permission-denied": "Firestore Rules blocked this action. Check and publish the correct Rules.",
+    "unavailable": "Firebase is temporarily unavailable. Try again."
+  };
+
+  return errors[error.code] || error.message || "An unexpected error occurred.";
+}
+
+// Student ID login uses a private-format Firebase Auth email.
+function makeStudentId() {
+  return "STU" + Math.floor(100000 + Math.random() * 900000);
+}
+
+function studentAuthEmail(studentId) {
+  return `${studentId.toLowerCase()}@students.excelwithai.com`;
+}
+
+async function getRole(uid) {
+  const snap = await getDoc(doc(db, "userRoles", uid));
+  return snap.exists() && snap.data().role === "admin"
+    ? "admin"
+    : "student";
+}
+
+async function getProfile(uid) {
+  const snap = await getDoc(doc(db, "studentProfiles", uid));
+  return snap.exists() ? snap.data() : null;
+}
+
+// REGISTRATION: creates Firebase Auth account and Firestore records.
+$("#enrollForm")?.addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage("enrollMessage");
+
+  const form = event.currentTarget;
+  const button = form.querySelector('button[type="submit"]');
+  const data = new FormData(form);
+
+  const name = String(data.get("name") || "").trim();
+  const phone = String(data.get("phone") || "").trim();
+  const contactEmail = String(data.get("email") || "").trim().toLowerCase();
+  const course = String(data.get("course") || "").trim();
+  const password = String(data.get("password") || "");
+  const paymentRef = String(data.get("paymentRef") || "").trim();
+  const note = String(data.get("message") || "").trim();
+
+  if (!name || !phone || !course || password.length < 6) {
+    message("enrollMessage", "Fill in your name, mobile, course and password (minimum 6 characters).");
+    return;
+  }
+
+  if (!/^[0-9+() -]{10,16}$/.test(phone)) {
+    message("enrollMessage", "Please enter a valid mobile number.");
+    return;
+  }
+
+  registrationInProgress = true;
+  button.disabled = true;
+  button.textContent = "Creating account…";
+
+  let accountCreated = false;
+
+  try {
+    let studentId;
+    let credential;
+
+    // Firebase Auth prevents duplicate synthetic login IDs.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      studentId = makeStudentId();
+
+      try {
+        credential = await createUserWithEmailAndPassword(
+          auth,
+          studentAuthEmail(studentId),
+          password
+        );
+        accountCreated = true;
+        break;
+      } catch (error) {
+        if (error.code !== "auth/email-already-in-use" || attempt === 4) {
+          throw error;
+        }
+      }
+    }
+
+    if (!credential) throw new Error("Could not create an account. Please retry.");
+
+    await updateProfile(credential.user, { displayName: name });
+
+    await setDoc(doc(db, "studentProfiles", credential.user.uid), {
+      uid: credential.user.uid,
+      studentId,
+      name,
+      phone,
+      contactEmail,
+      course,
+      role: "student",
+      createdAt: serverTimestamp()
+    });
+
+    const requestRef = doc(collection(db, "enrollmentRequests"));
+
+    await setDoc(requestRef, {
+      studentUid: credential.user.uid,
+      studentId,
+      name,
+      phone,
+      email: contactEmail,
+      course,
+      paymentRef,
+      message: note,
+      status: "Pending review",
+      createdAt: serverTimestamp()
+    });
+
+    form.hidden = true;
+    $("#enrollSuccess").hidden = false;
+    $("#newStudentId").textContent = studentId;
+
+    $("#goToStudentLogin")?.addEventListener("click", async () => {
+      // Keep the new account signed in, but show the login screen.
+      try {
+        await signOut(auth);
+        closeModal($("#enrollModal"));
+        openModal("loginModal");
+
+        const loginInput = $('#loginForm [name="email"]');
+        if (loginInput) loginInput.value = studentId;
+      } catch (error) {
+        message("enrollMessage", explainError(error));
+      }
+    }, { once: true });
+
+    toast("Registration successful. Save your Student ID.");
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    if (accountCreated) {
+      message(
+        "enrollMessage",
+        "Your login account was created, but saving all records failed. Do not register again. Check Firestore Rules. Error: " +
+        explainError(error)
+      );
+    } else {
+      message("enrollMessage", explainError(error));
+    }
+  } finally {
+    registrationInProgress = false;
+    button.disabled = false;
+    button.textContent = "Register & Get Student ID ↗";
+  }
+});
+
+// Course buttons open registration form.
+$$("[data-course]").forEach(button => {
+  button.addEventListener("click", () => {
+    const select = $("#courseSelect");
+    if (select) select.value = button.dataset.course;
+    openModal("enrollModal");
+  });
+});
+
+function showWebsite() {
+  if ($("#dashboardView")) $("#dashboardView").hidden = true;
+  if ($("main")) $("main").hidden = false;
+  if ($("footer")) $("footer").hidden = false;
+}
 
 function renderDashboard(user) {
   let view = $("#dashboardView");
-  if (!view) { view = document.createElement("section"); view.id = "dashboardView"; view.className = "dashboard-view section-wrap"; view.hidden = true; $("footer").before(view); }
+
+  if (!view) {
+    view = document.createElement("section");
+    view.id = "dashboardView";
+    view.className = "dashboard-view section-wrap";
+    view.hidden = true;
+    $("footer")?.before(view);
+  }
+
   const isAdmin = user.role === "admin";
-  const requests = JSON.parse(localStorage.getItem("excelWithAiDemoEnrollmentRequests") || "[]");
+
   view.innerHTML = `
-    <div class="dashboard-top"><div><div class="eyebrow">EXCEL WITH AI · ${isAdmin ? "ADMIN CONSOLE" : "LEARNER SPACE"}</div><h1>${isAdmin ? "Admin Dashboard" : "Student Dashboard"}</h1><p>Welcome, ${escapeHtml(user.name)}. ${isAdmin ? "Manage course requests and review the demo enrollment queue." : "Continue learning and explore your course resources."}</p><small>${escapeHtml(user.email)}</small></div><button class="btn btn-outline" id="logoutBtn">Log out ↗</button></div>
-    <div class="dashboard-stats"><article><span>${isAdmin ? "Enrollment requests" : "My courses"}</span><strong>${isAdmin ? requests.length : "1"}</strong></article><article><span>${isAdmin ? "Pending review" : "Learning progress"}</span><strong>${isAdmin ? requests.filter(r => r.status === "Pending review").length : "12%"}</strong></article><article><span>${isAdmin ? "Course library" : "Certificates"}</span><strong>${isAdmin ? "4" : "0"}</strong></article></div>
-    ${isAdmin ? `<div class="dashboard-panel"><div class="panel-heading"><div><h2>Enrollment requests</h2><p>These are still demo requests saved in this browser only.</p></div><button class="btn btn-outline" id="refreshRequests">Refresh</button></div><div id="requestList"></div></div><div class="dashboard-panel"><h2>Course & module management</h2><p>Admin tools preview. Firebase login is connected; uploads, payment workflow and course data are not connected yet.</p><div class="admin-tool-grid"><div><strong>Course library</strong><span>Excel Basics · Excel with AI · Dashboards · AI Prompt Lab</span></div><div><strong>Learning materials</strong><span>Video links, notes and downloadable practice files</span></div><div><strong>Payments</strong><span>UPI reference review and manual approval workflow</span></div><div><strong>Reports</strong><span>Student progress, quiz results and certificates</span></div></div></div>` : `<div class="dashboard-panel"><div class="panel-heading"><div><h2>My learning</h2><p>Your learning space</p></div><span class="pill pill-blue">ACCOUNT ACTIVE</span></div><div class="learner-course"><div class="course-icon">✦</div><div class="learner-course-main"><h3>Excel with AI</h3><p>Learn formulas, AI prompts, reports and business dashboards.</p><div class="progress-track"><span style="width:12%"></span></div><small>Progress and learning resources will connect in the next step.</small></div><button class="btn btn-primary" id="openLearning">Open course</button></div><div id="learningResources" hidden class="resource-grid"><article><span>▶ VIDEO LESSONS</span><h3>Module 1 · Getting Started</h3><p>Video links will appear here after the course admin adds them.</p></article><article><span>▤ NOTES & FILES</span><h3>Practice materials</h3><p>Lesson notes and Excel practice files will appear here.</p></article><article><span>✧ QUIZZES</span><h3>Check your learning</h3><p>Quizzes and certificate eligibility will be available after setup.</p></article></div></div>`}`;
-  $("main").hidden = true; $("footer").hidden = true; view.hidden = false; $("#mainNav").classList.remove("open"); view.scrollIntoView({behavior:"smooth",block:"start"});
-  $("#logoutBtn").addEventListener("click", async () => { try { await signOut(auth); } catch(err) { toast("Logout error: " + err.message); } });
+    <div class="dashboard-top">
+      <div>
+        <div class="eyebrow">EXCEL WITH AI · ${isAdmin ? "ADMIN CONSOLE" : "STUDENT SPACE"}</div>
+        <h1>${isAdmin ? "Admin Dashboard" : "Student Dashboard"}</h1>
+        <p>Welcome, ${escapeHtml(user.name)}.</p>
+        <small>${escapeHtml(user.studentId || user.email || "")}</small>
+      </div>
+      <button class="btn btn-outline" id="logoutBtn">Log out ↗</button>
+    </div>
+
+    <div class="dashboard-stats">
+      <article><span>${isAdmin ? "Enrollment requests" : "Student ID"}</span>
+        <strong>${isAdmin ? "Firebase" : escapeHtml(user.studentId || "—")}</strong></article>
+      <article><span>Account</span><strong>Active</strong></article>
+      <article><span>Course</span><strong>${isAdmin ? "Admin" : escapeHtml(user.course || "Pending review")}</strong></article>
+    </div>
+
+    ${isAdmin ? `
+      <div class="dashboard-panel">
+        <div class="panel-heading">
+          <div><h2>Student Enrollment Requests</h2>
+          <p>Requests saved in Firebase Firestore.</p></div>
+          <button class="btn btn-outline" id="refreshRequests">Refresh</button>
+        </div>
+        <div id="requestList">Loading…</div>
+      </div>
+    ` : `
+      <div class="dashboard-panel">
+        <div class="panel-heading">
+          <div><h2>My Learning</h2><p>Your registered course and account details.</p></div>
+          <span class="pill pill-blue">ACCOUNT ACTIVE</span>
+        </div>
+        <div class="learner-course">
+          <div class="course-icon">✦</div>
+          <div class="learner-course-main">
+            <h3>${escapeHtml(user.course || "Course pending approval")}</h3>
+            <p>Your Student ID: <strong>${escapeHtml(user.studentId || "—")}</strong></p>
+            <p>Course access may require Admin approval.</p>
+          </div>
+        </div>
+      </div>
+    `}
+  `;
+
+  if ($("main")) $("main").hidden = true;
+  if ($("footer")) $("footer").hidden = true;
+  view.hidden = false;
+  $("#mainNav")?.classList.remove("open");
+  view.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  $("#logoutBtn")?.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      showWebsite();
+      toast("Logged out successfully.");
+    } catch (error) {
+      toast(explainError(error));
+    }
+  });
+
   if (isAdmin) {
-    const renderRequests = () => {
-      const list = $("#requestList"); const rows = JSON.parse(localStorage.getItem("excelWithAiDemoEnrollmentRequests") || "[]");
-      list.innerHTML = rows.length ? `<div class="request-table">${rows.map(r => `<div class="request-row"><div><strong>${escapeHtml(r.name)}</strong><small>${escapeHtml(r.email)} · ${escapeHtml(r.phone)}</small><small>${escapeHtml(r.course)} · ${new Date(r.createdAt).toLocaleDateString()}</small></div><span class="status-pill">${escapeHtml(r.status)}</span><div class="request-actions"><button class="btn btn-outline btn-sm" data-approve="${r.id}">Approve</button><button class="btn btn-quiet btn-sm" data-reject="${r.id}">Reject</button></div></div>`).join("")}</div>` : `<div class="empty-state">No demo enrollment requests in this browser yet.</div>`;
-      $$('[data-approve]').forEach(b => b.addEventListener('click', () => updateRequest(b.dataset.approve, 'Approved')));
-      $$('[data-reject]').forEach(b => b.addEventListener('click', () => updateRequest(b.dataset.reject, 'Rejected')));
+    const loadRequests = async () => {
+      const list = $("#requestList");
+      list.textContent = "Loading enrollment requests…";
+
+      try {
+        const snap = await getDocs(collection(db, "enrollmentRequests"));
+
+        if (snap.empty) {
+          list.innerHTML = '<div class="empty-state">No enrollment requests yet.</div>';
+          return;
+        }
+
+        const requests = snap.docs.map(item => ({
+          id: item.id,
+          ...item.data()
+        }));
+
+        list.innerHTML = `<div class="request-table">${
+          requests.map(r => `
+            <div class="request-row">
+              <div>
+                <strong>${escapeHtml(r.name)}</strong>
+                <small>Student ID: ${escapeHtml(r.studentId)}</small>
+                <small>${escapeHtml(r.email || "No email")} · ${escapeHtml(r.phone)}</small>
+                <small>Course: ${escapeHtml(r.course)}</small>
+                <small>Payment: ${escapeHtml(r.paymentRef || "Not provided")}</small>
+              </div>
+              <span class="status-pill">${escapeHtml(r.status || "Pending review")}</span>
+              <div class="request-actions">
+                <button class="btn btn-outline btn-sm" data-id="${escapeHtml(r.id)}" data-status="Approved">Approve</button>
+                <button class="btn btn-quiet btn-sm" data-id="${escapeHtml(r.id)}" data-status="Rejected">Reject</button>
+              </div>
+            </div>
+          `).join("")
+        }</div>`;
+
+        $$("[data-status]", list).forEach(button => {
+          button.addEventListener("click", async () => {
+            button.disabled = true;
+            try {
+              await updateDoc(doc(db, "enrollmentRequests", button.dataset.id), {
+                status: button.dataset.status,
+                reviewedAt: serverTimestamp(),
+                reviewedBy: auth.currentUser.uid
+              });
+              toast("Request updated: " + button.dataset.status);
+              await loadRequests();
+            } catch (error) {
+              toast(explainError(error));
+              button.disabled = false;
+            }
+          });
+        });
+      } catch (error) {
+        console.error(error);
+        list.textContent = "Could not load requests: " + explainError(error);
+      }
     };
-    const updateRequest = (id, status) => { const rows = JSON.parse(localStorage.getItem("excelWithAiDemoEnrollmentRequests") || "[]"); localStorage.setItem("excelWithAiDemoEnrollmentRequests", JSON.stringify(rows.map(r => r.id === id ? {...r,status} : r))); renderDashboard(user); };
-    $("#refreshRequests").addEventListener("click", renderRequests); renderRequests();
-  } else { $("#openLearning").addEventListener("click", () => { $("#learningResources").hidden = !$("#learningResources").hidden; }); }
+
+    $("#refreshRequests")?.addEventListener("click", loadRequests);
+    loadRequests();
+  }
 }
-function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
 
-$("#loginForm").addEventListener("submit", async e => {
-  e.preventDefault(); const button = e.currentTarget.querySelector('button[type="submit"]'); button.disabled = true; button.textContent = "Signing in…";
-  const fields = new FormData(e.currentTarget); const email = String(fields.get("email") || "").trim().toLowerCase(); const password = String(fields.get("password") || "");
+// LOGIN: students may use Student ID; Admin uses their existing email.
+$("#loginForm")?.addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage("loginMessage");
+
+  const form = event.currentTarget;
+  const button = form.querySelector('button[type="submit"]');
+  const data = new FormData(form);
+
+  const loginValue = String(data.get("email") || "").trim();
+  const password = String(data.get("password") || "");
+
+  if (!loginValue || !password) {
+    message("loginMessage", "Enter your Student ID/email and password.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Signing in…";
+
   try {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
-    const roleSnap = await getDoc(doc(db, "userRoles", credential.user.uid));
-    const role = roleSnap.exists() && roleSnap.data().role === "admin" ? "admin" : "student";
-    closeModal($("#loginModal")); e.currentTarget.reset(); $("#loginMessage").hidden = true;
-    renderDashboard({ role, name: role === "admin" ? "Excel with AI Admin" : (credential.user.displayName || credential.user.email.split("@")[0]), email: credential.user.email, uid: credential.user.uid });
+    const isStudentId = /^STU\d{6}$/i.test(loginValue);
+
+    const email = isStudentId
+      ? studentAuthEmail(loginValue.toUpperCase())
+      : loginValue.toLowerCase();
+
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    const firebaseUser = result.user;
+    const role = await getRole(firebaseUser.uid);
+    const profile = await getProfile(firebaseUser.uid);
+
+    closeModal($("#loginModal"));
+    form.reset();
+
+    renderDashboard({
+      role,
+      name: role === "admin"
+        ? (firebaseUser.displayName || "Excel with AI Admin")
+        : (profile?.name || firebaseUser.displayName || "Student"),
+      email: profile?.contactEmail || firebaseUser.email,
+      uid: firebaseUser.uid,
+      studentId: profile?.studentId || "",
+      course: profile?.course || ""
+    });
   } catch (error) {
-    $("#loginMessage").hidden = false;
-    const messages = { "auth/invalid-credential":"Email ya password sahi nahi hai. Firebase Users mein banaya hua account use karein.", "auth/too-many-requests":"Bahut baar try hua hai. Thodi der baad dobara koshish karein.", "auth/network-request-failed":"Internet connection check karke phir try karein." };
-    $("#loginMessage").textContent = messages[error.code] || `Login nahi hua: ${error.message}`;
-  } finally { button.disabled = false; button.textContent = "Continue"; }
+    console.error("Login error:", error);
+    message("loginMessage", explainError(error));
+  } finally {
+    button.disabled = false;
+    button.textContent = "Continue";
+  }
 });
 
-// If the user refreshes while signed in, restore their role-based dashboard.
-onAuthStateChanged(auth, async user => {
-  if (!user) return;
+// Restore the dashboard after refresh.
+onAuthStateChanged(auth, async firebaseUser => {
+  if (registrationInProgress) return;
+
+  if (!firebaseUser) {
+    showWebsite();
+    return;
+  }
+
   try {
-    const roleSnap = await getDoc(doc(db, "userRoles", user.uid));
-    const role = roleSnap.exists() && roleSnap.data().role === "admin" ? "admin" : "student";
-    renderDashboard({ role, name: role === "admin" ? "Excel with AI Admin" : (user.displayName || user.email.split("@")[0]), email: user.email, uid: user.uid });
-  } catch (e) { console.warn("Could not restore signed-in view", e); }
+    const role = await getRole(firebaseUser.uid);
+    const profile = await getProfile(firebaseUser.uid);
+
+    renderDashboard({
+      role,
+      name: role === "admin"
+        ? (firebaseUser.displayName || "Excel with AI Admin")
+        : (profile?.name || firebaseUser.displayName || "Student"),
+      email: profile?.contactEmail || firebaseUser.email,
+      uid: firebaseUser.uid,
+      studentId: profile?.studentId || "",
+      course: profile?.course || ""
+    });
+  } catch (error) {
+    console.error("Could not restore dashboard:", error);
+  }
 });
-$$(".faq-list details").forEach(detail => detail.addEventListener("toggle", () => { if (detail.open) $$(".faq-list details").filter(other => other !== detail).forEach(other => other.open = false); }));
+
+$$(".faq-list details").forEach(detail => {
+  detail.addEventListener("toggle", () => {
+    if (detail.open) {
+      $$(".faq-list details")
+        .filter(other => other !== detail)
+        .forEach(other => other.open = false);
+    }
+  });
+});
