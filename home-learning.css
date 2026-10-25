@@ -1,0 +1,151 @@
+
+/* Excel with AI - Additional Home Page Design */
+/* Existing styles are intentionally left untouched */
+
+.learning-tools-section {
+  max-width: 1200px;
+  margin: 36px auto;
+  padding: 24px;
+  color: var(--text-color, #f8fafc);
+}
+
+.learning-tools-heading {
+  margin-bottom: 8px;
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+}
+
+.learning-tools-subtitle {
+  margin: 0 0 24px;
+  opacity: .75;
+  line-height: 1.7;
+}
+
+.learning-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.learning-tool-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid rgba(148, 163, 184, .25);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #172338, #101827);
+  color: #f8fafc;
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+.learning-tool-card:hover {
+  transform: translateY(-3px);
+  border-color: #22c55e;
+}
+
+.learning-tool-icon {
+  font-size: 30px;
+  margin-bottom: 12px;
+}
+
+.learning-tool-card h3 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.learning-tool-card p {
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.learning-tool-button {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #16a34a;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.learning-tool-button:hover {
+  background: #15803d;
+}
+
+.learning-progress-track {
+  height: 9px;
+  margin-top: 12px;
+  border-radius: 99px;
+  background: #334155;
+  overflow: hidden;
+}
+
+.learning-progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: #4ade80;
+  transition: width .3s ease;
+}
+
+.formula-search-input,
+.practice-answer {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #475569;
+  border-radius: 9px;
+  background: #0f172a;
+  color: #f8fafc;
+  font: inherit;
+}
+
+.formula-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.formula-item {
+  padding: 15px;
+  border-radius: 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+.formula-code {
+  display: block;
+  margin: 10px 0;
+  color: #86efac;
+  overflow-wrap: anywhere;
+  font-family: monospace;
+}
+
+.learning-feedback {
+  margin-top: 12px;
+  line-height: 1.7;
+}
+
+.learning-tools-section [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .learning-tools-section {
+    padding: 16px;
+    margin: 20px auto;
+  }
+
+  .learning-tools-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .learning-tool-card {
+    padding: 18px;
+  }
+}
