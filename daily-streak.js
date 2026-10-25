@@ -24,24 +24,28 @@ const app = getApps().length
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+let currentUid = null;
+let activityDays = [];
+let saving = false;
+let dashboardObserver = null;
+let discoveryObserver = null;
+
 const $ = (selector, root = document) =>
   root.querySelector(selector);
 
-let activeUid = null;
-let currentStreakData = {};
-let savingActivity = false;
+function todayKey() {
+  const now = new Date();
 
-function getLocalDateKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0")
+  ].join("-");
 }
 
-function dateDifference(dateA, dateB) {
-  const a = new Date(`${dateA}T12:00:00`);
-  const b = new Date(`${dateB}T12:00:00`);
+function dayDifference(first, second) {
+  const a = new Date(first + "T12:00:00");
+  const b = new Date(second + "T12:00:00");
 
   return Math.round((b - a) / 86400000);
 }
@@ -57,12 +61,9 @@ function calculateStreak(days) {
   let run = 1;
 
   for (let i = 1; i < uniqueDays.length; i++) {
-    const difference = dateDifference(
-      uniqueDays[i - 1],
-      uniqueDays[i]
-    );
-
-    if (difference === 1) {
+    if (
+      dayDifference(uniqueDays[i - 1], uniqueDays[i]) === 1
+    ) {
       run++;
     } else {
       run = 1;
@@ -71,11 +72,8 @@ function calculateStreak(days) {
     longest = Math.max(longest, run);
   }
 
-  const today = getLocalDateKey();
-  const yesterday = getLocalDateKey(
-    new Date(Date.now() - 86400000)
-  );
-
+  const today = todayKey();
+  const yesterday = todayKeyFromOffset(-1);
   const lastDay = uniqueDays[uniqueDays.length - 1];
 
   let current = 0;
@@ -85,10 +83,7 @@ function calculateStreak(days) {
 
     for (let i = uniqueDays.length - 1; i > 0; i--) {
       if (
-        dateDifference(
-          uniqueDays[i - 1],
-          uniqueDays[i]
-        ) === 1
+        dayDifference(uniqueDays[i - 1], uniqueDays[i]) === 1
       ) {
         current++;
       } else {
@@ -100,131 +95,142 @@ function calculateStreak(days) {
   return { current, longest };
 }
 
-function addStreakStyles() {
-  if ($("#daily-streak-styles")) return;
+function todayKeyFromOffset(offset) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function addStyles() {
+  if ($("#daily-streak-style")) return;
 
   const style = document.createElement("style");
-  style.id = "daily-streak-styles";
+  style.id = "daily-streak-style";
 
   style.textContent = `
-    .ds-card {
+    #daily-streak-card {
       margin: 16px 0;
       padding: 20px;
       border: 1px solid #344668;
       border-radius: 16px;
       color: #f3f6ff;
-      background:
-        radial-gradient(circle at top right, #293a69, transparent 55%),
-        #111c32;
+      background: linear-gradient(135deg,#172541,#10182b);
+      box-sizing: border-box;
     }
 
-    .ds-heading {
+    #daily-streak-card * {
+      box-sizing: border-box;
+    }
+
+    #daily-streak-card .ds-heading {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .ds-flame {
+    #daily-streak-card .ds-flame {
       font-size: 30px;
     }
 
-    .ds-card h3 {
+    #daily-streak-card h3 {
       margin: 0 0 5px;
       font-size: 18px;
     }
 
-    .ds-muted {
+    #daily-streak-card .ds-muted {
       color: #aab8d5;
       font-size: 12px;
       line-height: 1.6;
     }
 
-    .ds-stats {
+    #daily-streak-card .ds-stats {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2,minmax(0,1fr));
       gap: 12px;
       margin-top: 18px;
     }
 
-    .ds-stat {
+    #daily-streak-card .ds-stat {
       padding: 14px;
       border: 1px solid #344668;
       border-radius: 12px;
-      background: rgba(7, 15, 32, .45);
+      background: #0b1428;
     }
 
-    .ds-stat strong {
+    #daily-streak-card .ds-stat strong {
       display: block;
-      margin-top: 5px;
-      font-size: 25px;
+      margin-top: 6px;
+      font-size: 24px;
     }
 
-    .ds-calendar {
+    #daily-streak-card .ds-calendar {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-columns: repeat(7,minmax(0,1fr));
       gap: 6px;
       margin-top: 14px;
     }
 
-    .ds-day {
+    #daily-streak-card .ds-day {
+      min-height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 30px;
       border-radius: 7px;
       background: #202d47;
       color: #aab8d5;
-      font-size: 10px;
+      font-size: 11px;
     }
 
-    .ds-day.done {
+    #daily-streak-card .ds-day.done {
       background: #17634e;
       color: #d1fae5;
-      border: 1px solid #36a783;
     }
 
-    .ds-day.today {
+    #daily-streak-card .ds-day.today {
       outline: 2px solid #83a7ff;
-      outline-offset: 1px;
     }
 
-    .ds-badges {
+    #daily-streak-card .ds-badges {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 14px;
     }
 
-    .ds-badge {
+    #daily-streak-card .ds-badge {
       padding: 7px 10px;
       border-radius: 999px;
       border: 1px solid #344668;
-      font-size: 11px;
       color: #aab8d5;
+      font-size: 11px;
     }
 
-    .ds-badge.earned {
+    #daily-streak-card .ds-badge.earned {
       color: #ffdf8a;
-      background: #42351e;
       border-color: #80622c;
+      background: #42351e;
     }
 
-    @media(max-width: 600px) {
-      .ds-card { padding: 15px; }
-      .ds-stats { gap: 8px; }
+    @media(max-width:600px) {
+      #daily-streak-card { padding: 15px; }
+      #daily-streak-card .ds-stats { gap: 8px; }
     }
   `;
 
   document.head.appendChild(style);
 }
 
-function renderCalendar(days) {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
+function calendarHTML(days) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
   const totalDays = new Date(year, month + 1, 0).getDate();
-  const todayKey = getLocalDateKey();
 
   let html = "";
 
@@ -234,25 +240,29 @@ function renderCalendar(days) {
 
   for (let day = 1; day <= totalDays; day++) {
     const date = new Date(year, month, day);
-    const key = getLocalDateKey(date);
+
+    const key = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0")
+    ].join("-");
+
     const done = days.includes(key);
-    const isToday = key === todayKey;
+    const isToday = key === todayKey();
 
     html += `
-      <span
-        class="ds-day ${done ? "done" : ""} ${isToday ? "today" : ""}"
-        title="${key}${done ? " — Learning activity" : ""}"
-      >${day}</span>
+      <span class="ds-day ${done ? "done" : ""} ${isToday ? "today" : ""}"
+        title="${key}">
+        ${day}
+      </span>
     `;
   }
 
   return html;
 }
 
-function renderStreak() {
-  const dashboard = $("#studentDashboardV2");
-
-  if (!dashboard || !activeUid) return;
+function renderCard(dashboard) {
+  if (!dashboard || !currentUid) return;
 
   let card = $("#daily-streak-card", dashboard);
 
@@ -270,20 +280,15 @@ function renderStreak() {
     }
   }
 
-  const days = Array.isArray(currentStreakData.activityDays)
-    ? currentStreakData.activityDays
-    : [];
-
-  const streak = calculateStreak(days);
-  const today = getLocalDateKey();
-  const activeToday = days.includes(today);
-
+  const streak = calculateStreak(activityDays);
   const monthName = new Date().toLocaleDateString("en-IN", {
     month: "long",
     year: "numeric"
   });
 
-  const milestones = [
+  const activeToday = activityDays.includes(todayKey());
+
+  const badges = [
     { days: 3, label: "3-Day Starter" },
     { days: 7, label: "7-Day Learner" },
     { days: 30, label: "30-Day Champion" }
@@ -297,7 +302,7 @@ function renderStreak() {
         <div class="ds-muted">
           ${activeToday
             ? "Today's learning activity recorded."
-            : "Complete a lesson or MCQ to record today's activity."}
+            : "Complete a lesson to record today's activity."}
         </div>
       </div>
     </div>
@@ -305,153 +310,185 @@ function renderStreak() {
     <div class="ds-stats">
       <div class="ds-stat">
         <span class="ds-muted">Current Streak</span>
-        <strong>🔥 ${streak.current} day${streak.current === 1 ? "" : "s"}</strong>
+        <strong>🔥 ${streak.current} day(s)</strong>
       </div>
 
       <div class="ds-stat">
         <span class="ds-muted">Longest Streak</span>
-        <strong>🏆 ${streak.longest} day${streak.longest === 1 ? "" : "s"}</strong>
+        <strong>🏆 ${streak.longest} day(s)</strong>
       </div>
     </div>
 
     <h4 style="margin:20px 0 0">${monthName}</h4>
-    <div class="ds-muted">Green dates show recorded learning activity.</div>
+    <div class="ds-muted">
+      Green dates show recorded learning activity.
+    </div>
 
     <div class="ds-calendar">
-      ${renderCalendar(days)}
+      ${calendarHTML(activityDays)}
     </div>
 
     <div class="ds-badges">
-      ${milestones.map(item => {
-        const earned = streak.longest >= item.days;
-
-        return `
-          <span class="ds-badge ${earned ? "earned" : ""}">
-            ${earned ? "🏅" : "🔒"} ${item.label}
-          </span>
-        `;
-      }).join("")}
+      ${badges.map(badge => `
+        <span class="ds-badge ${
+          streak.longest >= badge.days ? "earned" : ""
+        }">
+          ${streak.longest >= badge.days ? "🏅" : "🔒"}
+          ${badge.label}
+        </span>
+      `).join("")}
     </div>
   `;
 }
 
-async function recordLearningActivity() {
+async function recordActivity() {
   const user = auth.currentUser;
 
-  if (!user || user.uid !== activeUid || savingActivity) {
-    return;
-  }
+  if (!user || user.uid !== currentUid || saving) return;
 
-  const today = getLocalDateKey();
-  const oldDays = Array.isArray(currentStreakData.activityDays)
-    ? currentStreakData.activityDays
-    : [];
+  const today = todayKey();
 
-  if (oldDays.includes(today)) {
-    return;
-  }
+  if (activityDays.includes(today)) return;
 
-  savingActivity = true;
+  saving = true;
 
   try {
-    const nextDays = [...oldDays, today].sort();
+    const updatedDays = [...activityDays, today].sort();
 
     await setDoc(
       doc(db, "studentProgress", user.uid),
       {
-        learningActivityDays: nextDays,
+        learningActivityDays: updatedDays,
         learningActivityUpdatedAt: serverTimestamp()
       },
       { merge: true }
     );
 
-    currentStreakData.activityDays = nextDays;
-    renderStreak();
+    activityDays = updatedDays;
+
+    const dashboard = $("#studentDashboardV2");
+    if (dashboard) renderCard(dashboard);
   } catch (error) {
     console.error("Daily streak save failed:", error);
     alert(
-      "Learning streak save nahi hui. Firebase Firestore Rules check karein."
+      "Streak save nahi hui. Firestore Rules ya browser Console check karein."
     );
   } finally {
-    savingActivity = false;
+    saving = false;
   }
 }
 
-async function loadStreak(user) {
-  const snapshot = await getDoc(
-    doc(db, "studentProgress", user.uid)
-  );
+function attachActivityHandler(dashboard) {
+  if (dashboard.dataset.dailyStreakHandler === "yes") return;
 
-  if (auth.currentUser?.uid !== user.uid) return;
-
-  const data = snapshot.exists() ? snapshot.data() : {};
-
-  currentStreakData = {
-    activityDays: Array.isArray(data.learningActivityDays)
-      ? data.learningActivityDays
-      : []
-  };
-
-  renderStreak();
-}
-
-function attachActivityTracking() {
-  const dashboard = $("#studentDashboardV2");
-
-  if (!dashboard || dashboard.dataset.streakTracking === "true") {
-    return;
-  }
-
-  dashboard.dataset.streakTracking = "true";
+  dashboard.dataset.dailyStreakHandler = "yes";
 
   dashboard.addEventListener("click", event => {
     const button = event.target.closest("button");
 
     if (!button || !dashboard.contains(button)) return;
 
-    // Count activity only when a lesson action is enabled.
-    if (button.matches("[data-lesson]") && !button.disabled) {
-      recordLearningActivity();
-    }
-
-    // Count a passed Admin-created MCQ module.
-    if (button.id === "cs-pass") {
-      recordLearningActivity();
+    if (
+      button.matches("[data-lesson]") &&
+      !button.disabled
+    ) {
+      recordActivity();
     }
   });
 }
 
-function setupDashboardObserver() {
-  const observer = new MutationObserver(() => {
-    if ($("#studentDashboardV2") && activeUid) {
-      attachActivityTracking();
-      renderStreak();
+function watchDashboard() {
+  const root = $("#dashboardView");
+
+  if (!root) return false;
+
+  if (dashboardObserver) dashboardObserver.disconnect();
+
+  dashboardObserver = new MutationObserver(() => {
+    const dashboard = $("#studentDashboardV2", root);
+
+    if (!dashboard || !currentUid) return;
+
+    attachActivityHandler(dashboard);
+
+    // Render only if the card is missing.
+    // This prevents an observer/render loop.
+    if (!$("#daily-streak-card", dashboard)) {
+      renderCard(dashboard);
     }
   });
 
-  observer.observe(document.body, {
+  dashboardObserver.observe(root, {
+    childList: true,
+    subtree: true
+  });
+
+  const dashboard = $("#studentDashboardV2", root);
+
+  if (dashboard && currentUid) {
+    attachActivityHandler(dashboard);
+    renderCard(dashboard);
+  }
+
+  return true;
+}
+
+function discoverDashboard() {
+  if (watchDashboard()) return;
+
+  if (discoveryObserver) discoveryObserver.disconnect();
+
+  discoveryObserver = new MutationObserver(() => {
+    if (watchDashboard()) {
+      discoveryObserver.disconnect();
+      discoveryObserver = null;
+    }
+  });
+
+  discoveryObserver.observe(document.body, {
     childList: true,
     subtree: true
   });
 }
 
 onAuthStateChanged(auth, async user => {
-  activeUid = user?.uid || null;
-  currentStreakData = {};
+  currentUid = user?.uid || null;
+  activityDays = [];
 
   if (!user) {
     $("#daily-streak-card")?.remove();
+
+    if (dashboardObserver) dashboardObserver.disconnect();
+    if (discoveryObserver) discoveryObserver.disconnect();
+
     return;
   }
 
-  addStreakStyles();
+  addStyles();
+  discoverDashboard();
 
   try {
-    await loadStreak(user);
-    attachActivityTracking();
+    const snapshot = await getDoc(
+      doc(db, "studentProgress", user.uid)
+    );
+
+    if (auth.currentUser?.uid !== user.uid) return;
+
+    const data = snapshot.exists() ? snapshot.data() : {};
+
+    activityDays = Array.isArray(data.learningActivityDays)
+      ? data.learningActivityDays.filter(day =>
+          /^\d{4}-\d{2}-\d{2}$/.test(day)
+        )
+      : [];
+
+    const dashboard = $("#studentDashboardV2");
+
+    if (dashboard) {
+      attachActivityHandler(dashboard);
+      renderCard(dashboard);
+    }
   } catch (error) {
     console.error("Daily streak load failed:", error);
   }
 });
-
-setupDashboardObserver();
