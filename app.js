@@ -17,6 +17,7 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
+  onSnapshot,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
@@ -498,7 +499,24 @@ function renderDashboard(user) {
             </article>
           </div>
 
-          <div class="dashboard-panel">
+          <div class="dashboard-panel live-class-admin">
+             <div class="panel-heading">
+               <div><h2>🔴 Live Online Class</h2><p>Publish or stop a Google Meet class on the homepage.</p></div>
+               <span id="liveAdminStatus" class="status-pill">Checking…</span>
+             </div>
+             <form id="liveClassForm">
+               <label>Class title<input id="liveClassTitle" maxlength="100" placeholder="Excel with AI — Live Class" required></label>
+               <label>Google Meet link<input id="liveClassUrl" type="url" placeholder="https://meet.google.com/..." required></label>
+               <div class="request-actions">
+                 <button class="btn btn-primary" type="submit">Activate Class</button>
+                 <button class="btn btn-outline" type="button" id="deactivateLiveClass">Deactivate</button>
+                 <button class="btn btn-quiet" type="button" id="deleteLiveClass">Delete Class</button>
+               </div>
+               <p id="liveClassMessage" role="status"></p>
+             </form>
+           </div>
+
+           <div class="dashboard-panel">
             <div class="panel-heading">
               <div>
                 <h2>All Student Records</h2>
@@ -569,7 +587,56 @@ function renderDashboard(user) {
   `;
 
   if ($("main")) {
-    $("main").hidden = true;
+    // LIVE ONLINE CLASS ADMIN CONTROLS
+   if (admin) {
+     const liveClassRef = doc(db, "liveClasses", "current");
+     const liveForm = $("#liveClassForm");
+     const liveStatus = $("#liveAdminStatus");
+     const liveMessage = $("#liveClassMessage");
+     const showLiveMessage = (message) => { if (liveMessage) liveMessage.textContent = message; };
+
+     getDoc(liveClassRef).then((snap) => {
+       if (!snap.exists()) { liveStatus.textContent = "OFFLINE"; return; }
+       const data = snap.data();
+       $("#liveClassTitle").value = data.title || "";
+       $("#liveClassUrl").value = data.meetUrl || "";
+       liveStatus.textContent = data.active === true ? "LIVE" : "OFFLINE";
+     }).catch((error) => { console.error(error); showLiveMessage("Could not load live class. Check Firestore Rules."); });
+
+     liveForm?.addEventListener("submit", async (event) => {
+       event.preventDefault();
+       const title = $("#liveClassTitle").value.trim();
+       const meetUrl = $("#liveClassUrl").value.trim();
+       let parsed;
+       try { parsed = new URL(meetUrl); } catch { showLiveMessage("Enter a valid Google Meet URL."); return; }
+       if (parsed.protocol !== "https:" || parsed.hostname !== "meet.google.com") {
+         showLiveMessage("Use a valid https://meet.google.com/ link."); return;
+       }
+       try {
+         await setDoc(liveClassRef, { title, meetUrl: parsed.href, active: true, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid });
+         liveStatus.textContent = "LIVE";
+         showLiveMessage("Class activated. Homepage is updating.");
+       } catch (error) { console.error(error); showLiveMessage("Activation failed. Check Firestore Rules."); }
+     });
+
+     $("#deactivateLiveClass")?.addEventListener("click", async () => {
+       try {
+         await setDoc(liveClassRef, { active: false, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid }, { merge: true });
+         liveStatus.textContent = "OFFLINE"; showLiveMessage("Class deactivated.");
+       } catch (error) { console.error(error); showLiveMessage("Deactivation failed. Check Firestore Rules."); }
+     });
+
+     $("#deleteLiveClass")?.addEventListener("click", async () => {
+       if (!confirm("Delete the live class and saved link?")) return;
+       try {
+         await deleteDoc(liveClassRef);
+         $("#liveClassTitle").value = ""; $("#liveClassUrl").value = "";
+         liveStatus.textContent = "OFFLINE"; showLiveMessage("Live class deleted.");
+       } catch (error) { console.error(error); showLiveMessage("Delete failed. Check Firestore Rules."); }
+     });
+   }
+
+   $("main").hidden = true;
   }
 
   // Make Admin sections collapsible to keep the dashboard compact.
