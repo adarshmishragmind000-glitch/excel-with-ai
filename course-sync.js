@@ -1,4 +1,3 @@
-
 import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 import {
@@ -36,6 +35,8 @@ let quizSubmitted = false;
 let courseUnsubscribe = null;
 let renderedDashboard = null;
 let renderPending = false;
+let courseSearchText = "";
+let courseCategory = "all";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 
@@ -70,44 +71,149 @@ function addStyles() {
 
   style.textContent = `
     #cs-modal[hidden] { display:none !important; }
+
     #cs-modal {
-      position:fixed; inset:0; z-index:100000;
-      display:flex; align-items:center; justify-content:center;
-      padding:16px; background:rgba(2,6,18,.84);
+      position:fixed;
+      inset:0;
+      z-index:100000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      background:rgba(2,6,18,.84);
     }
+
     #cs-modal .cs-box {
-      width:min(760px,100%); max-height:90vh; overflow:auto;
-      padding:22px; color:#f3f6ff; background:#111c32;
-      border:1px solid #344668; border-radius:16px;
+      width:min(760px,100%);
+      max-height:90vh;
+      overflow:auto;
+      padding:22px;
+      color:#f3f6ff;
+      background:#111c32;
+      border:1px solid #344668;
+      border-radius:16px;
     }
+
     #cs-modal .cs-head {
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
-    #cs-modal .cs-head h2 { font-size:21px; }
-    #cs-modal button, #cs-modal .cs-link {
-      padding:10px 14px; border:1px solid #425a80;
-      border-radius:9px; color:#eef3ff; background:#1c2b47;
-      cursor:pointer; display:inline-block; text-decoration:none;
+
+    #cs-modal .cs-head h2 {
+      font-size:21px;
     }
-    #cs-modal .cs-note, #cs-modal .cs-question {
-      margin:12px 0; padding:15px; background:#172541;
-      border:1px solid #2d4266; border-radius:12px;
+
+    #cs-modal button,
+    #cs-modal .cs-link {
+      padding:10px 14px;
+      border:1px solid #425a80;
+      border-radius:9px;
+      color:#eef3ff;
+      background:#1c2b47;
+      cursor:pointer;
+      display:inline-block;
+      text-decoration:none;
     }
-    #cs-modal .cs-note { white-space:pre-wrap; line-height:1.7; }
+
+    #cs-modal .cs-note,
+    #cs-modal .cs-question {
+      margin:12px 0;
+      padding:15px;
+      background:#172541;
+      border:1px solid #2d4266;
+      border-radius:12px;
+    }
+
+    #cs-modal .cs-note {
+      white-space:pre-wrap;
+      line-height:1.7;
+    }
+
     #cs-modal .cs-option {
-      display:flex; gap:10px; padding:8px 0; cursor:pointer;
+      display:flex;
+      gap:10px;
+      padding:8px 0;
+      cursor:pointer;
     }
-    #cs-modal .cs-muted { color:#aab8d5; font-size:13px; line-height:1.7; }
+
+    #cs-modal .cs-muted {
+      color:#aab8d5;
+      font-size:13px;
+      line-height:1.7;
+    }
+
     #cs-modal .cs-result {
-      margin-top:14px; padding:14px; background:#20344f;
-      border-radius:10px; line-height:1.7;
+      margin-top:14px;
+      padding:14px;
+      background:#20344f;
+      border-radius:10px;
+      line-height:1.7;
     }
-    .cs-dynamic-card { min-width:0; }
+
+    .cs-dynamic-card {
+      min-width:0;
+    }
+
+    .cs-filter-bar {
+      display:grid;
+      grid-template-columns:minmax(180px,1.5fr) minmax(160px,1fr);
+      gap:10px;
+      margin:0 0 18px;
+      width:100%;
+    }
+
+    .cs-filter-bar input,
+    .cs-filter-bar select {
+      width:100%;
+      min-width:0;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid #344668;
+      background:#111c32;
+      color:#f3f6ff;
+      font:inherit;
+      outline:none;
+    }
+
+    .cs-filter-bar input:focus,
+    .cs-filter-bar select:focus {
+      border-color:#7c9cff;
+      box-shadow:0 0 0 3px rgba(124,156,255,.15);
+    }
+
+    .cs-filter-count {
+      margin:-8px 0 14px;
+      color:#aab8d5;
+      font-size:13px;
+    }
+
+    .cs-no-results {
+      grid-column:1/-1;
+      padding:24px;
+      text-align:center;
+      border-radius:12px;
+      border:1px dashed #425a80;
+      color:#aab8d5;
+      background:rgba(23,37,65,.5);
+    }
+
     .cs-dynamic-card .cs-buttons {
-      display:grid; grid-template-columns:1fr; gap:8px; margin-top:10px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-top:10px;
     }
+
     @media(max-width:600px) {
-      #cs-modal .cs-box { padding:15px; }
+      .cs-filter-bar {
+        grid-template-columns:1fr;
+      }
+
+      #cs-modal .cs-box {
+        padding:15px;
+      }
     }
   `;
 
@@ -172,12 +278,160 @@ async function loadProgress() {
 
 function scheduleRender() {
   if (renderPending) return;
+
   renderPending = true;
 
   requestAnimationFrame(() => {
     renderPending = false;
     renderStudentModules();
   });
+}
+
+// Automatically group lessons into categories.
+function getCategory(value) {
+  const text = String(value || "").toLowerCase();
+
+  if (/ai|artificial intelligence|prompt|copilot|chatgpt/.test(text)) {
+    return "ai";
+  }
+
+  if (/formula|function|lookup|vlookup|xlookup|if\b|sumif|countif/.test(text)) {
+    return "formulas";
+  }
+
+  if (/data analysis|dashboard|chart|pivot|report|visuali[sz]/.test(text)) {
+    return "analysis";
+  }
+
+  if (/project|automation|macro|vba|salary|attendance|inventory|business/.test(text)) {
+    return "projects";
+  }
+
+  if (/basic|foundation|beginner|excel essentials|clean data|format/.test(text)) {
+    return "basics";
+  }
+
+  return "other";
+}
+
+function categoryLabel(category) {
+  return ({
+    all: "All Modules",
+    basics: "Excel Basics",
+    formulas: "Formulas & Functions",
+    analysis: "Data Analysis & Dashboards",
+    ai: "AI & Automation",
+    projects: "Projects",
+    other: "Other Modules"
+  })[category] || category;
+}
+
+// Add the search field and category filter to the student dashboard.
+function ensureCourseFilters(dashboard, grid) {
+  let bar = dashboard.querySelector("#cs-filter-bar");
+
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "cs-filter-bar";
+    bar.className = "cs-filter-bar";
+
+    bar.innerHTML = `
+      <input
+        id="cs-course-search"
+        type="search"
+        placeholder="Search lessons by name or topic…"
+        aria-label="Search lessons"
+      >
+
+      <select
+        id="cs-course-category"
+        aria-label="Filter lessons by category"
+      >
+        <option value="all">All Modules</option>
+        <option value="basics">Excel Basics</option>
+        <option value="formulas">Formulas &amp; Functions</option>
+        <option value="analysis">Data Analysis &amp; Dashboards</option>
+        <option value="ai">AI &amp; Automation</option>
+        <option value="projects">Projects</option>
+        <option value="other">Other Modules</option>
+      </select>
+    `;
+
+    grid.parentNode.insertBefore(bar, grid);
+
+    bar.querySelector("#cs-course-search").addEventListener("input", event => {
+      courseSearchText = event.target.value.trim().toLowerCase();
+      applyCourseFilters(dashboard, grid);
+    });
+
+    bar.querySelector("#cs-course-category").addEventListener("change", event => {
+      courseCategory = event.target.value;
+      applyCourseFilters(dashboard, grid);
+    });
+  }
+
+  const search = bar.querySelector("#cs-course-search");
+  const select = bar.querySelector("#cs-course-category");
+
+  if (search && search.value !== courseSearchText) {
+    search.value = courseSearchText;
+  }
+
+  if (select && select.value !== courseCategory) {
+    select.value = courseCategory;
+  }
+
+  let count = dashboard.querySelector("#cs-filter-count");
+
+  if (!count) {
+    count = document.createElement("div");
+    count.id = "cs-filter-count";
+    count.className = "cs-filter-count";
+    bar.insertAdjacentElement("afterend", count);
+  }
+}
+
+// Search and filter both the old lessons and Admin-created modules.
+function applyCourseFilters(dashboard, grid) {
+  const cards = [...grid.querySelectorAll(".sv2-course")];
+  let visible = 0;
+
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const category = card.dataset.csCategory || getCategory(text);
+
+    const matchesSearch =
+      !courseSearchText || text.includes(courseSearchText);
+
+    const matchesCategory =
+      courseCategory === "all" || category === courseCategory;
+
+    const show = matchesSearch && matchesCategory;
+
+    card.hidden = !show;
+
+    if (show) visible++;
+  });
+
+  let empty = grid.querySelector(".cs-no-results");
+
+  if (!empty) {
+    empty = document.createElement("div");
+    empty.className = "cs-no-results";
+    empty.textContent =
+      "कोई lesson नहीं मिला। Search या Category बदलकर देखें।";
+    empty.hidden = true;
+    grid.appendChild(empty);
+  }
+
+  empty.hidden = visible > 0;
+
+  const count = dashboard.querySelector("#cs-filter-count");
+
+  if (count) {
+    count.textContent =
+      `${visible} lesson${visible === 1 ? "" : "s"} shown`;
+  }
 }
 
 function renderStudentModules() {
@@ -188,12 +442,14 @@ function renderStudentModules() {
   const grid = $(".sv2-course-grid", dashboard);
   if (!grid) return;
 
+  ensureCourseFilters(dashboard, grid);
+
   // Keep the original six hard-coded modules.
   const legacyCards = [
     ...grid.querySelectorAll(".sv2-course:not(.cs-dynamic-card)")
   ];
 
-  // Remove only cards created by this file.
+  // Remove only the Admin-created cards from the previous render.
   grid.querySelectorAll(".cs-dynamic-card").forEach(card => card.remove());
 
   const activeModules = adminModules;
@@ -201,6 +457,7 @@ function renderStudentModules() {
   const dynamicCards = activeModules.map((module, index) => {
     const done = completedLessons.includes(module.id);
     const title = module.title || "Untitled Module";
+
     const description = String(module.notes || "")
       .replace(/\s+/g, " ")
       .slice(0, 140) ||
@@ -208,6 +465,10 @@ function renderStudentModules() {
 
     const article = document.createElement("article");
     article.className = "sv2-course cs-dynamic-card";
+
+    article.dataset.csCategory = getCategory(
+      `${module.category || ""} ${title} ${description}`
+    );
 
     const top = document.createElement("div");
     top.className = "sv2-course-top";
@@ -239,12 +500,17 @@ function renderStudentModules() {
 
     const openButton = document.createElement("button");
     openButton.type = "button";
-    openButton.textContent = done ? "Review Module ↗" : "Open Module ↗";
+    openButton.textContent = done
+      ? "Review Module ↗"
+      : "Open Module ↗";
+
     openButton.addEventListener("click", () => openModule(module.id));
 
     const toggleButton = document.createElement("button");
     toggleButton.type = "button";
-    toggleButton.textContent = done ? "Mark incomplete" : "Mark complete";
+    toggleButton.textContent = done
+      ? "Mark incomplete"
+      : "Mark complete";
 
     toggleButton.addEventListener("click", async () => {
       if (completedLessons.includes(module.id)) {
@@ -262,7 +528,10 @@ function renderStudentModules() {
 
   grid.append(...dynamicCards);
 
-  // Calculate progress across the original and Admin-created modules.
+  // Apply the currently selected search and category.
+  applyCourseFilters(dashboard, grid);
+
+  // Calculate progress across old and Admin-created modules.
   const legacyIds = legacyCards
     .map(card => card.querySelector("[data-lesson]")?.dataset.lesson)
     .filter(Boolean);
@@ -277,6 +546,7 @@ function renderStudentModules() {
   ).length;
 
   const totalCount = allIds.length;
+
   const percent = totalCount
     ? Math.round(completedCount / totalCount * 100)
     : 0;
@@ -289,10 +559,12 @@ function renderStudentModules() {
     const fill = metricCards[1].querySelector(".sv2-progress-fill");
 
     if (strong) strong.textContent = `${percent}%`;
+
     if (small) {
       small.textContent =
         `${completedCount} of ${totalCount} modules completed`;
     }
+
     if (fill) fill.style.width = `${percent}%`;
   }
 
@@ -301,10 +573,14 @@ function renderStudentModules() {
     if (strong) strong.textContent = `${completedCount}/${totalCount}`;
   }
 
-  const sectionTags = dashboard.querySelectorAll(".sv2-section-head .sv2-tag");
+  const sectionTags =
+    dashboard.querySelectorAll(".sv2-section-head .sv2-tag");
+
   const moduleTag = sectionTags[0];
 
-  if (moduleTag) moduleTag.textContent = `${totalCount} modules`;
+  if (moduleTag) {
+    moduleTag.textContent = `${totalCount} modules`;
+  }
 }
 
 function openModule(id) {
@@ -335,6 +611,7 @@ function showTab(tab) {
         escapeHTML(activeModule.notes || "Admin has not added notes yet.")
       }</div>
     `;
+
     return;
   }
 
@@ -344,6 +621,7 @@ function showTab(tab) {
     if (url && /^https?:\/\//i.test(url)) {
       content.innerHTML = `
         <p class="cs-muted">Video lesson</p>
+
         <a class="cs-link"
            href="${escapeHTML(url)}"
            target="_blank"
@@ -358,6 +636,7 @@ function showTab(tab) {
         </p>
       `;
     }
+
     return;
   }
 
@@ -390,6 +669,7 @@ function renderQuiz() {
         Admin से MCQ JSON जाँचने को कहें।
       </p>
     `;
+
     return;
   }
 
@@ -542,7 +822,7 @@ async function setCompletion(moduleId, complete) {
   }
 }
 
-// Load Admin-created Modules without removing the original six cards.
+// Load Admin-created modules without removing the original six cards.
 function startCourseListener() {
   if (courseUnsubscribe) {
     courseUnsubscribe();
@@ -575,7 +855,7 @@ function startCourseListener() {
   );
 }
 
-// Notice when the dashboard first appears; do not observe our own card updates.
+// Detect when the student dashboard appears.
 const dashboardObserver = new MutationObserver(() => {
   const dashboard = $("#studentDashboardV2");
 
