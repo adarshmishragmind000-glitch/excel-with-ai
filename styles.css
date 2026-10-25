@@ -812,3 +812,297 @@
   }
 }
 
+
+/* ===== Mobile responsive safety fixes (added 25 Oct 2026) ===== */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+img, video, iframe, canvas, svg {
+  max-width: 100%;
+}
+
+.section-wrap,
+.hero-copy,
+.hero-centered,
+.hero-premium,
+.hero-pillar-wrap,
+.mentor-section,
+.mentor-card,
+.mentor-content,
+.dashboard-view,
+.dashboard-panel,
+.dashboard-top,
+.panel-heading {
+  min-width: 0;
+}
+
+h1, h2, h3, p, a, button, span, strong, small {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .section-wrap {
+    width: calc(100% - 32px);
+  }
+
+  .topbar {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+
+  .brand {
+    min-width: 0;
+    max-width: 58%;
+    font-size: 14px;
+    letter-spacing: -.4px;
+  }
+
+  .brand > span:last-child {
+    min-width: 0;
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
+  .brand-muted {
+    font-size: 11px;
+  }
+
+  .brand small {
+    font-size: 6px;
+    letter-spacing: 1px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+    margin-right: 4px;
+  }
+
+  .nav-actions .btn {
+    white-space: normal;
+    max-width: 112px;
+    text-align: center;
+  }
+
+  .hero-premium h1,
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(34px, 8.5vw, 48px);
+    line-height: 1.12;
+    letter-spacing: -1.5px;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  .hero-premium .hero-sub,
+  .hero-sub {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-actions {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .hero-actions .btn {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .hero-pillar-wrap {
+    width: 100%;
+  }
+
+  .hero-visual {
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    min-height: 0;
+    padding: 24px 0 38px;
+    margin-bottom: 0;
+  }
+
+  .dashboard-window {
+    width: 100%;
+    max-width: 420px;
+    transform: none;
+  }
+
+  .chip-ai {
+    right: 0;
+  }
+
+  .chip-excel {
+    left: 0;
+  }
+
+  .chip-progress {
+    right: 0;
+  }
+
+  .float-chip {
+    max-width: 48%;
+    padding: 8px 10px;
+  }
+
+  .section-heading h2,
+  .cta-card h2 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    letter-spacing: -1.5px;
+  }
+
+  .course-card,
+  .project-card,
+  .feature-card,
+  .dashboard-stats article,
+  .dashboard-panel {
+    min-width: 0;
+  }
+
+  .course-body,
+  .project-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .mentor-section {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 16px;
+  }
+
+  .mentor-card {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mentor-content h2 {
+    font-size: clamp(27px, 7vw, 32px);
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-view {
+    width: 100%;
+    padding-inline: 16px !important;
+  }
+
+  .dashboard-view .dashboard-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-view .dashboard-panel,
+  .dashboard-view .dashboard-stats article {
+    min-width: 0;
+    padding: 16px !important;
+  }
+
+  .dashboard-view .request-row,
+  .dashboard-view .request-actions {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .dashboard-view .request-actions button {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .modal-backdrop {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 540px;
+    max-height: calc(100dvh - 24px);
+    margin-block: auto;
+    padding: 24px 18px;
+  }
+
+  .live-class-popup {
+    top: max(76px, env(safe-area-inset-top));
+    right: 12px;
+    left: auto;
+    width: min(350px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    max-height: min(72dvh, 520px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .live-class-title {
+    font-size: 17px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .live-class-popup p {
+    overflow-wrap: anywhere;
+  }
+
+  .live-class-popup a {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .footer-links {
+    min-width: 0;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar {
+    padding-inline: 9px;
+  }
+
+  .brand {
+    max-width: 52%;
+    font-size: 12px;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    font-size: 18px;
+  }
+
+  .nav-actions .btn {
+    padding: 8px 9px;
+    font-size: 9px;
+    max-width: 92px;
+  }
+
+  .menu-toggle {
+    font-size: 22px;
+    padding: 2px;
+  }
+
+  .hero-premium h1,
+  .hero h1 {
+    font-size: clamp(31px, 8.4vw, 36px);
+    letter-spacing: -1.2px;
+  }
+
+  .float-chip {
+    gap: 6px;
+    padding: 7px;
+  }
+
+  .chip-progress {
+    bottom: 0;
+  }
+
+  .modal h2 {
+    font-size: 23px;
+  }
+}
