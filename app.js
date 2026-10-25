@@ -17,10 +17,10 @@ import {
   collection,
   getDocs,
   updateDoc,
+  deleteDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-// Existing Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
   authDomain: "excel-with-ai.firebaseapp.com",
@@ -33,12 +33,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-let registrationInProgress = false;
-let dashboardUserId = null;
+let registering = false;
+let dashboardUid = null;
 
 if ($("#year")) $("#year").textContent = new Date().getFullYear();
 
@@ -51,63 +50,50 @@ if ("IntersectionObserver" in window) {
       }
     });
   }, { threshold: 0.12 });
-
   $$(".reveal").forEach(el => observer.observe(el));
 }
 
 $("#menuToggle")?.addEventListener("click", () =>
   $("#mainNav")?.classList.toggle("open")
 );
-
-$$(".nav a").forEach(a =>
-  a.addEventListener("click", () => $("#mainNav")?.classList.remove("open"))
+$$(".nav a").forEach(el =>
+  el.addEventListener("click", () => $("#mainNav")?.classList.remove("open"))
 );
 
 function openModal(id) {
-  const modal = document.getElementById(id);
-  if (!modal) return;
-
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add("open");
+  el.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
 }
 
-function closeModal(element) {
-  const modal = element?.closest(".modal-backdrop");
+function closeModal(el) {
+  const modal = el?.closest(".modal-backdrop");
   if (!modal) return;
-
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
 }
 
-$$("[data-open]").forEach(button => {
-  button.addEventListener("click", event => {
-    if (event.currentTarget.tagName === "A") event.preventDefault();
-    openModal(event.currentTarget.dataset.open);
-  });
-});
-
-$$("[data-close]").forEach(button =>
-  button.addEventListener("click", () => closeModal(button))
-);
-
-$$(".modal-backdrop").forEach(backdrop => {
-  backdrop.addEventListener("click", event => {
-    if (event.target === backdrop) closeModal(backdrop);
-  });
-});
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-    $$(".modal-backdrop.open").forEach(closeModal);
-  }
+$$("[data-open]").forEach(el => el.addEventListener("click", e => {
+  if (e.currentTarget.tagName === "A") e.preventDefault();
+  openModal(e.currentTarget.dataset.open);
+}));
+$$("[data-close]").forEach(el => el.addEventListener("click", () => closeModal(el)));
+$$(".modal-backdrop").forEach(el => el.addEventListener("click", e => {
+  if (e.target === el) closeModal(el);
+}));
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") $$(".modal-backdrop.open").forEach(closeModal);
 });
 
 function toast(text) {
   const el = $("#toast");
-  if (!el) return;
-
+  if (!el) {
+    console.info(text);
+    return;
+  }
   el.textContent = text;
   el.classList.add("show");
   clearTimeout(toast.timer);
@@ -116,154 +102,116 @@ function toast(text) {
 
 function showMessage(id, text) {
   const el = document.getElementById(id);
-  if (!el) return;
-
-  el.textContent = text;
-  el.hidden = false;
+  if (el) {
+    el.textContent = text;
+    el.hidden = false;
+  }
 }
-
 function clearMessage(id) {
   const el = document.getElementById(id);
-  if (!el) return;
-
-  el.textContent = "";
-  el.hidden = true;
+  if (el) {
+    el.textContent = "";
+    el.hidden = true;
+  }
 }
-
 function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[char]));
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  }[c]));
 }
-
-function explainError(error) {
-  const errors = {
-    "auth/email-already-in-use": "This account already exists. Please log in instead.",
-    "auth/invalid-email": "The account ID or email format is invalid.",
+function errorText(error) {
+  const map = {
+    "auth/email-already-in-use": "This account already exists. Please log in.",
+    "auth/invalid-email": "Invalid account ID or email.",
     "auth/weak-password": "Password must be at least 6 characters.",
     "auth/invalid-credential": "Student ID/email or password is incorrect.",
     "auth/operation-not-allowed": "Enable Email/Password in Firebase Authentication.",
-    "auth/too-many-requests": "Too many attempts. Please wait and try again.",
+    "auth/too-many-requests": "Too many attempts. Try again later.",
     "auth/network-request-failed": "Check your internet connection.",
-    "permission-denied": "Firestore Rules blocked this action. Check the published Rules.",
-    "unavailable": "Firebase is temporarily unavailable. Try again."
+    "permission-denied": "Firestore Rules blocked this action. Check published Rules."
   };
-
-  return errors[error.code] || error.message || "Something went wrong.";
+  return map[error.code] || error.message || "An unexpected error occurred.";
 }
 
-function makeStudentId() {
+function newStudentId() {
   return "STU" + Math.floor(100000 + Math.random() * 900000);
 }
-
-function studentAuthEmail(studentId) {
-  return `${studentId.toLowerCase()}@students.excelwithai.com`;
+function studentAuthEmail(id) {
+  return `${id.toLowerCase()}@students.excelwithai.com`;
 }
-
-function studentIdFromAuthEmail(email) {
-  const match = String(email || "").match(
-    /^((?:stu)\d{6})@students\.excelwithai\.com$/i
-  );
-
-  return match ? match[1].toUpperCase() : "";
+function idFromEmail(email) {
+  const m = String(email || "").match(/^(stu\d{6})@students\.excelwithai\.com$/i);
+  return m ? m[1].toUpperCase() : "";
 }
-
 async function getRole(uid) {
   const snap = await getDoc(doc(db, "userRoles", uid));
-
-  return snap.exists() && snap.data().role === "admin"
-    ? "admin"
-    : "student";
+  return snap.exists() && snap.data().role === "admin" ? "admin" : "student";
 }
-
 async function getProfile(uid) {
   const snap = await getDoc(doc(db, "studentProfiles", uid));
-  return snap.exists() ? snap.data() : null;
+  return snap.exists() ? { uid, ...snap.data() } : null;
 }
 
-// Show a polished Student ID success screen.
-// Adds a Copy ID button without needing another HTML edit.
-function showRegistrationSuccess(studentId, warning = "") {
-  const form = $("#enrollForm");
-  const success = $("#enrollSuccess");
-  const idElement = $("#newStudentId");
+// Registration success screen with copyable ID.
+function showSuccess(id, warning = "") {
+  if ($("#enrollForm")) $("#enrollForm").hidden = true;
+  if ($("#enrollSuccess")) $("#enrollSuccess").hidden = false;
+  if ($("#newStudentId")) $("#newStudentId").textContent = id;
 
-  if (form) form.hidden = true;
-  if (success) success.hidden = false;
-  if (idElement) idElement.textContent = studentId;
-
-  let copyButton = $("#copyStudentId");
-
-  if (!copyButton && idElement) {
-    copyButton = document.createElement("button");
-    copyButton.type = "button";
-    copyButton.id = "copyStudentId";
-    copyButton.className = "btn btn-outline btn-full";
-    copyButton.textContent = "Copy Student ID";
-    idElement.insertAdjacentElement("afterend", copyButton);
+  let copy = $("#copyStudentId");
+  if (!copy && $("#newStudentId")) {
+    copy = document.createElement("button");
+    copy.id = "copyStudentId";
+    copy.type = "button";
+    copy.className = "btn btn-outline btn-full";
+    copy.textContent = "Copy Student ID";
+    $("#newStudentId").insertAdjacentElement("afterend", copy);
   }
-
-  if (copyButton) {
-    copyButton.onclick = async () => {
+  if (copy) {
+    copy.onclick = async () => {
       try {
-        await navigator.clipboard.writeText(studentId);
-        copyButton.textContent = "✓ Student ID Copied";
-        toast("Student ID copied successfully.");
+        await navigator.clipboard.writeText(id);
+        copy.textContent = "✓ ID Copied";
+        toast("Student ID copied.");
       } catch {
-        window.prompt("Copy your Student ID:", studentId);
+        window.prompt("Copy your Student ID:", id);
       }
     };
   }
 
-  const note = $("#registrationWarning");
-  if (note) note.remove();
-
-  if (warning && success) {
-    const warningElement = document.createElement("p");
-    warningElement.id = "registrationWarning";
-    warningElement.className = "inline-message";
-    warningElement.textContent = warning;
-    success.appendChild(warningElement);
-  }
-
-  const loginButton = $("#goToStudentLogin");
-
-  if (loginButton) {
-    loginButton.onclick = async () => {
-      try {
-        await signOut(auth);
-      } catch (error) {
-        console.warn("Sign out before login:", error);
-      }
-
+  const loginBtn = $("#goToStudentLogin");
+  if (loginBtn) {
+    loginBtn.onclick = async () => {
+      try { await signOut(auth); } catch {}
       closeModal($("#enrollModal"));
       openModal("loginModal");
-
-      const loginInput = $('#loginForm [name="email"]');
-      if (loginInput) loginInput.value = studentId;
-
-      const passwordInput = $('#loginForm [name="password"]');
-      passwordInput?.focus();
+      const field = $('#loginForm [name="email"]');
+      if (field) field.value = id;
+      $('#loginForm [name="password"]')?.focus();
     };
+  }
+
+  let warningEl = $("#registrationWarning");
+  if (warningEl) warningEl.remove();
+  if (warning) {
+    warningEl = document.createElement("p");
+    warningEl.id = "registrationWarning";
+    warningEl.className = "inline-message";
+    warningEl.textContent = warning;
+    $("#enrollSuccess")?.appendChild(warningEl);
   }
 }
 
-// Registration form: Firebase Authentication + Firestore.
-$("#enrollForm")?.addEventListener("submit", async event => {
-  event.preventDefault();
-
-  if (registrationInProgress) return;
-
+// REGISTER: save profile and enrollment request to Firestore.
+$("#enrollForm")?.addEventListener("submit", async e => {
+  e.preventDefault();
+  if (registering) return;
   clearMessage("enrollMessage");
 
-  const form = event.currentTarget;
-  const button = form.querySelector('button[type="submit"]');
+  const form = e.currentTarget;
+  const button = form.querySelector('[type="submit"]');
   const data = new FormData(form);
-
   const name = String(data.get("name") || "").trim();
   const phone = String(data.get("phone") || "").trim();
   const contactEmail = String(data.get("email") || "").trim().toLowerCase();
@@ -273,108 +221,78 @@ $("#enrollForm")?.addEventListener("submit", async event => {
   const note = String(data.get("message") || "").trim();
 
   if (!name || !phone || !course || password.length < 6) {
-    showMessage(
-      "enrollMessage",
-      "Enter your name, mobile number, course and password (minimum 6 characters)."
-    );
+    showMessage("enrollMessage", "Fill all required fields. Password must be at least 6 characters.");
     return;
   }
-
   if (!/^[0-9+() -]{10,16}$/.test(phone)) {
-    showMessage("enrollMessage", "Please enter a valid mobile number.");
+    showMessage("enrollMessage", "Enter a valid mobile number.");
     return;
   }
 
-  registrationInProgress = true;
-
+  registering = true;
   if (button) {
     button.disabled = true;
-    button.textContent = "Creating your account…";
+    button.textContent = "Creating account…";
   }
 
-  let accountCreated = false;
-  let studentId = "";
-  let uid = "";
+  let user = null;
+  let id = "";
 
   try {
     let credential;
-
-    // Firebase Auth prevents duplicate synthetic login addresses.
-    for (let attempt = 0; attempt < 10; attempt++) {
-      studentId = makeStudentId();
-
+    for (let i = 0; i < 10; i++) {
+      id = newStudentId();
       try {
         credential = await createUserWithEmailAndPassword(
-          auth,
-          studentAuthEmail(studentId),
-          password
+          auth, studentAuthEmail(id), password
         );
-
-        accountCreated = true;
-        uid = credential.user.uid;
+        user = credential.user;
         break;
-      } catch (error) {
-        if (
-          error.code !== "auth/email-already-in-use" ||
-          attempt === 9
-        ) {
-          throw error;
-        }
+      } catch (err) {
+        if (err.code !== "auth/email-already-in-use" || i === 9) throw err;
       }
     }
+    if (!user) throw new Error("Could not create account.");
 
-    if (!credential) throw new Error("Could not create account. Please try again.");
+    await updateProfile(user, { displayName: name });
 
-    await updateProfile(credential.user, { displayName: name });
-
-    // Save each student's own profile.
-    await setDoc(doc(db, "studentProfiles", uid), {
-      uid,
-      studentId,
+    await setDoc(doc(db, "studentProfiles", user.uid), {
+      uid: user.uid,
+      studentId: id,
       name,
       phone,
       contactEmail,
       course,
       role: "student",
+      status: "Pending Approval",
       createdAt: serverTimestamp()
     });
 
-    // Save the enrollment request for Admin review.
     const requestRef = doc(collection(db, "enrollmentRequests"));
-
     await setDoc(requestRef, {
-      studentUid: uid,
-      studentId,
+      studentUid: user.uid,
+      studentId: id,
       name,
       phone,
       email: contactEmail,
       course,
       paymentRef,
       message: note,
-      status: "Pending review",
+      status: "Pending Approval",
       createdAt: serverTimestamp()
     });
 
-    showRegistrationSuccess(studentId);
-    toast("Registration successful! Save your Student ID.");
-
-  } catch (error) {
-    console.error("Registration failed:", error);
-
-    // If Firebase Auth created the account, don't ask the student
-    // to register again. Show the generated ID and the real error.
-    if (accountCreated && studentId) {
-      showRegistrationSuccess(
-        studentId,
-        "Your login account was created, but saving the profile or enrollment request failed. Save this ID. Do not register again. Error: " +
-          explainError(error)
-      );
+    showSuccess(id);
+    toast("Registration saved. Save the Student ID.");
+  } catch (err) {
+    console.error(err);
+    if (user && id) {
+      showSuccess(id, "Account created, but a Firestore write failed. Save this ID and contact Admin. Error: " + errorText(err));
     } else {
-      showMessage("enrollMessage", explainError(error));
+      showMessage("enrollMessage", errorText(err));
     }
   } finally {
-    registrationInProgress = false;
-
+    registering = false;
     if (button) {
       button.disabled = false;
       button.textContent = "Register & Get Student ID ↗";
@@ -382,14 +300,11 @@ $("#enrollForm")?.addEventListener("submit", async event => {
   }
 });
 
-// Course buttons open the enrollment popup.
-$$("[data-course]").forEach(button => {
-  button.addEventListener("click", () => {
-    const select = $("#courseSelect");
-    if (select) select.value = button.dataset.course;
-    openModal("enrollModal");
-  });
-});
+$$("[data-course]").forEach(button => button.addEventListener("click", () => {
+  const select = $("#courseSelect");
+  if (select) select.value = button.dataset.course;
+  openModal("enrollModal");
+}));
 
 function showWebsite() {
   if ($("#dashboardView")) $("#dashboardView").hidden = true;
@@ -397,9 +312,9 @@ function showWebsite() {
   if ($("footer")) $("footer").hidden = false;
 }
 
+// Dashboard.
 function renderDashboard(user) {
   let view = $("#dashboardView");
-
   if (!view) {
     view = document.createElement("section");
     view.id = "dashboardView";
@@ -408,165 +323,247 @@ function renderDashboard(user) {
     $("footer")?.before(view);
   }
 
-  const isAdmin = user.role === "admin";
-  const studentId = user.studentId || "";
+  const admin = user.role === "admin";
+  const status = user.status || "Pending Approval";
+  const id = user.studentId || "";
 
   view.innerHTML = `
     <div class="dashboard-top">
       <div>
-        <div class="eyebrow">EXCEL WITH AI · ${isAdmin ? "ADMIN CONSOLE" : "STUDENT SPACE"}</div>
-        <h1>${isAdmin ? "Admin Dashboard" : "Student Dashboard"}</h1>
-        <p>Welcome, ${escapeHtml(user.name)}.</p>
-        <small>${escapeHtml(isAdmin ? (user.email || "") : studentId)}</small>
+        <div class="eyebrow">EXCEL WITH AI · ${admin ? "ADMIN CONSOLE" : "STUDENT SPACE"}</div>
+        <h1>${admin ? "Admin Dashboard" : "Student Dashboard"}</h1>
+        <p>Welcome, ${escapeHtml(user.name)}</p>
+        <small>${escapeHtml(admin ? (user.email || "") : id)}</small>
       </div>
       <button class="btn btn-outline" id="logoutBtn">Log out ↗</button>
     </div>
 
-    <div class="dashboard-stats">
-      <article>
-        <span>${isAdmin ? "Enrollment requests" : "Your Student ID"}</span>
-        <strong>${isAdmin ? "Admin" : escapeHtml(studentId || "Not available")}</strong>
-        ${!isAdmin && studentId ? '<button class="btn btn-outline btn-sm" id="dashboardCopyId">Copy ID</button>' : ""}
-      </article>
-      <article><span>Account</span><strong>Active</strong></article>
-      <article><span>Course</span><strong>${isAdmin ? "Admin" : escapeHtml(user.course || "Pending review")}</strong></article>
-    </div>
-
-    ${isAdmin ? `
+    ${admin ? `
+      <div class="dashboard-stats">
+        <article><span>Total Students</span><strong id="studentCount">…</strong></article>
+        <article><span>Pending Approval</span><strong id="pendingCount">…</strong></article>
+        <article><span>Admin Access</span><strong>Active</strong></article>
+      </div>
       <div class="dashboard-panel">
         <div class="panel-heading">
-          <div><h2>Student Enrollment Requests</h2><p>Registration requests saved in Firebase.</p></div>
-          <button class="btn btn-outline" id="refreshRequests">Refresh</button>
+          <div><h2>All Student Records</h2><p>Registered students from Firestore.</p></div>
+          <button class="btn btn-outline" id="refreshStudents">Refresh</button>
         </div>
-        <div id="requestList">Loading requests…</div>
+        <input id="studentSearch" type="search" placeholder="Search ID, name, phone, email or course">
+        <div id="studentRecords">Loading records…</div>
       </div>
     ` : `
-      <div class="dashboard-panel">
-        <div class="panel-heading">
-          <div><h2>My Learning</h2><p>Your registered course and account details.</p></div>
-          <span class="pill pill-blue">ACCOUNT ACTIVE</span>
-        </div>
-        <div class="learner-course">
-          <div class="course-icon">✦</div>
-          <div class="learner-course-main">
-            <h3>${escapeHtml(user.course || "Course pending approval")}</h3>
-            <p>Your Student ID: <strong>${escapeHtml(studentId || "Not available")}</strong></p>
-            <p>Keep your Student ID and password safe. Course access may require Admin approval.</p>
-          </div>
-        </div>
+      <div class="dashboard-stats">
+        <article><span>Student ID</span><strong>${escapeHtml(id || "Not available")}</strong>
+          ${id ? '<button class="btn btn-outline btn-sm" id="copyDashboardId">Copy ID</button>' : ""}
+        </article>
+        <article><span>Account Status</span><strong>${escapeHtml(status)}</strong></article>
+        <article><span>Course</span><strong>${escapeHtml(user.course || "Not assigned")}</strong></article>
       </div>
-    `}
+      <div class="dashboard-panel">
+        <h2>My Student Record</h2>
+        <p><strong>Name:</strong> ${escapeHtml(user.name)}</p>
+        <p><strong>Student ID:</strong> ${escapeHtml(id || "Not available")}</p>
+        <p><strong>Mobile:</strong> ${escapeHtml(user.phone || "Not provided")}</p>
+        <p><strong>Email:</strong> ${escapeHtml(user.email || "Not provided")}</p>
+        <p><strong>Course:</strong> ${escapeHtml(user.course || "Not assigned")}</p>
+        <p><strong>Status:</strong> ${escapeHtml(status)}</p>
+        ${status === "Active" ? `
+          <h3>Account Approved</h3><p>Your account has been approved by Admin.</p>
+        ` : `
+          <h3>Waiting for Admin Approval</h3>
+          <p>Course access will be available after Admin approval.</p>
+        `}
+      </div>
+    `
   `;
 
   if ($("main")) $("main").hidden = true;
   if ($("footer")) $("footer").hidden = true;
-
   view.hidden = false;
-  $("#mainNav")?.classList.remove("open");
   view.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  $("#dashboardCopyId")?.addEventListener("click", async () => {
+  $("#copyDashboardId")?.addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText(studentId);
+      await navigator.clipboard.writeText(id);
       toast("Student ID copied.");
     } catch {
-      window.prompt("Copy your Student ID:", studentId);
+      window.prompt("Copy Student ID:", id);
     }
   });
 
   $("#logoutBtn")?.addEventListener("click", async () => {
-    try {
-      await signOut(auth);
-      dashboardUserId = null;
-      showWebsite();
-      toast("Logged out successfully.");
-    } catch (error) {
-      toast(explainError(error));
-    }
+    await signOut(auth);
+    dashboardUid = null;
+    showWebsite();
   });
 
-  if (isAdmin) {
-    const loadRequests = async () => {
-      const list = $("#requestList");
-      if (!list) return;
-
-      list.textContent = "Loading enrollment requests…";
-
-      try {
-        const snap = await getDocs(collection(db, "enrollmentRequests"));
-
-        if (snap.empty) {
-          list.innerHTML = '<div class="empty-state">No enrollment requests yet.</div>';
-          return;
-        }
-
-        const requests = snap.docs.map(item => ({
-          id: item.id,
-          ...item.data()
-        }));
-
-        list.innerHTML = `<div class="request-table">${
-          requests.map(r => `
-            <div class="request-row">
-              <div>
-                <strong>${escapeHtml(r.name)}</strong>
-                <small>Student ID: ${escapeHtml(r.studentId)}</small>
-                <small>${escapeHtml(r.email || "No email")} · ${escapeHtml(r.phone || "")}</small>
-                <small>Course: ${escapeHtml(r.course || "")}</small>
-                <small>Payment: ${escapeHtml(r.paymentRef || "Not provided")}</small>
-              </div>
-              <span class="status-pill">${escapeHtml(r.status || "Pending review")}</span>
-              <div class="request-actions">
-                <button class="btn btn-outline btn-sm" data-id="${escapeHtml(r.id)}" data-status="Approved">Approve</button>
-                <button class="btn btn-quiet btn-sm" data-id="${escapeHtml(r.id)}" data-status="Rejected">Reject</button>
-              </div>
-            </div>
-          `).join("")
-        }</div>`;
-
-        $$("[data-status]", list).forEach(button => {
-          button.addEventListener("click", async () => {
-            button.disabled = true;
-
-            try {
-              await updateDoc(doc(db, "enrollmentRequests", button.dataset.id), {
-                status: button.dataset.status,
-                reviewedAt: serverTimestamp(),
-                reviewedBy: auth.currentUser.uid
-              });
-
-              toast("Request updated: " + button.dataset.status);
-              await loadRequests();
-            } catch (error) {
-              toast(explainError(error));
-              button.disabled = false;
-            }
-          });
-        });
-      } catch (error) {
-        console.error(error);
-        list.textContent = "Could not load requests: " + explainError(error);
-      }
-    };
-
-    $("#refreshRequests")?.addEventListener("click", loadRequests);
-    loadRequests();
-  }
+  if (admin) loadAdminStudents();
 }
 
-// Login: Student ID or existing Admin email.
-$("#loginForm")?.addEventListener("submit", async event => {
-  event.preventDefault();
+// Admin student management.
+async function loadAdminStudents() {
+  const target = $("#studentRecords");
+  if (!target) return;
+
+  let students = [];
+
+  const renderRows = () => {
+    const query = ($("#studentSearch")?.value || "").trim().toLowerCase();
+    const filtered = students.filter(s =>
+      [s.studentId, s.name, s.phone, s.contactEmail, s.course, s.status]
+        .join(" ").toLowerCase().includes(query)
+    );
+
+    if (!filtered.length) {
+      target.innerHTML = '<p class="empty-state">No student records found.</p>';
+      return;
+    }
+
+    target.innerHTML = `<div class="request-table">${
+      filtered.map(s => `
+        <div class="request-row">
+          <div>
+            <strong>${escapeHtml(s.name || "Student")}</strong>
+            <small>ID: ${escapeHtml(s.studentId || "—")}</small>
+            <small>Mobile: ${escapeHtml(s.phone || "—")}</small>
+            <small>Email: ${escapeHtml(s.contactEmail || "Not provided")}</small>
+            <small>Course: ${escapeHtml(s.course || "Not selected")}</small>
+            <small>Status: ${escapeHtml(s.status || "Pending Approval")}</small>
+          </div>
+          <div class="request-actions">
+            ${s.status !== "Active" ? `<button class="btn btn-primary btn-sm" data-status="Active" data-uid="${escapeHtml(s.uid)}">Approve</button>` : '<span class="status-pill">Active</span>'}
+            ${s.status !== "Rejected" ? `<button class="btn btn-quiet btn-sm" data-status="Rejected" data-uid="${escapeHtml(s.uid)}">Reject</button>` : ""}
+            <button class="btn btn-outline btn-sm" data-edit="${escapeHtml(s.uid)}">Edit</button>
+            <button class="btn btn-quiet btn-sm" data-delete="${escapeHtml(s.uid)}">Delete</button>
+          </div>
+        </div>
+      `).join("")
+    }</div>`;
+
+    $$("[data-status]", target).forEach(button => button.addEventListener("click", async () => {
+      const uid = button.dataset.uid;
+      const status = button.dataset.status;
+      button.disabled = true;
+
+      try {
+        await updateDoc(doc(db, "studentProfiles", uid), { status });
+
+        const requests = await getDocs(collection(db, "enrollmentRequests"));
+        for (const request of requests.docs) {
+          if (request.data().studentUid === uid) {
+            await updateDoc(doc(db, "enrollmentRequests", request.id), {
+              status: status === "Active" ? "Approved" : "Rejected",
+              reviewedAt: serverTimestamp(),
+              reviewedBy: auth.currentUser.uid
+            });
+          }
+        }
+
+        toast("Student status: " + status);
+        await loadAdminStudents();
+      } catch (err) {
+        toast(errorText(err));
+        button.disabled = false;
+      }
+    }));
+
+    $$("[data-edit]", target).forEach(button => button.addEventListener("click", async () => {
+      const student = students.find(s => s.uid === button.dataset.edit);
+      if (!student) return;
+
+      const name = prompt("Student name:", student.name || "");
+      if (name === null) return;
+      const phone = prompt("Mobile number:", student.phone || "");
+      if (phone === null) return;
+      const email = prompt("Contact email:", student.contactEmail || "");
+      if (email === null) return;
+      const course = prompt("Course:", student.course || "");
+      if (course === null) return;
+
+      button.disabled = true;
+      try {
+        await updateDoc(doc(db, "studentProfiles", student.uid), {
+          name: name.trim(),
+          phone: phone.trim(),
+          contactEmail: email.trim().toLowerCase(),
+          course: course.trim()
+        });
+        toast("Student record updated.");
+        await loadAdminStudents();
+      } catch (err) {
+        toast("Update failed: " + errorText(err));
+        button.disabled = false;
+      }
+    }));
+
+    $$("[data-delete]", target).forEach(button => button.addEventListener("click", async () => {
+      const student = students.find(s => s.uid === button.dataset.delete);
+      if (!student) return;
+
+      if (!confirm(`Delete Firestore profile for ${student.name} (${student.studentId})? The Firebase Authentication login account will not be deleted by this action.`)) return;
+
+      button.disabled = true;
+      try {
+        const requests = await getDocs(collection(db, "enrollmentRequests"));
+
+        // Keep the enrollment history but mark it deleted.
+        for (const request of requests.docs) {
+          if (request.data().studentUid === student.uid) {
+            await updateDoc(doc(db, "enrollmentRequests", request.id), {
+              status: "Deleted",
+              reviewedAt: serverTimestamp(),
+              reviewedBy: auth.currentUser.uid
+            });
+          }
+        }
+
+        await deleteDoc(doc(db, "studentProfiles", student.uid));
+        toast("Student profile deleted. Authentication login still exists.");
+        await loadAdminStudents();
+      } catch (err) {
+        toast("Delete failed: " + errorText(err));
+        button.disabled = false;
+      }
+    }));
+  };
+
+  const refresh = async () => {
+    target.textContent = "Loading student records…";
+
+    try {
+      const snapshot = await getDocs(collection(db, "studentProfiles"));
+      students = snapshot.docs.map(d => ({ uid: d.id, ...d.data() }));
+
+      if ($("#studentCount")) $("#studentCount").textContent = String(students.length);
+      if ($("#pendingCount")) {
+        $("#pendingCount").textContent = String(
+          students.filter(s => (s.status || "Pending Approval") === "Pending Approval").length
+        );
+      }
+      renderRows();
+    } catch (err) {
+      target.textContent = "Could not load records: " + errorText(err);
+    }
+  };
+
+  $("#studentSearch")?.addEventListener("input", renderRows);
+  $("#refreshStudents")?.addEventListener("click", refresh);
+  await refresh();
+}
+
+// Student ID login; Admin continues to use existing email.
+$("#loginForm")?.addEventListener("submit", async e => {
+  e.preventDefault();
   clearMessage("loginMessage");
 
-  const form = event.currentTarget;
-  const button = form.querySelector('button[type="submit"]');
+  const form = e.currentTarget;
+  const button = form.querySelector('[type="submit"]');
   const data = new FormData(form);
-
-  const loginValue = String(data.get("email") || "").trim();
+  const value = String(data.get("email") || "").trim();
   const password = String(data.get("password") || "");
 
-  if (!loginValue || !password) {
+  if (!value || !password) {
     showMessage("loginMessage", "Enter your Student ID/email and password.");
     return;
   }
@@ -575,78 +572,70 @@ $("#loginForm")?.addEventListener("submit", async event => {
   button.textContent = "Signing in…";
 
   try {
-    const isStudentId = /^STU\d{6}$/i.test(loginValue);
-
-    const email = isStudentId
-      ? studentAuthEmail(loginValue.toUpperCase())
-      : loginValue.toLowerCase();
-
+    const isId = /^STU\d{6}$/i.test(value);
+    const email = isId ? studentAuthEmail(value.toUpperCase()) : value.toLowerCase();
     const result = await signInWithEmailAndPassword(auth, email, password);
     const firebaseUser = result.user;
     const role = await getRole(firebaseUser.uid);
     const profile = await getProfile(firebaseUser.uid);
+    const id = profile?.studentId || idFromEmail(firebaseUser.email);
 
-    const studentId = profile?.studentId || studentIdFromAuthEmail(firebaseUser.email);
-
-    dashboardUserId = firebaseUser.uid;
+    dashboardUid = firebaseUser.uid;
     closeModal($("#loginModal"));
     form.reset();
 
     renderDashboard({
       role,
-      name: role === "admin"
-        ? (firebaseUser.displayName || "Excel with AI Admin")
-        : (profile?.name || firebaseUser.displayName || "Student"),
+      name: role === "admin" ? (firebaseUser.displayName || "Institute Admin") : (profile?.name || firebaseUser.displayName || "Student"),
       email: profile?.contactEmail || firebaseUser.email,
       uid: firebaseUser.uid,
-      studentId,
-      course: profile?.course || ""
+      studentId: id,
+      phone: profile?.phone || "",
+      course: profile?.course || "",
+      status: profile?.status || "Pending Approval"
     });
-  } catch (error) {
-    console.error("Login failed:", error);
-    showMessage("loginMessage", explainError(error));
+  } catch (err) {
+    showMessage("loginMessage", errorText(err));
   } finally {
     button.disabled = false;
     button.textContent = "Continue";
   }
 });
 
-// Restore the dashboard after page refresh.
+// Restore the dashboard after refresh.
 onAuthStateChanged(auth, async firebaseUser => {
-  if (registrationInProgress) return;
+  if (registering) return;
 
   if (!firebaseUser) {
-    dashboardUserId = null;
+    dashboardUid = null;
     showWebsite();
     return;
   }
 
-  if (dashboardUserId === firebaseUser.uid && $("#dashboardView") && !$("#dashboardView").hidden) {
-    return;
-  }
+  if (dashboardUid === firebaseUser.uid && $("#dashboardView") && !$("#dashboardView").hidden) return;
 
   try {
     const role = await getRole(firebaseUser.uid);
     const profile = await getProfile(firebaseUser.uid);
-    const studentId = profile?.studentId || studentIdFromAuthEmail(firebaseUser.email);
+    const id = profile?.studentId || idFromEmail(firebaseUser.email);
 
-    dashboardUserId = firebaseUser.uid;
-
+    dashboardUid = firebaseUser.uid;
     renderDashboard({
       role,
-      name: role === "admin"
-        ? (firebaseUser.displayName || "Excel with AI Admin")
-        : (profile?.name || firebaseUser.displayName || "Student"),
+      name: role === "admin" ? (firebaseUser.displayName || "Institute Admin") : (profile?.name || firebaseUser.displayName || "Student"),
       email: profile?.contactEmail || firebaseUser.email,
       uid: firebaseUser.uid,
-      studentId,
-      course: profile?.course || ""
+      studentId: id,
+      phone: profile?.phone || "",
+      course: profile?.course || "",
+      status: profile?.status || "Pending Approval"
     });
-  } catch (error) {
-    console.error("Could not restore dashboard:", error);
+  } catch (err) {
+    console.error("Dashboard restore failed:", err);
   }
 });
 
+// FAQ accordion
 $$(".faq-list details").forEach(detail => {
   detail.addEventListener("toggle", () => {
     if (detail.open) {
