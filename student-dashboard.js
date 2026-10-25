@@ -1,269 +1,316 @@
 
-/* Student Dashboard add-on for Excel with AI
-   Does not replace app.js or change Firebase login. */
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-(() => {
-  "use strict";
+const firebaseConfig = {
+  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
+  authDomain: "excel-with-ai.firebaseapp.com",
+  projectId: "excel-with-ai",
+  storageBucket: "excel-with-ai.firebasestorage.app",
+  messagingSenderId: "615391443440",
+  appId: "1:615391443440:web:92b3a15f0e4596abc50535"
+};
 
-  const PREFIX = "excelWithAiStudentDashboard:v1:";
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = (selector, root = document) => root.querySelector(selector);
 
-  const lessons = [
-    { id: "l1", module: "Module 1", title: "Getting Started with Excel", note: "Workbook, worksheet, rows, columns and cells." },
-    { id: "l2", module: "Module 1", title: "Data Entry & Formatting", note: "Enter data and format a worksheet." },
-    { id: "l3", module: "Module 2", title: "Essential Formulas", note: "SUM, AVERAGE, MIN, MAX and COUNT." },
-    { id: "l4", module: "Module 2", title: "Logical Functions", note: "Practice IF and logical formulas." },
-    { id: "l5", module: "Module 3", title: "Charts & Reports", note: "Create charts from spreadsheet data." },
-    { id: "l6", module: "Module 3", title: "Using AI with Excel", note: "Use clear prompts for formulas and analysis." }
-  ];
+const LESSONS = [
+  { id: "excel-foundations", module: "Module 01", title: "Excel Foundations", description: "Workbook basics, rows, columns, cells and navigation.", level: "Beginner", duration: "25 min" },
+  { id: "clean-data", module: "Module 02", title: "Clean & Organise Data", description: "Formatting, tables, sorting, filters and clean datasets.", level: "Beginner", duration: "35 min" },
+  { id: "essential-formulas", module: "Module 03", title: "Essential Formulas", description: "SUM, AVERAGE, COUNT, IF and practical formula patterns.", level: "Core skill", duration: "45 min" },
+  { id: "lookup-functions", module: "Module 04", title: "Lookup & Logic", description: "VLOOKUP, IFERROR and reliable lookup workflows.", level: "Core skill", duration: "45 min" },
+  { id: "business-dashboard", module: "Module 05", title: "Business Dashboard", description: "KPIs, charts and a useful monthly performance report.", level: "Project", duration: "60 min" },
+  { id: "ai-workflows", module: "Module 06", title: "Excel with AI", description: "Write better prompts, explain formulas and plan automation.", level: "AI lab", duration: "45 min" }
+];
 
-  const quiz = [
-    { q: "Which function adds numbers?", options: ["COUNT", "SUM", "IF", "MAX"], answer: 1 },
-    { q: "Which function checks a condition?", options: ["IF", "MIN", "SUM", "AVERAGE"], answer: 0 },
-    { q: "What is an Excel workbook?", options: ["A cell", "A chart", "An Excel file containing worksheets", "A formula"], answer: 2 }
-  ];
+let lastRenderedUid = null;
+let observer = null;
+let discoveryObserver = null;
 
-  const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[c]));
+  }[char]));
+}
 
-  function read(key) {
-    try {
-      return JSON.parse(localStorage.getItem(PREFIX + key) || "{}");
-    } catch {
-      return {};
-    }
+function notify(message) {
+  const toast = $("#toast");
+  if (toast) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(notify.timer);
+    notify.timer = setTimeout(() => toast.classList.remove("show"), 3200);
+  } else {
+    console.info(message);
   }
+}
 
-  function save(key, state) {
-    try {
-      localStorage.setItem(PREFIX + key, JSON.stringify(state));
-      return true;
-    } catch {
-      alert("Progress save nahi hua. Browser storage settings check karein.");
-      return false;
+function addDashboardStyles() {
+  if ($("#student-dashboard-runtime-style")) return;
+
+  const style = document.createElement("style");
+  style.id = "student-dashboard-runtime-style";
+  style.textContent = `
+    .student-v2{margin:26px 0 32px;color:#f4f6ff}
+    .student-v2 *{box-sizing:border-box}
+    .student-v2 .sv2-welcome{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px;border:1px solid rgba(147,177,255,.2);border-radius:20px;background:radial-gradient(ellipse at 90% 0%,rgba(104,119,255,.2),transparent 42%),linear-gradient(135deg,#172541,#10182b)}
+    .student-v2 .sv2-kicker{font-size:10px;letter-spacing:1.8px;color:#9bbaff;font-weight:800}
+    .student-v2 h2,.student-v2 h3,.student-v2 p{margin-top:0}
+    .student-v2 .sv2-welcome h2{font-size:clamp(25px,3vw,36px);letter-spacing:-1px;margin:10px 0 8px}
+    .student-v2 .sv2-welcome p{color:#aab8d5;font-size:13px;line-height:1.7;margin-bottom:0}
+    .student-v2 .sv2-id{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 11px;border-radius:9px;background:#0b1428;border:1px solid #334567;color:#dce7ff;font-size:12px}
+    .student-v2 .sv2-status{white-space:nowrap;padding:8px 11px;border-radius:999px;background:#203c39;color:#91f0cc;border:1px solid #2d6b5d;font-size:11px;font-weight:800}
+    .student-v2 .sv2-status.pending{background:#42351e;color:#ffdb8b;border-color:#66532d}
+    .student-v2 .sv2-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    .student-v2 .sv2-metric{padding:17px;border:1px solid #2b3b5d;border-radius:15px;background:#111c32;min-width:0}
+    .student-v2 .sv2-metric span{display:block;color:#9eafcf;font-size:11px;margin-bottom:9px}
+    .student-v2 .sv2-metric strong{font-size:clamp(16px,2vw,25px);letter-spacing:-.5px;overflow-wrap:anywhere}
+    .student-v2 .sv2-metric small{display:block;color:#8394b7;font-size:10px;margin-top:7px}
+    .student-v2 .sv2-section-head{display:flex;justify-content:space-between;align-items:end;gap:14px;margin:28px 0 14px}
+    .student-v2 .sv2-section-head h3{font-size:19px;letter-spacing:-.4px;margin-bottom:5px}
+    .student-v2 .sv2-section-head p{font-size:12px;color:#91a1c1;margin-bottom:0}
+    .student-v2 .sv2-course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .student-v2 .sv2-course{padding:18px;border:1px solid #2c3c5e;border-radius:16px;background:linear-gradient(145deg,#141f36,#10182b);min-width:0}
+    .student-v2 .sv2-course-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+    .student-v2 .sv2-module{font-size:10px;font-weight:800;letter-spacing:1px;color:#9cbaff}
+    .student-v2 .sv2-tag{font-size:10px;color:#b8c7e5;border:1px solid #334563;border-radius:999px;padding:5px 8px}
+    .student-v2 .sv2-course h4{font-size:15px;margin:0 0 8px}
+    .student-v2 .sv2-course p{font-size:12px;line-height:1.7;color:#9caccb;min-height:40px;margin:0 0 14px}
+    .student-v2 .sv2-course-meta{display:flex;gap:10px;flex-wrap:wrap;color:#8598ba;font-size:10px;margin-bottom:14px}
+    .student-v2 .sv2-course button{width:100%;border:1px solid #405681;background:#1b2b49;color:#e9f0ff;padding:10px 12px;border-radius:10px;font-size:11px;font-weight:800}
+    .student-v2 .sv2-course button:hover{background:#243b63}
+    .student-v2 .sv2-course button:disabled{opacity:.55;cursor:not-allowed}
+    .student-v2 .sv2-resources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .student-v2 .sv2-resource{padding:16px;border:1px solid #293a5b;background:#111b30;border-radius:14px}
+    .student-v2 .sv2-resource-icon{font-size:20px;margin-bottom:12px}
+    .student-v2 .sv2-resource b{display:block;font-size:12px;margin-bottom:6px}
+    .student-v2 .sv2-resource p{font-size:11px;line-height:1.6;color:#91a1c0;margin:0}
+    .student-v2 .sv2-notice{padding:16px 18px;border:1px solid #354b72;background:#15233d;border-radius:14px;color:#c9d8f6;font-size:12px;line-height:1.7;margin-top:14px}
+    .student-v2 .sv2-notice strong{color:#fff}
+    .student-v2 .sv2-legacy{margin-top:16px}
+    .student-v2 .sv2-legacy summary{cursor:pointer;color:#a9bee9;font-size:12px;padding:12px 2px}
+    .student-v2 .sv2-legacy .dashboard-panel{margin-top:0}
+    @media(max-width:700px){
+      .student-v2 .sv2-welcome{padding:18px;flex-direction:column}
+      .student-v2 .sv2-metrics,.student-v2 .sv2-course-grid,.student-v2 .sv2-resources{grid-template-columns:1fr}
+      .student-v2 .sv2-section-head{align-items:flex-start;flex-direction:column}
     }
-  }
+  `;
+  document.head.appendChild(style);
+}
 
-  function initDashboard() {
-    const view = document.getElementById("dashboardView");
-    if (!view || view.hidden || view.dataset.studentAddonReady === "yes") return;
+function makeDashboardMarkup(profile, progress) {
+  const name = profile?.name || auth.currentUser?.displayName || "Student";
+  const studentId = profile?.studentId || "ID not available";
+  const course = profile?.course || "Excel with AI";
+  const status = profile?.status || "Pending Approval";
+  const approved = status === "Active" || status === "Approved";
+  const completed = Array.isArray(progress?.completedLessons) ? progress.completedLessons : [];
+  const percent = Math.round((completed.length / LESSONS.length) * 100);
 
-    // Do not modify the Admin Dashboard.
-    const eyebrow = view.querySelector(".dashboard-top .eyebrow");
-    if (eyebrow && eyebrow.textContent.includes("ADMIN CONSOLE")) return;
-
-    const email = (
-      view.querySelector(".dashboard-top small")?.textContent ||
-      "student"
-    ).trim().toLowerCase();
-
-    // Separate local progress for each signed-in email.
-    const key = encodeURIComponent(email);
-    const state = read(key);
-    const completed = new Set(
-      Array.isArray(state.completedLessons) ? state.completedLessons : []
-    );
-
-    view.dataset.studentAddonReady = "yes";
-
-    const panel = document.createElement("section");
-    panel.className = "dashboard-panel student-extra-panel";
-    panel.innerHTML = `
-      <div class="panel-heading">
+  return `
+    <section class="student-v2" id="studentDashboardV2" aria-label="Student dashboard">
+      <div class="sv2-welcome">
         <div>
-          <h2>My Learning Center</h2>
-          <p>Lessons, practice quiz and your learning progress.</p>
+          <div class="sv2-kicker">YOUR LEARNING OVERVIEW</div>
+          <h2>Welcome back, ${escapeHTML(name.split(" ")[0])}.</h2>
+          <p>Your learning space is ready. Continue your lessons, practise useful skills and track your progress in one place.</p>
+          <div class="sv2-id">Student ID: <strong>${escapeHTML(studentId)}</strong></div>
         </div>
-        <span class="pill pill-blue" data-progress-label>0% COMPLETE</span>
+        <span class="sv2-status ${approved ? "" : "pending"}">${approved ? "✓ Account Active" : "◷ Awaiting approval"}</span>
       </div>
 
-      <div class="student-extra-progress">
-        <span data-progress-bar></span>
+      <div class="sv2-metrics">
+        <article class="sv2-metric"><span>Course</span><strong>${escapeHTML(course)}</strong><small>Your assigned learning path</small></article>
+        <article class="sv2-metric"><span>Learning progress</span><strong>${percent}%</strong><small>${completed.length} of ${LESSONS.length} modules completed</small></article>
+        <article class="sv2-metric"><span>Completed modules</span><strong>${completed.length}/${LESSONS.length}</strong><small>Progress saved to your account</small></article>
       </div>
 
-      <div class="student-extra-tabs">
-        <button type="button" class="btn btn-primary" data-tab="lessons">Lessons & Notes</button>
-        <button type="button" class="btn btn-outline" data-tab="quiz">Quick Quiz</button>
-        <button type="button" class="btn btn-outline" data-tab="profile">My Profile</button>
+      ${approved ? "" : `<div class="sv2-notice"><strong>Account review in progress.</strong><br>Your registration is saved. Learning modules unlock after Admin approval.</div>`}
+
+      <div class="sv2-section-head">
+        <div><h3>My learning path</h3><p>Practical modules designed to build confidence step by step.</p></div>
+        <span class="sv2-tag">${LESSONS.length} modules</span>
       </div>
 
-      <div data-extra-content></div>
+      <div class="sv2-course-grid">
+        ${LESSONS.map((lesson, index) => {
+          const done = completed.includes(lesson.id);
+          const locked = !approved;
+          return `
+            <article class="sv2-course">
+              <div class="sv2-course-top"><span class="sv2-module">${escapeHTML(lesson.module)}</span><span class="sv2-tag">${done ? "✓ Completed" : locked ? "Locked" : escapeHTML(lesson.level)}</span></div>
+              <h4>${escapeHTML(lesson.title)}</h4>
+              <p>${escapeHTML(lesson.description)}</p>
+              <div class="sv2-course-meta"><span>◷ ${escapeHTML(lesson.duration)}</span><span>${done ? "Progress saved" : "Practical learning"}</span></div>
+              <button type="button" data-lesson="${escapeHTML(lesson.id)}" ${locked ? "disabled" : ""}>${done ? "Mark incomplete" : index === 0 && !completed.length ? "Mark started / complete" : "Mark complete"} ↗</button>
+            </article>`;
+        }).join("")}
+      </div>
 
-      <p class="student-extra-note">
-        Progress and quiz scores are saved in this browser only.
-        They are not synced to Firebase or other devices.
-      </p>
-    `;
+      <div class="sv2-section-head"><div><h3>Quick access</h3><p>Your learning resources at a glance.</p></div></div>
+      <div class="sv2-resources">
+        <article class="sv2-resource"><div class="sv2-resource-icon">▦</div><b>Practice projects</b><p>Build salary sheets, attendance trackers, sales reports and dashboards.</p></article>
+        <article class="sv2-resource"><div class="sv2-resource-icon">✦</div><b>AI Prompt Lab</b><p>Practise prompts for formulas, data cleaning and spreadsheet workflows.</p></article>
+        <article class="sv2-resource"><div class="sv2-resource-icon">✓</div><b>Results & certificates</b><p>Assessment and certificate records can be connected in a later update.</p></article>
+      </div>
 
-    const stats = view.querySelector(".dashboard-stats");
-    if (stats) stats.insertAdjacentElement("afterend", panel);
-    else view.appendChild(panel);
-
-    const content = panel.querySelector("[data-extra-content]");
-
-    function updateProgress() {
-      const percent = Math.round(completed.size / lessons.length * 100);
-      panel.querySelector("[data-progress-label]").textContent =
-        `${percent}% COMPLETE`;
-      panel.querySelector("[data-progress-bar]").style.width =
-        `${percent}%`;
-    }
-
-    function renderLessons() {
-      content.innerHTML = `
-        <div class="student-extra-list">
-          ${lessons.map(lesson => `
-            <label class="student-extra-lesson">
-              <input type="checkbox"
-                data-lesson="${lesson.id}"
-                ${completed.has(lesson.id) ? "checked" : ""}>
-              <span>
-                <strong>${esc(lesson.module)} · ${esc(lesson.title)}</strong>
-                <small>${esc(lesson.note)}</small>
-              </span>
-              <span class="student-extra-status">
-                ${completed.has(lesson.id) ? "Completed" : "Mark complete"}
-              </span>
-            </label>
-          `).join("")}
+      <details class="sv2-legacy">
+        <summary>View account details</summary>
+        <div class="dashboard-panel">
+          <p><strong>Full name:</strong> ${escapeHTML(name)}</p>
+          <p><strong>Student ID:</strong> ${escapeHTML(studentId)}</p>
+          <p><strong>Mobile:</strong> ${escapeHTML(profile?.phone || "Not provided")}</p>
+          <p><strong>Email:</strong> ${escapeHTML(profile?.contactEmail || "Not provided")}</p>
+          <p><strong>Course:</strong> ${escapeHTML(course)}</p>
+          <p><strong>Status:</strong> ${escapeHTML(status)}</p>
         </div>
-      `;
+      </details>
+    </section>`;
+}
 
-      content.querySelectorAll("[data-lesson]").forEach(input => {
-        input.addEventListener("change", () => {
-          if (input.checked) completed.add(input.dataset.lesson);
-          else completed.delete(input.dataset.lesson);
+async function enhanceStudentDashboard() {
+  const view = $("#dashboardView");
+  if (!view || view.hidden) return;
 
-          state.completedLessons = [...completed];
+  // Never alter the Admin Dashboard.
+  if (view.querySelector(".dashboard-top .eyebrow")?.textContent?.includes("ADMIN CONSOLE")) return;
 
-          if (save(key, state)) {
-            updateProgress();
-            input.closest(".student-extra-lesson")
-              .querySelector(".student-extra-status").textContent =
-              input.checked ? "Completed" : "Mark complete";
-          }
-        });
-      });
-    }
+  const user = auth.currentUser;
+  if (!user) return;
+  if (view.querySelector("#studentDashboardV2") && lastRenderedUid === user.uid) return;
 
-    function renderQuiz() {
-      content.innerHTML = `
-        <form class="student-extra-quiz">
-          <p>Choose one answer for each question.</p>
+  const oldPanel = view.querySelector(".dashboard-panel");
+  if (!oldPanel) return;
 
-          ${quiz.map((item, i) => `
-            <fieldset>
-              <legend>${i + 1}. ${esc(item.q)}</legend>
-              ${item.options.map((option, j) => `
-                <label>
-                  <input type="radio" name="q${i}" value="${j}" required>
-                  ${esc(option)}
-                </label>
-              `).join("")}
-            </fieldset>
-          `).join("")}
+  let profile = {};
+  let progress = {};
 
-          <button class="btn btn-primary" type="submit">Submit Quiz</button>
-          <p class="student-extra-result" aria-live="polite"></p>
-        </form>
-      `;
+  try {
+    const [profileSnap, progressSnap] = await Promise.all([
+      getDoc(doc(db, "studentProfiles", user.uid)),
+      getDoc(doc(db, "studentProgress", user.uid))
+    ]);
+    if (profileSnap.exists()) profile = profileSnap.data();
+    if (progressSnap.exists()) progress = progressSnap.data();
+  } catch (error) {
+    console.error("Student dashboard load error:", error);
+  }
 
-      const form = content.querySelector("form");
+  // A student profile is required; do not invent an account record.
+  if (!profileSnapExists(profile)) {
+    console.warn("Student profile not found; preserving the existing dashboard.");
+    return;
+  }
 
-      if (state.lastQuiz) {
-        content.querySelector(".student-extra-result").textContent =
-          `Previous score: ${state.lastQuiz.score}/${state.lastQuiz.total}`;
+  addDashboardStyles();
+  const holder = document.createElement("div");
+  holder.innerHTML = makeDashboardMarkup(profile, progress).trim();
+  const dashboard = holder.firstElementChild;
+  oldPanel.before(dashboard);
+  oldPanel.hidden = true;
+  lastRenderedUid = user.uid;
+
+  dashboard.querySelectorAll("[data-lesson]").forEach(button => {
+    button.addEventListener("click", async () => {
+      if (button.disabled) return;
+
+      const lessonId = button.dataset.lesson;
+      const current = Array.isArray(progress.completedLessons) ? progress.completedLessons : [];
+      const wasDone = current.includes(lessonId);
+      const completed = new Set(current);
+      if (wasDone) completed.delete(lessonId);
+      else completed.add(lessonId);
+
+      button.disabled = true;
+      const previousText = button.textContent;
+      button.textContent = "Saving progress…";
+
+      try {
+        await setDoc(doc(db, "studentProgress", user.uid), {
+          completedLessons: [...completed],
+          lastLessonId: lessonId,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        progress.completedLessons = [...completed];
+        progress.lastLessonId = lessonId;
+        dashboard.remove();
+        oldPanel.hidden = false;
+        lastRenderedUid = null;
+        await enhanceStudentDashboard();
+        notify(wasDone ? "Module marked incomplete." : "Learning progress saved.");
+      } catch (error) {
+        console.error("Progress save failed:", error);
+        button.disabled = false;
+        button.textContent = previousText;
+        notify("Progress save failed. Check the studentProgress Firestore Rules.");
       }
+    });
+  });
+}
 
-      form.addEventListener("submit", event => {
-        event.preventDefault();
-        const answers = new FormData(form);
-        let score = 0;
+// Returns true only when the profile document was fetched successfully.
+// The flag is set inside loadData to avoid fabricating student data.
+let profileExistsForCurrentLoad = false;
+function profileSnapExists() {
+  return profileExistsForCurrentLoad;
+}
 
-        quiz.forEach((item, i) => {
-          if (Number(answers.get(`q${i}`)) === item.answer) score++;
-        });
+async function loadDataForCurrentUser(uid) {
+  const profileSnap = await getDoc(doc(db, "studentProfiles", uid));
+  profileExistsForCurrentLoad = profileSnap.exists();
+  return profileSnap.exists() ? profileSnap.data() : {};
+}
 
-        state.lastQuiz = {
-          score,
-          total: quiz.length,
-          attemptedAt: new Date().toISOString()
-        };
+function observeDashboard() {
+  const attach = () => {
+    const root = $("#dashboardView");
+    if (!root) return false;
 
-        if (save(key, state)) {
-          content.querySelector(".student-extra-result").textContent =
-            `Your score: ${score}/${quiz.length}. ${
-              score === quiz.length
-                ? "Excellent work!"
-                : "Review the lessons and try again."
-            }`;
-        }
-      });
-    }
-
-    function renderProfile() {
-      content.innerHTML = `
-        <div class="student-extra-profile">
-          <div>
-            <small>Signed-in account</small>
-            <strong>${esc(email)}</strong>
-          </div>
-          <div>
-            <small>Course</small>
-            <strong>Excel with AI</strong>
-          </div>
-          <div>
-            <small>Completed lessons</small>
-            <strong>${completed.size} of ${lessons.length}</strong>
-          </div>
-          <div>
-            <small>Latest quiz score</small>
-            <strong>${
-              state.lastQuiz
-                ? `${state.lastQuiz.score}/${state.lastQuiz.total}`
-                : "Not attempted yet"
-            }</strong>
-          </div>
-        </div>
-        <p class="student-extra-note">
-          Login and account details are managed by the existing authentication system.
-        </p>
-      `;
-    }
-
-    function showTab(tab) {
-      panel.querySelectorAll("[data-tab]").forEach(button => {
-        const active = button.dataset.tab === tab;
-        button.classList.toggle("btn-primary", active);
-        button.classList.toggle("btn-outline", !active);
-        button.setAttribute("aria-pressed", String(active));
-      });
-
-      if (tab === "quiz") renderQuiz();
-      else if (tab === "profile") renderProfile();
-      else renderLessons();
-    }
-
-    panel.querySelectorAll("[data-tab]").forEach(button => {
-      button.addEventListener("click", () => showTab(button.dataset.tab));
+    if (observer) observer.disconnect();
+    observer = new MutationObserver(() => {
+      if (root.hidden) {
+        lastRenderedUid = null;
+        return;
+      }
+      requestAnimationFrame(() => enhanceStudentDashboard().catch(console.error));
     });
 
-    updateProgress();
-    showTab("lessons");
-  }
+    observer.observe(root, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["hidden"]
+    });
 
-  // Dashboard is created dynamically by the existing app.js.
-  const observer = new MutationObserver(initDashboard);
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["hidden"]
+    if (!root.hidden) setTimeout(() => enhanceStudentDashboard().catch(console.error), 150);
+    return true;
+  };
+
+  if (attach()) return;
+
+  if (discoveryObserver) discoveryObserver.disconnect();
+  discoveryObserver = new MutationObserver(() => {
+    if ($("#dashboardView")) {
+      discoveryObserver.disconnect();
+      attach();
+    }
   });
+  discoveryObserver.observe(document.body, { childList: true, subtree: true });
+}
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initDashboard);
-  } else {
-    initDashboard();
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    lastRenderedUid = null;
+    $("#studentDashboardV2")?.remove();
+    return;
   }
-})();
+  observeDashboard();
+  setTimeout(() => enhanceStudentDashboard().catch(console.error), 350);
+});
