@@ -284,3 +284,64 @@
     width: 100%;
   }
 }
+
+/* Compact Admin accordion card */
+.admin-accordion {
+  margin-top: 18px;
+  border: 1px solid #344666;
+  border-radius: 16px;
+  background: #111a2e;
+  overflow: hidden;
+}
+
+.admin-accordion > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  cursor: pointer;
+  list-style: none;
+  background: #17233b;
+  color: #ffffff;
+}
+
+.admin-accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-accordion > summary::after {
+  content: "+";
+  font-size: 24px;
+  color: #91b5ff;
+  margin-left: auto;
+}
+
+.admin-accordion[open] > summary::after {
+  content: "−";
+}
+
+.admin-accordion-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.admin-accordion-hint {
+  font-size: 12px;
+  color: #b8c6e3;
+}
+
+.admin-accordion > .dashboard-panel {
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+@media (max-width: 600px) {
+  .admin-accordion > summary {
+    padding: 16px;
+  }
+}
