@@ -746,6 +746,10 @@ async function loadAdminStudents() {
                     ? `<button class="btn btn-quiet btn-sm" data-status="Rejected" data-uid="${escapeHtml(s.uid)}">Reject</button>`
                     : ""
                 }
+                <button
+  class="btn btn-primary btn-sm"
+  data-view="${escapeHtml(s.uid)}"
+>View Student Data ↗</button>
 
                 <button
                   class="btn btn-outline btn-sm"
@@ -762,6 +766,13 @@ async function loadAdminStudents() {
         }
       </div>
     `;
+    $$("[data-view]", target).forEach(button => {
+  button.addEventListener("click", () => {
+    const uid = button.dataset.view;
+    window.location.href =
+      "student-details.html?uid=" + encodeURIComponent(uid);
+  });
+});
 
     $$("[data-status]", target).forEach(button => {
       button.addEventListener("click", async () => {
