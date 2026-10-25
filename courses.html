@@ -5,409 +5,222 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080d1d">
-<title>Computer Courses | Disha Computer Education</title>
-<meta name="description" content="Explore computer courses at Disha Computer Education. Learn ADCA, DCA, O Level, CCC, Web Development, Python, Tally, Excel, AI and Cyber Security. Apply online.">
-
+<title>Courses | Excel with AI</title>
+<meta name="description" content="Explore Excel with AI courses in Advanced Excel, Excel with AI, Python, Web Development, Data Analysis, Tally and Cyber Security. Explore course details and apply online.">
 <style>
-:root {
-  --bg:#080d1d;
-  --card:#111b31;
-  --border:#2b3b5d;
-  --text:#f7f9ff;
-  --muted:#b5c2dc;
-  --pink:#ff2855;
-  --purple:#7b61ff;
+:root{--bg:#080d1d;--card:#111b31;--border:#2b3b5d;--text:#f7f9ff;--muted:#b5c2dc;--pink:#ff2855;--purple:#7b61ff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.6}
+button,input,select,textarea{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer}
+.container{width:min(1160px,92%);margin:auto}
+.navbar{position:sticky;top:0;z-index:50;background:#080d1df2;border-bottom:1px solid var(--border);backdrop-filter:blur(14px)}
+.nav-inner{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{font-weight:900;font-size:19px;line-height:1.2}
+.brand span{color:#ff527b}
+.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:2px}
+.nav-links{display:flex;gap:22px;align-items:center;font-size:13px}
+.nav-links a:hover{color:#ff527b}
+.btn{border:0;border-radius:10px;padding:12px 17px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.25s}
+.btn-primary{color:white;background:linear-gradient(110deg,#ff2855,#9c45ff);box-shadow:0 8px 24px #ff285526}
+.btn-outline{color:white;background:transparent;border:1px solid #6679a0}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.menu-btn{display:none;background:transparent;color:white;border:1px solid var(--border);border-radius:9px;padding:8px 12px}
+.hero{position:relative;overflow:hidden;text-align:center;padding:85px 0 65px;background:radial-gradient(ellipse at 10% 20%,#4e185c66,transparent 45%),radial-gradient(ellipse at 90% 10%,#103d7955,transparent 40%),var(--bg)}
+.hero h1{max-width:850px;margin:20px auto 14px;font-size:clamp(34px,6vw,66px);line-height:1.08;letter-spacing:-2px;overflow-wrap:anywhere}
+.gradient{background:linear-gradient(90deg,#ff426d,#b88aff,#65d9ff);color:transparent;background-clip:text;-webkit-background-clip:text}
+.hero p{max-width:680px;margin:0 auto 25px;color:var(--muted)}
+.eyebrow{display:inline-block;border:1px solid #ff426755;border-radius:50px;color:#ff7192;padding:6px 13px;font-size:11px;font-weight:900;letter-spacing:1.5px}
+.hero-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.hero-note{color:#a8b8d7;font-size:12px;margin-top:22px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:-25px;position:relative;z-index:2}
+.stat{text-align:center;background:var(--card);border:1px solid var(--border);padding:19px 10px;border-radius:15px}
+.stat strong{display:block;font-size:25px;color:#ff527b}
+.stat span{font-size:12px;color:var(--muted)}
+.section{padding:65px 0}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:22px;margin-bottom:26px}
+.section-head h2{font-size:clamp(27px,4vw,40px);line-height:1.2;margin:10px 0}
+.section-head p{color:var(--muted);max-width:420px;margin:0;font-size:14px}
+.filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:22px}
+.filter{color:#d8e1f4;background:#101a30;border:1px solid var(--border);padding:9px 14px;border-radius:50px;font-size:12px}
+.filter.active,.filter:hover{color:white;background:#762d65;border-color:#ff4270}
+.course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px}
+.course-card{min-width:0;overflow:hidden;border:1px solid var(--border);border-radius:18px;background:linear-gradient(150deg,#17233c,#0d1426);transition:transform .28s,border-color .28s,box-shadow .28s;animation:appear .55s both}
+.course-card:hover{transform:translateY(-7px);border-color:#ff4776;box-shadow:0 18px 40px #0005}
+.course-art{height:125px;padding:18px;position:relative;overflow:hidden;background:radial-gradient(circle at 80% 25%,#ff477744,transparent 35%),linear-gradient(120deg,#321b47,#122b4c)}
+.course-icon{font-size:35px}
+.course-tag{position:absolute;bottom:13px;left:17px;font-size:10px;letter-spacing:1px;font-weight:900;color:#ff9cb5}
+.course-body{padding:20px}
+.course-body h3{margin:0 0 7px;font-size:21px;line-height:1.3}
+.course-body p{margin:0 0 14px;color:var(--muted);font-size:13px;min-height:42px}
+.course-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
+.chip{font-size:10px;padding:5px 8px;border-radius:7px;background:#202e49;color:#dbe5ff}
+.course-actions{display:flex;gap:8px;margin-top:18px}
+.course-actions .btn{flex:1;min-width:0;padding:10px 7px;font-size:12px}
+.course-card[hidden]{display:none}
+.benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.benefit{padding:22px;border-radius:15px;background:var(--card);border:1px solid var(--border)}
+.benefit strong{display:block;font-size:16px;margin:8px 0}
+.benefit p{color:var(--muted);font-size:13px;margin:0}
+.cta{text-align:center;padding:40px 24px;border-radius:22px;border:1px solid #854c8d;background:radial-gradient(ellipse at top right,#8a245244,transparent 55%),linear-gradient(120deg,#211b3c,#101c32)}
+.cta h2{font-size:clamp(27px,4vw,42px);margin:8px 0}
+.cta p{color:var(--muted);margin:0 auto 20px;max-width:600px}
+footer{border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font-size:12px}
+.footer-inner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.modal{display:none;position:fixed;inset:0;z-index:100;background:#020613d9;backdrop-filter:blur(7px);padding:18px;overflow:auto;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-box{width:min(650px,100%);max-height:92vh;overflow:auto;background:#101a2e;border:1px solid #405478;border-radius:20px;padding:25px;position:relative;animation:appear .25s ease}
+.modal-close{position:absolute;right:14px;top:12px;background:#25334d;color:white;border:0;border-radius:9px;padding:7px 12px;font-size:18px}
+.modal-box h2{margin:5px 38px 8px 0;font-size:27px}
+.modal-box p{color:var(--muted);font-size:14px}
+.detail-list{padding-left:20px;color:#d9e4f9;font-size:14px}
+.detail-list li{margin:7px 0}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:flex;flex-direction:column;gap:6px;margin:9px 0}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;color:#c6d5ee;font-weight:700}
+.field input,.field select,.field textarea{width:100%;min-width:0;padding:12px;color:white;background:#080f20;border:1px solid #354767;border-radius:9px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#ff4776}
+.field select option{background:#101a2e}
+.form-submit{width:100%;margin-top:10px}
+.form-help{font-size:11px!important}
+#formMessage{color:#9ff2bf;overflow-wrap:anywhere}
+.whatsapp-float{position:fixed;right:18px;bottom:18px;z-index:40;background:#19bd69;color:white;border-radius:50px;padding:13px 17px;font-size:12px;font-weight:900;box-shadow:0 8px 25px #0005}
+.reveal{opacity:0;transform:translateY(15px);transition:.6s ease}
+.reveal.visible{opacity:1;transform:none}
+@keyframes appear{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:850px){
+.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.benefits{grid-template-columns:repeat(2,minmax(0,1fr))}
+.section-head{display:block}.section-head p{margin-top:10px}
+.nav-links{display:none;position:absolute;left:0;right:0;top:71px;background:#0b1224;border-bottom:1px solid var(--border);padding:20px;flex-direction:column;align-items:stretch}
+.nav-links.open{display:flex}.menu-btn{display:block}
 }
-* { box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body {
-  margin:0;
-  color:var(--text);
-  background:var(--bg);
-  font-family:Arial,Helvetica,sans-serif;
-  line-height:1.6;
+@media(max-width:560px){
+.container{width:92%}.hero{padding:60px 0 50px}.hero h1{letter-spacing:-1px}
+.stats{gap:7px}.stat{padding:14px 5px}.stat strong{font-size:20px}.stat span{font-size:10px}
+.section{padding:48px 0}.course-grid{grid-template-columns:1fr}
+.course-body p{min-height:0}.benefits{grid-template-columns:1fr}
+.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+.modal{padding:9px}.modal-box{padding:20px 15px}
+.nav-inner{gap:8px}.brand{font-size:15px}.brand small{font-size:8px;letter-spacing:1px}
+.nav-inner>.btn{padding:9px 10px;font-size:11px}.menu-btn{padding:7px 9px}
+.whatsapp-float{right:10px;bottom:10px;padding:12px 14px}
 }
-button,input,select,textarea { font:inherit; }
-button,a { -webkit-tap-highlight-color:transparent; }
-a { color:inherit; text-decoration:none; }
-button { cursor:pointer; }
-.container { width:min(1160px,92%); margin:auto; }
-
-.navbar {
-  position:sticky; top:0; z-index:50;
-  background:rgba(8,13,29,.94);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(14px);
-}
-.nav-inner {
-  min-height:72px; display:flex; align-items:center;
-  justify-content:space-between; gap:18px;
-}
-.brand { font-weight:900; font-size:19px; line-height:1.2; }
-.brand span { color:#ff3970; }
-.brand small { display:block; font-size:10px; color:var(--muted); letter-spacing:2px; }
-.nav-links { display:flex; gap:22px; align-items:center; font-size:13px; }
-.nav-links a:hover { color:#ff527b; }
-.btn {
-  border:0; border-radius:10px; padding:12px 17px;
-  font-weight:800; display:inline-flex; align-items:center;
-  justify-content:center; gap:7px; transition:.25s;
-}
-.btn-primary {
-  color:white; background:linear-gradient(110deg,#ff2855,#9c45ff);
-  box-shadow:0 8px 24px #ff285526;
-}
-.btn-outline { color:white; background:transparent; border:1px solid #6679a0; }
-.btn:hover { transform:translateY(-2px); filter:brightness(1.1); }
-.menu-btn { display:none; background:transparent; color:white; border:1px solid var(--border); border-radius:9px; padding:8px 12px; }
-
-.hero {
-  position:relative; overflow:hidden; text-align:center;
-  padding:88px 0 65px;
-  background:
-    radial-gradient(ellipse at 10% 20%,#4e185c66,transparent 45%),
-    radial-gradient(ellipse at 90% 10%,#103d7955,transparent 40%),
-    var(--bg);
-}
-.hero:before,.hero:after {
-  content:""; position:absolute; border-radius:50%; filter:blur(2px);
-  pointer-events:none; animation:float 8s ease-in-out infinite;
-}
-.hero:before { width:220px;height:220px;left:-100px;top:80px;background:#ff285512;border:1px solid #ff285522; }
-.hero:after { width:280px;height:280px;right:-130px;bottom:10px;background:#7850ff14;border:1px solid #7850ff24;animation-delay:-3s; }
-.eyebrow {
-  display:inline-block; border:1px solid #ff426755; border-radius:50px;
-  color:#ff7192; padding:6px 13px; font-size:11px; font-weight:900; letter-spacing:1.5px;
-}
-.hero h1 {
-  position:relative; z-index:1;
-  max-width:850px; margin:20px auto 14px;
-  font-size:clamp(34px,6vw,66px); line-height:1.08; letter-spacing:-2px;
-  overflow-wrap:anywhere;
-}
-.gradient {
-  background:linear-gradient(90deg,#ff426d,#b88aff,#65d9ff);
-  color:transparent; background-clip:text; -webkit-background-clip:text;
-}
-.hero p { max-width:680px; margin:0 auto 25px; color:var(--muted); }
-.hero-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; }
-.hero-note { color:#a8b8d7; font-size:12px; margin-top:22px; }
-
-.stats {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
-  margin-top:-25px; position:relative; z-index:2;
-}
-.stat {
-  text-align:center; background:var(--card); border:1px solid var(--border);
-  padding:19px 10px; border-radius:15px;
-}
-.stat strong { display:block; font-size:25px; color:#ff527b; }
-.stat span { font-size:12px; color:var(--muted); }
-
-.section { padding:65px 0; }
-.section-head { display:flex; justify-content:space-between; align-items:end; gap:22px; margin-bottom:26px; }
-.section-head h2 { font-size:clamp(27px,4vw,40px); line-height:1.2; margin:10px 0; }
-.section-head p { color:var(--muted); max-width:420px; margin:0; font-size:14px; }
-.filters { display:flex; flex-wrap:wrap; gap:9px; margin-bottom:22px; }
-.filter {
-  color:#d8e1f4; background:#101a30; border:1px solid var(--border);
-  padding:9px 14px; border-radius:50px; font-size:12px;
-}
-.filter.active,.filter:hover { color:white; background:#762d65; border-color:#ff4270; }
-
-.course-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:19px; }
-.course-card {
-  min-width:0; overflow:hidden; position:relative;
-  border:1px solid var(--border); border-radius:18px;
-  background:linear-gradient(150deg,#17233c,#0d1426);
-  transition:transform .28s,border-color .28s,box-shadow .28s;
-  animation:appear .65s both;
-}
-.course-card:hover {
-  transform:translateY(-7px); border-color:#ff4776;
-  box-shadow:0 18px 40px #0005,0 0 25px #ff285510;
-}
-.course-art {
-  height:135px; padding:18px; position:relative; overflow:hidden;
-  background:radial-gradient(circle at 80% 25%,#ff477744,transparent 35%),linear-gradient(120deg,#321b47,#122b4c);
-}
-.course-art:after {
-  content:""; position:absolute; width:110px;height:110px;border-radius:30px;
-  right:22px;top:25px;transform:rotate(24deg);
-  border:1px solid #ffffff26;background:#ffffff08;
-}
-.course-icon { font-size:34px; position:relative;z-index:2; }
-.course-tag {
-  position:absolute;bottom:15px;left:17px;z-index:3;
-  font-size:10px;letter-spacing:1px;font-weight:900;color:#ff9cb5;
-}
-.course-body { padding:20px; }
-.course-body h3 { margin:0 0 7px; font-size:21px; line-height:1.3; }
-.course-body p { margin:0 0 14px;color:var(--muted);font-size:13px;min-height:42px; }
-.course-meta { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:13px; }
-.chip { font-size:10px; padding:5px 8px; border-radius:7px; background:#202e49; color:#dbe5ff; }
-.course-actions { display:flex; gap:8px; margin-top:18px; }
-.course-actions .btn { flex:1; padding:10px 8px; font-size:12px; }
-.course-actions button { min-width:0; }
-.course-card[hidden] { display:none; }
-
-.benefits { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px; }
-.benefit { padding:22px;border-radius:15px;background:var(--card);border:1px solid var(--border); }
-.benefit strong { display:block;font-size:16px;margin:8px 0; }
-.benefit p { color:var(--muted);font-size:13px;margin:0; }
-.benefit-icon { font-size:26px; }
-
-.cta {
-  text-align:center; padding:40px 24px; border-radius:22px;
-  border:1px solid #854c8d;
-  background:radial-gradient(ellipse at top right,#8a245244,transparent 55%),linear-gradient(120deg,#211b3c,#101c32);
-}
-.cta h2 { font-size:clamp(27px,4vw,42px);margin:8px 0; }
-.cta p { color:var(--muted);margin:0 auto 20px;max-width:600px; }
-
-footer { border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font-size:12px; }
-.footer-inner { display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap; }
-
-.modal {
-  display:none; position:fixed;inset:0;z-index:100;
-  background:#020613d9;backdrop-filter:blur(7px);
-  padding:18px;overflow:auto;align-items:center;justify-content:center;
-}
-.modal.show { display:flex; }
-.modal-box {
-  width:min(650px,100%);max-height:92vh;overflow:auto;
-  background:#101a2e;border:1px solid #405478;border-radius:20px;
-  padding:25px;position:relative;animation:appear .25s ease;
-}
-.modal-close {
-  position:absolute;right:14px;top:12px;background:#25334d;color:white;
-  border:0;border-radius:9px;padding:7px 12px;font-size:18px;
-}
-.modal-box h2 { margin:5px 38px 8px 0;font-size:27px; }
-.modal-box p { color:var(--muted);font-size:14px; }
-.detail-list { padding-left:20px;color:#d9e4f9;font-size:14px; }
-.detail-list li { margin:7px 0; }
-.form-grid { display:grid;grid-template-columns:1fr 1fr;gap:13px; }
-.field { display:flex;flex-direction:column;gap:6px;margin:9px 0; }
-.field.full { grid-column:1/-1; }
-.field label { font-size:12px;color:#c6d5ee;font-weight:700; }
-.field input,.field select,.field textarea {
-  width:100%;min-width:0;padding:12px;
-  color:white;background:#080f20;border:1px solid #354767;
-  border-radius:9px;outline:none;
-}
-.field input:focus,.field select:focus,.field textarea:focus { border-color:#ff4776; }
-.field select option { background:#101a2e; }
-.form-submit { width:100%;margin-top:10px; }
-.form-help { font-size:11px!important; }
-#formMessage { color:#9ff2bf;overflow-wrap:anywhere; }
-
-.whatsapp-float {
-  position:fixed;right:18px;bottom:18px;z-index:40;
-  background:#19bd69;color:white;border-radius:50px;padding:13px 17px;
-  font-size:12px;font-weight:900;box-shadow:0 8px 25px #0005;
-}
-.reveal { opacity:0;transform:translateY(15px);transition:.6s ease; }
-.reveal.visible { opacity:1;transform:none; }
-
-@keyframes float { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-16px) rotate(6deg); } }
-@keyframes appear { from { opacity:0;transform:translateY(13px); } to { opacity:1;transform:translateY(0); } }
-
-@media(max-width:850px) {
-  .course-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .benefits { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .section-head { display:block; }
-  .section-head p { margin-top:10px; }
-  .nav-links {
-    display:none;position:absolute;left:0;right:0;top:71px;
-    background:#0b1224;border-bottom:1px solid var(--border);
-    padding:20px;flex-direction:column;align-items:stretch;
-  }
-  .nav-links.open { display:flex; }
-  .menu-btn { display:block; }
-  .nav-inner > .btn { margin-left:auto; }
-}
-@media(max-width:560px) {
-  .container { width:92%; }
-  .hero { padding:65px 0 52px; }
-  .hero h1 { letter-spacing:-1px; }
-  .stats { gap:7px; }
-  .stat { padding:14px 5px; }
-  .stat strong { font-size:20px; }
-  .stat span { font-size:10px; }
-  .section { padding:48px 0; }
-  .course-grid { grid-template-columns:1fr; }
-  .course-art { height:115px; }
-  .course-body p { min-height:0; }
-  .benefits { grid-template-columns:1fr; }
-  .form-grid { grid-template-columns:1fr; }
-  .field.full { grid-column:auto; }
-  .modal { padding:9px; }
-  .modal-box { padding:20px 15px; }
-  .nav-inner { gap:8px; }
-  .brand { font-size:15px; }
-  .brand small { font-size:8px;letter-spacing:1px; }
-  .nav-inner > .btn { padding:9px 10px;font-size:11px; }
-  .menu-btn { padding:7px 9px; }
-  .whatsapp-float { right:10px;bottom:10px;padding:12px 14px; }
-}
-@media(prefers-reduced-motion:reduce) {
-  *,*::before,*::after { animation:none!important;scroll-behavior:auto!important;transition:none!important; }
-  .reveal { opacity:1;transform:none; }
-}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
 <header class="navbar">
   <div class="container nav-inner">
-    <a class="brand" href="index.html">
-      DISHA <span>COMPUTER EDUCATION</span>
-      <small>LEARN • PRACTISE • SUCCEED</small>
-    </a>
+    <a class="brand" href="index.html">EXCEL <span>WITH AI</span><small>LEARN · AUTOMATE · GROW</small></a>
     <nav class="nav-links" id="navLinks">
       <a href="index.html">Home</a>
-      <a href="#courses">All Courses</a>
-      <a href="#benefits">Why Choose Us</a>
-      <a href="#contact">Contact</a>
+      <a href="courses.html" aria-current="page">Courses</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#faq">FAQ</a>
     </nav>
-    <button class="btn btn-primary" onclick="openApply('General Enquiry')">Admission Enquiry ↗</button>
+    <button class="btn btn-primary" onclick="openApply('General Enquiry')">Apply Now ↗</button>
     <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
   </div>
 </header>
 
 <main>
-  <section class="hero">
-    <div class="container">
-      <span class="eyebrow">✦ PROFESSIONAL COMPUTER COURSES</span>
-      <h1>Build Your <span class="gradient">Digital Future</span></h1>
-      <p>Choose the right course, learn practical skills and move towards your career goals with Disha Computer Education.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#courses">Explore All Courses ↓</a>
-        <button class="btn btn-outline" onclick="openApply('General Enquiry')">Talk to Our Team</button>
-      </div>
-      <div class="hero-note">Practical Learning · Guided Training · Career-Focused Skills</div>
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">✦ SKILLS FOR THE DIGITAL FUTURE</span>
+    <h1>Learn Smarter with <span class="gradient">Excel with AI</span></h1>
+    <p>Explore practical courses in Excel, AI tools, programming, web development, data analysis and digital technology. Choose your course and enquire online.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#courses">Explore Courses ↓</a>
+      <button class="btn btn-outline" onclick="openApply('General Enquiry')">Ask About Admission</button>
     </div>
-  </section>
+    <div class="hero-note">Practical Skills · Guided Learning · Project-Based Practice</div>
+  </div>
+</section>
 
-  <div class="container stats">
-    <div class="stat"><strong>11+</strong><span>Learning Paths</span></div>
-    <div class="stat"><strong>Practical</strong><span>Skill-Based Learning</span></div>
-    <div class="stat"><strong>Apply</strong><span>Direct WhatsApp Enquiry</span></div>
+<div class="container stats">
+  <div class="stat"><strong>11+</strong><span>Course Options</span></div>
+  <div class="stat"><strong>Projects</strong><span>Learn by Practising</span></div>
+  <div class="stat"><strong>Online</strong><span>Easy Admission Enquiry</span></div>
+</div>
+
+<section class="section container" id="courses">
+  <div class="section-head">
+    <div><span class="eyebrow">FIND YOUR LEARNING PATH</span><h2>Explore Our <span class="gradient">Courses</span></h2></div>
+    <p>Open a course to see its learning topics, then send an enquiry on WhatsApp to ask about duration, fees and available batches.</p>
   </div>
 
-  <section class="section container" id="courses">
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">FIND YOUR COURSE</span>
-        <h2>Choose Your <span class="gradient">Career Path</span></h2>
-      </div>
-      <p>Explore the course overview and syllabus highlights. Select a course to view more information or send your admission enquiry.</p>
-    </div>
+  <div class="filters" id="filters">
+    <button class="filter active" data-filter="All">All Courses</button>
+    <button class="filter" data-filter="Office">Excel & Office</button>
+    <button class="filter" data-filter="Development">Development</button>
+    <button class="filter" data-filter="Business">Business Skills</button>
+    <button class="filter" data-filter="Technology">AI & Technology</button>
+    <button class="filter" data-filter="Computer">Computer Fundamentals</button>
+  </div>
+  <div class="course-grid" id="courseGrid"></div>
+</section>
 
-    <div class="filters" id="filters">
-      <button class="filter active" data-filter="All">All Courses</button>
-      <button class="filter" data-filter="Computer">Computer Courses</button>
-      <button class="filter" data-filter="Development">Development</button>
-      <button class="filter" data-filter="Business">Business & Office</button>
-      <button class="filter" data-filter="Technology">AI & Technology</button>
-    </div>
+<section class="section container" id="benefits">
+  <div class="section-head">
+    <div><span class="eyebrow">WHY LEARN WITH US</span><h2>Skills That Move You <span class="gradient">Forward</span></h2></div>
+    <p>Build confidence through structured learning, practical work and course guidance.</p>
+  </div>
+  <div class="benefits">
+    <article class="benefit reveal"><div>💻</div><strong>Practical Learning</strong><p>Focus on real skills, exercises and useful projects.</p></article>
+    <article class="benefit reveal"><div>🤖</div><strong>AI-Aware Skills</strong><p>Explore how AI tools can support everyday productivity.</p></article>
+    <article class="benefit reveal"><div>📚</div><strong>Structured Topics</strong><p>Review course topics before choosing your learning path.</p></article>
+    <article class="benefit reveal"><div>📈</div><strong>Career Development</strong><p>Build a foundation for further learning and work projects.</p></article>
+    <article class="benefit reveal"><div>📱</div><strong>Easy Enquiry</strong><p>Send your course enquiry through WhatsApp.</p></article>
+    <article class="benefit reveal"><div>🎯</div><strong>Course Guidance</strong><p>Ask about course duration, fees, eligibility and batches.</p></article>
+  </div>
+</section>
 
-    <div class="course-grid" id="courseGrid"></div>
-  </section>
-
-  <section class="section container" id="benefits">
-    <div class="section-head">
-      <div>
-        <span class="eyebrow">YOUR LEARNING EXPERIENCE</span>
-        <h2>Learn Skills That <span class="gradient">Matter</span></h2>
-      </div>
-      <p>Choose a learning path that matches your current level and the skills you want to develop.</p>
-    </div>
-    <div class="benefits">
-      <article class="benefit reveal"><div class="benefit-icon">💻</div><strong>Practical Training</strong><p>Focus on useful computer skills and hands-on practice.</p></article>
-      <article class="benefit reveal"><div class="benefit-icon">📚</div><strong>Structured Learning</strong><p>Explore topics from the fundamentals to more advanced concepts.</p></article>
-      <article class="benefit reveal"><div class="benefit-icon">🧑‍🏫</div><strong>Guided Learning</strong><p>Ask about course content, class format and available batches before applying.</p></article>
-      <article class="benefit reveal"><div class="benefit-icon">📈</div><strong>Career-Oriented Skills</strong><p>Build a foundation for further study, office work or technology projects.</p></article>
-      <article class="benefit reveal"><div class="benefit-icon">📱</div><strong>Easy Enquiry</strong><p>Submit your course enquiry through WhatsApp from your phone or computer.</p></article>
-      <article class="benefit reveal"><div class="benefit-icon">🎯</div><strong>Choose Your Path</strong><p>Compare course options and ask about eligibility, duration and fees.</p></article>
-    </div>
-  </section>
-
-  <section class="section container" id="contact">
-    <div class="cta">
-      <span class="eyebrow">READY TO GET STARTED?</span>
-      <h2>Your Next Skill Starts <span class="gradient">Today.</span></h2>
-      <p>Choose a course and contact Disha Computer Education for details about fees, duration, eligibility and the next available batch.</p>
-      <button class="btn btn-primary" onclick="openApply('General Enquiry')">Apply / Enquire on WhatsApp ↗</button>
-    </div>
-  </section>
+<section class="section container" id="contact">
+  <div class="cta">
+    <span class="eyebrow">READY TO START?</span>
+    <h2>Your Next Skill Starts <span class="gradient">Today.</span></h2>
+    <p>Choose a course and send your enquiry to learn more about the syllabus, fees and next available batch.</p>
+    <button class="btn btn-primary" onclick="openApply('General Enquiry')">Apply / Enquire on WhatsApp ↗</button>
+  </div>
+</section>
 </main>
 
-<footer>
-  <div class="container footer-inner">
-    <span>© <span id="year"></span> Disha Computer Education</span>
-    <span>Course information is confirmed by the institute at enquiry time.</span>
-  </div>
-</footer>
+<footer><div class="container footer-inner"><span>© <span id="year"></span> Excel with AI</span><a href="index.html">← Back to Home</a></div></footer>
+<a class="whatsapp-float" href="https://wa.me/919250332217?text=Hello%2C%20I%20want%20to%20know%20about%20Excel%20with%20AI%20courses." target="_blank" rel="noopener">WhatsApp ↗</a>
 
-<a class="whatsapp-float" href="https://wa.me/919250332217?text=Hello%2C%20I%20want%20to%20know%20about%20your%20computer%20courses." target="_blank" rel="noopener">WhatsApp ↗</a>
-
-<!-- Course details modal -->
 <div class="modal" id="courseModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
   <div class="modal-box">
     <button class="modal-close" type="button" data-close="courseModal" aria-label="Close">×</button>
     <span class="eyebrow" id="detailCategory">COURSE DETAILS</span>
-    <h2 id="detailTitle">Course Name</h2>
-    <p id="detailDescription"></p>
+    <h2 id="detailTitle">Course Name</h2><p id="detailDescription"></p>
     <div class="course-meta" id="detailMeta"></div>
-    <h3>What you can learn</h3>
-    <ul class="detail-list" id="detailTopics"></ul>
-    <p id="detailNote">Duration, fees, eligibility and batch availability should be confirmed with the institute.</p>
-    <button class="btn btn-primary" id="detailApply" type="button">Apply for This Course ↗</button>
+    <h3>Topics to Explore</h3><ul class="detail-list" id="detailTopics"></ul>
+    <p>Duration, fees, eligibility and batch availability must be confirmed with the course team.</p>
+    <button class="btn btn-primary" id="detailApply" type="button">Enquire About This Course ↗</button>
   </div>
 </div>
 
-<!-- Admission enquiry form -->
 <div class="modal" id="applyModal" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
   <div class="modal-box">
     <button class="modal-close" type="button" data-close="applyModal" aria-label="Close">×</button>
-    <span class="eyebrow">ADMISSION ENQUIRY</span>
-    <h2 id="applyTitle">Apply / Enquire Online</h2>
-    <p>Fill in your details. WhatsApp will open with your enquiry message ready to send to Disha Computer Education.</p>
-
+    <span class="eyebrow">COURSE ENQUIRY</span><h2 id="applyTitle">Apply / Enquire Online</h2>
+    <p>Fill in your details. WhatsApp will open with a ready-to-send enquiry message.</p>
     <form id="applyForm">
       <div class="form-grid">
-        <div class="field">
-          <label for="studentName">Student Name *</label>
-          <input id="studentName" name="name" required maxlength="80" autocomplete="name" placeholder="Enter your full name">
-        </div>
-        <div class="field">
-          <label for="studentPhone">Mobile Number *</label>
-          <input id="studentPhone" name="phone" required type="tel" maxlength="16" autocomplete="tel" placeholder="Your mobile number">
-        </div>
-        <div class="field full">
-          <label for="studentCourse">Select Course *</label>
-          <select id="studentCourse" name="course" required></select>
-        </div>
-        <div class="field">
-          <label for="studentMode">Preferred Learning Mode</label>
-          <select id="studentMode" name="mode">
-            <option>Need information</option>
-            <option>Offline / Classroom</option>
-            <option>Online</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="studentCity">City / Area</label>
-          <input id="studentCity" name="city" maxlength="80" placeholder="Enter your city or area">
-        </div>
-        <div class="field full">
-          <label for="studentMessage">Your Question (Optional)</label>
-          <textarea id="studentMessage" name="message" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batches"></textarea>
-        </div>
+        <div class="field"><label for="studentName">Full Name *</label><input id="studentName" required maxlength="80" autocomplete="name" placeholder="Your full name"></div>
+        <div class="field"><label for="studentPhone">Mobile Number *</label><input id="studentPhone" required type="tel" maxlength="16" autocomplete="tel" placeholder="Your mobile number"></div>
+        <div class="field full"><label for="studentCourse">Select Course *</label><select id="studentCourse" required></select></div>
+        <div class="field"><label for="studentMode">Preferred Mode</label><select id="studentMode"><option>Need information</option><option>Online</option><option>Offline / Classroom</option></select></div>
+        <div class="field"><label for="studentCity">City / Area</label><input id="studentCity" maxlength="80" placeholder="Your city or area"></div>
+        <div class="field full"><label for="studentMessage">Question (Optional)</label><textarea id="studentMessage" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batch"></textarea></div>
       </div>
-      <p class="form-help">Your information will be placed in a WhatsApp message. Review it before pressing Send in WhatsApp.</p>
+      <p class="form-help">Your details are added to a WhatsApp message. Review it and press Send in WhatsApp to submit.</p>
       <button class="btn btn-primary form-submit" type="submit">Continue to WhatsApp ↗</button>
       <p id="formMessage" aria-live="polite"></p>
     </form>
@@ -418,356 +231,93 @@ footer { border-top:1px solid var(--border);padding:27px 0;color:var(--muted);fo
 const WHATSAPP_NUMBER = "919250332217";
 
 const courses = [
-  {
-    name:"ADCA",
-    category:"Computer",
-    icon:"🖥️",
-    tag:"COMPUTER APPLICATIONS",
-    level:"Beginner friendly",
-    description:"Build a foundation in computer applications, office tools and everyday digital work.",
-    topics:["Computer fundamentals and operating systems","Office applications and document creation","Internet, email and digital productivity","Practical exercises based on the offered syllabus"]
-  },
-  {
-    name:"DCA",
-    category:"Computer",
-    icon:"💻",
-    tag:"DIPLOMA COURSE",
-    level:"Foundation",
-    description:"Explore essential computer applications and build confidence using common digital tools.",
-    topics:["Computer basics","Office productivity tools","Internet and digital skills","Practical work based on the institute syllabus"]
-  },
-  {
-    name:"O Level",
-    category:"Computer",
-    icon:"🎓",
-    tag:"EXAM PREPARATION",
-    level:"Structured learning",
-    description:"Prepare for O Level computer topics with theory, practical exercises and revision.",
-    topics:["IT tools and network basics","Web design fundamentals","Python programming concepts","Internet of Things and relevant practicals"]
-  },
-  {
-    name:"CCC",
-    category:"Computer",
-    icon:"📘",
-    tag:"COMPUTER LITERACY",
-    level:"Beginner",
-    description:"Learn essential digital literacy and common computer tasks.",
-    topics:["Computer and operating system basics","Word processing and spreadsheets","Internet, email and online services","Digital payments and cyber safety"]
-  },
-  {
-    name:"Python Programming",
-    category:"Development",
-    icon:"🐍",
-    tag:"PROGRAMMING",
-    level:"Beginner to intermediate",
-    description:"Learn programming concepts and build small projects step by step.",
-    topics:["Variables and data types","Conditions, loops and functions","Lists, dictionaries and files","Practice programs and mini projects"]
-  },
-  {
-    name:"Web Designing",
-    category:"Development",
-    icon:"🌐",
-    tag:"WEBSITE CREATION",
-    level:"Beginner friendly",
-    description:"Learn the fundamentals of building attractive, responsive web pages.",
-    topics:["HTML structure and semantic elements","CSS layouts, colours and typography","Responsive design for mobile","JavaScript basics and interactive pages"]
-  },
-  {
-    name:"Full Stack Development",
-    category:"Development",
-    icon:"⚡",
-    tag:"WEB DEVELOPMENT",
-    level:"Project based",
-    description:"Explore front-end and back-end web development through practical projects.",
-    topics:["HTML, CSS and JavaScript","Front-end development fundamentals","Server and API concepts","Database basics, deployment and projects"]
-  },
-  {
-    name:"Tally Prime",
-    category:"Business",
-    icon:"📊",
-    tag:"ACCOUNTING",
-    level:"Practical learning",
-    description:"Learn digital accounting workflows and common business accounting tasks.",
-    topics:["Company and ledger creation","Vouchers and accounting entries","Inventory basics","GST concepts and reports, as applicable"]
-  },
-  {
-    name:"Advanced Excel",
-    category:"Business",
-    icon:"📈",
-    tag:"OFFICE PRODUCTIVITY",
-    level:"Basic Excel recommended",
-    description:"Improve spreadsheet productivity using formulas, analysis and reports.",
-    topics:["Important formulas and functions","Sorting, filtering and data validation","PivotTables and charts","Dashboards and practical spreadsheet projects"]
-  },
-  {
-    name:"AI & Data Science",
-    category:"Technology",
-    icon:"🤖",
-    tag:"EMERGING TECHNOLOGY",
-    level:"Foundation to projects",
-    description:"Explore AI tools, data analysis concepts and responsible practical applications.",
-    topics:["AI fundamentals and prompt writing","Data cleaning and analysis concepts","Visualisation and reporting","Guided practical exercises and mini projects"]
-  },
-  {
-    name:"Cyber Security",
-    category:"Technology",
-    icon:"🛡️",
-    tag:"DIGITAL SAFETY",
-    level:"Foundation",
-    description:"Learn cybersecurity fundamentals and safer digital practices.",
-    topics:["Cybersecurity concepts and threats","Passwords, phishing and account safety","Network and device security basics","Responsible security awareness and defensive practice"]
-  }
+ {name:"Excel with AI",category:"Office",icon:"📊",tag:"FEATURED COURSE",level:"Beginner friendly",description:"Learn spreadsheet skills and explore how AI tools can assist with everyday work.",topics:["Excel interface and workbook basics","Formulas and useful functions","Data cleaning, charts and dashboards","AI-assisted productivity and practical projects"]},
+ {name:"Advanced Excel",category:"Office",icon:"📈",tag:"OFFICE PRODUCTIVITY",level:"Basic Excel helpful",description:"Build spreadsheet skills for data organisation, reporting and analysis.",topics:["Important formulas and functions","Sorting, filtering and data validation","PivotTables and charts","Dashboards and practical spreadsheet projects"]},
+ {name:"AI Tools & Productivity",category:"Technology",icon:"🤖",tag:"ARTIFICIAL INTELLIGENCE",level:"Foundation",description:"Explore AI tools and responsible ways to use them for learning and productivity.",topics:["AI fundamentals","Prompt writing basics","AI-assisted documents and presentations","Practical productivity workflows"]},
+ {name:"Python Programming",category:"Development",icon:"🐍",tag:"PROGRAMMING",level:"Beginner to intermediate",description:"Learn programming concepts and build small projects step by step.",topics:["Variables and data types","Conditions, loops and functions","Lists, dictionaries and files","Practice programs and mini projects"]},
+ {name:"Web Designing",category:"Development",icon:"🌐",tag:"WEBSITE CREATION",level:"Beginner friendly",description:"Learn the fundamentals of building attractive and responsive web pages.",topics:["HTML structure and semantic elements","CSS layouts, colours and typography","Responsive design for mobile","JavaScript basics and interactive pages"]},
+ {name:"Full Stack Development",category:"Development",icon:"⚡",tag:"WEB DEVELOPMENT",level:"Project based",description:"Explore front-end and back-end web development through guided projects.",topics:["HTML, CSS and JavaScript","Front-end development fundamentals","Server and API concepts","Database basics, deployment and projects"]},
+ {name:"Tally Prime & GST",category:"Business",icon:"🧾",tag:"ACCOUNTING",level:"Practical learning",description:"Explore accounting workflows and common business bookkeeping tasks.",topics:["Company and ledger creation","Vouchers and accounting entries","Inventory basics","GST concepts and reports, as applicable"]},
+ {name:"Computer Fundamentals",category:"Computer",icon:"💻",tag:"COMPUTER BASICS",level:"Beginner",description:"Build a foundation in computer use, operating systems and digital skills.",topics:["Computer hardware and software","Operating system basics","Files, folders and typing practice","Internet, email and digital safety"]},
+ {name:"O Level",category:"Computer",icon:"🎓",tag:"EXAM PREPARATION",level:"Structured learning",description:"Study computer topics and practise relevant theory and practical concepts.",topics:["IT tools and network basics","Web design fundamentals","Python programming concepts","IoT concepts and relevant practicals"]},
+ {name:"CCC",category:"Computer",icon:"📘",tag:"DIGITAL LITERACY",level:"Beginner",description:"Learn essential digital literacy and common computer tasks.",topics:["Computer and operating system basics","Word processing and spreadsheets","Internet, email and online services","Digital payments and cyber safety"]},
+ {name:"Data Analysis",category:"Technology",icon:"📉",tag:"DATA SKILLS",level:"Foundation",description:"Explore data organisation, analysis and visual reporting concepts.",topics:["Organising and cleaning data","Spreadsheet analysis","Charts and visualisation","Reports and practical exercises"]},
+ {name:"Cyber Security",category:"Technology",icon:"🛡️",tag:"DIGITAL SAFETY",level:"Foundation",description:"Learn cybersecurity fundamentals and safer digital practices.",topics:["Cybersecurity concepts and threats","Passwords, phishing and account safety","Network and device security basics","Responsible security awareness"]}
 ];
 
-const grid = document.getElementById("courseGrid");
-const courseSelect = document.getElementById("studentCourse");
-let selectedCourse = "ADCA";
+const grid=document.getElementById("courseGrid");
+const courseSelect=document.getElementById("studentCourse");
 
-function addCourseOptions() {
-  courseSelect.replaceChildren();
-  courses.forEach(course => {
-    const option = document.createElement("option");
-    option.value = course.name;
-    option.textContent = course.name;
-    courseSelect.appendChild(option);
-  });
-  const general = document.createElement("option");
-  general.value = "General Enquiry";
-  general.textContent = "General Enquiry";
-  courseSelect.appendChild(general);
+function addOptions(){
+ courseSelect.replaceChildren();
+ courses.forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;courseSelect.appendChild(o)});
+ const g=document.createElement("option");g.value="General Enquiry";g.textContent="General Enquiry";courseSelect.appendChild(g);
 }
-
-function renderCourses(filter = "All") {
-  grid.replaceChildren();
-
-  courses.filter(course => filter === "All" || course.category === filter)
-    .forEach((course, index) => {
-      const card = document.createElement("article");
-      card.className = "course-card reveal";
-      card.style.animationDelay = `${Math.min(index * 50, 250)}ms`;
-
-      const art = document.createElement("div");
-      art.className = "course-art";
-
-      const icon = document.createElement("div");
-      icon.className = "course-icon";
-      icon.textContent = course.icon;
-
-      const tag = document.createElement("div");
-      tag.className = "course-tag";
-      tag.textContent = course.tag;
-
-      art.append(icon, tag);
-
-      const body = document.createElement("div");
-      body.className = "course-body";
-
-      const title = document.createElement("h3");
-      title.textContent = course.name;
-
-      const description = document.createElement("p");
-      description.textContent = course.description;
-
-      const meta = document.createElement("div");
-      meta.className = "course-meta";
-
-      const chip1 = document.createElement("span");
-      chip1.className = "chip";
-      chip1.textContent = course.level;
-
-      const chip2 = document.createElement("span");
-      chip2.className = "chip";
-      chip2.textContent = course.category;
-
-      meta.append(chip1, chip2);
-
-      const actions = document.createElement("div");
-      actions.className = "course-actions";
-
-      const detailsButton = document.createElement("button");
-      detailsButton.className = "btn btn-outline";
-      detailsButton.textContent = "View Details";
-      detailsButton.type = "button";
-      detailsButton.addEventListener("click", () => openCourseDetails(course.name));
-
-      const applyButton = document.createElement("button");
-      applyButton.className = "btn btn-primary";
-      applyButton.textContent = "Apply ↗";
-      applyButton.type = "button";
-      applyButton.addEventListener("click", () => openApply(course.name));
-
-      actions.append(detailsButton, applyButton);
-      body.append(title, description, meta, actions);
-      card.append(art, body);
-      grid.appendChild(card);
-    });
-
-  observeReveals();
+function renderCourses(filter="All"){
+ grid.replaceChildren();
+ courses.filter(c=>filter==="All"||c.category===filter).forEach((c,i)=>{
+  const card=document.createElement("article");card.className="course-card";card.style.animationDelay=Math.min(i*45,240)+"ms";
+  const art=document.createElement("div");art.className="course-art";
+  const icon=document.createElement("div");icon.className="course-icon";icon.textContent=c.icon;
+  const tag=document.createElement("div");tag.className="course-tag";tag.textContent=c.tag;art.append(icon,tag);
+  const body=document.createElement("div");body.className="course-body";
+  const title=document.createElement("h3");title.textContent=c.name;
+  const desc=document.createElement("p");desc.textContent=c.description;
+  const meta=document.createElement("div");meta.className="course-meta";
+  [c.level,c.category].forEach(t=>{const chip=document.createElement("span");chip.className="chip";chip.textContent=t;meta.appendChild(chip)});
+  const actions=document.createElement("div");actions.className="course-actions";
+  const details=document.createElement("button");details.className="btn btn-outline";details.type="button";details.textContent="Details";details.addEventListener("click",()=>openDetails(c.name));
+  const apply=document.createElement("button");apply.className="btn btn-primary";apply.type="button";apply.textContent="Apply ↗";apply.addEventListener("click",()=>openApply(c.name));
+  actions.append(details,apply);body.append(title,desc,meta,actions);card.append(art,body);grid.appendChild(card);
+ });
 }
-
-function openCourseDetails(name) {
-  const course = courses.find(item => item.name === name);
-  if (!course) return;
-
-  selectedCourse = course.name;
-  document.getElementById("detailCategory").textContent = course.tag;
-  document.getElementById("detailTitle").textContent = course.name;
-  document.getElementById("detailDescription").textContent = course.description;
-  document.getElementById("detailMeta").replaceChildren();
-
-  [course.level, course.category].forEach(text => {
-    const chip = document.createElement("span");
-    chip.className = "chip";
-    chip.textContent = text;
-    document.getElementById("detailMeta").appendChild(chip);
-  });
-
-  const topics = document.getElementById("detailTopics");
-  topics.replaceChildren();
-
-  course.topics.forEach(topic => {
-    const li = document.createElement("li");
-    li.textContent = topic;
-    topics.appendChild(li);
-  });
-
-  document.getElementById("detailApply").onclick = () => {
-    closeModal("courseModal");
-    openApply(course.name);
-  };
-
-  openModal("courseModal");
+function openDetails(name){
+ const c=courses.find(x=>x.name===name);if(!c)return;
+ document.getElementById("detailCategory").textContent=c.tag;
+ document.getElementById("detailTitle").textContent=c.name;
+ document.getElementById("detailDescription").textContent=c.description;
+ const meta=document.getElementById("detailMeta");meta.replaceChildren();
+ [c.level,c.category].forEach(t=>{const chip=document.createElement("span");chip.className="chip";chip.textContent=t;meta.appendChild(chip)});
+ const list=document.getElementById("detailTopics");list.replaceChildren();
+ c.topics.forEach(t=>{const li=document.createElement("li");li.textContent=t;list.appendChild(li)});
+ document.getElementById("detailApply").onclick=()=>{closeModal("courseModal");openApply(c.name)};
+ openModal("courseModal");
 }
-
-function openApply(courseName = "General Enquiry") {
-  selectedCourse = courseName;
-  courseSelect.value = courses.some(c => c.name === courseName)
-    ? courseName : "General Enquiry";
-
-  document.getElementById("formMessage").textContent = "";
-  openModal("applyModal");
+function openApply(name="General Enquiry"){
+ courseSelect.value=courses.some(c=>c.name===name)?name:"General Enquiry";
+ document.getElementById("formMessage").textContent="";
+ openModal("applyModal");
 }
-
-function openModal(id) {
-  document.getElementById(id).classList.add("show");
-  document.body.style.overflow = "hidden";
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove("show");
-  if (!document.querySelector(".modal.show")) {
-    document.body.style.overflow = "";
-  }
-}
-
-document.querySelectorAll("[data-close]").forEach(button => {
-  button.addEventListener("click", () => closeModal(button.dataset.close));
+function openModal(id){document.getElementById(id).classList.add("show");document.body.style.overflow="hidden"}
+function closeModal(id){document.getElementById(id).classList.remove("show");if(!document.querySelector(".modal.show"))document.body.style.overflow=""}
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>closeModal(b.dataset.close)));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModal(m.id)}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal.show").forEach(m=>closeModal(m.id))});
+document.getElementById("filters").addEventListener("click",e=>{
+ const b=e.target.closest("[data-filter]");if(!b)return;
+ document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderCourses(b.dataset.filter);
 });
-
-document.querySelectorAll(".modal").forEach(modal => {
-  modal.addEventListener("click", event => {
-    if (event.target === modal) closeModal(modal.id);
-  });
+document.getElementById("applyForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=document.getElementById("studentName").value.trim();
+ const phone=document.getElementById("studentPhone").value.trim();
+ const course=courseSelect.value;
+ const mode=document.getElementById("studentMode").value;
+ const city=document.getElementById("studentCity").value.trim();
+ const message=document.getElementById("studentMessage").value.trim();
+ const status=document.getElementById("formMessage");
+ if(!name||!phone||!course){status.textContent="Please fill in your name, mobile number and course.";return}
+ if(!/^[0-9+() -]{8,16}$/.test(phone)){status.textContent="Please enter a valid mobile number.";return}
+ const text=["🎓 *New Course Enquiry — Excel with AI*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Course:* "+course,"*Preferred Mode:* "+mode,"*City/Area:* "+(city||"Not provided"),"*Question:* "+(message||"Please share course details."),"","Please share the fees, duration, syllabus and next batch details."].join("\n");
+ const url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(text);
+ const w=window.open(url,"_blank");
+ if(w){status.textContent="WhatsApp opened. Review the message and press Send to submit your enquiry."}
+ else{status.textContent="Allow pop-ups, then open this WhatsApp link: "+url}
 });
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-    document.querySelectorAll(".modal.show").forEach(modal => closeModal(modal.id));
-  }
-});
-
-document.getElementById("filters").addEventListener("click", event => {
-  const button = event.target.closest("[data-filter]");
-  if (!button) return;
-
-  document.querySelectorAll(".filter").forEach(item => item.classList.remove("active"));
-  button.classList.add("active");
-  renderCourses(button.dataset.filter);
-});
-
-document.getElementById("applyForm").addEventListener("submit", event => {
-  event.preventDefault();
-
-  const name = document.getElementById("studentName").value.trim();
-  const phone = document.getElementById("studentPhone").value.trim();
-  const course = courseSelect.value;
-  const mode = document.getElementById("studentMode").value;
-  const city = document.getElementById("studentCity").value.trim();
-  const message = document.getElementById("studentMessage").value.trim();
-
-  if (!name || !phone || !course) {
-    document.getElementById("formMessage").textContent =
-      "Please fill in your name, mobile number and course.";
-    return;
-  }
-
-  if (!/^[0-9+() -]{8,16}$/.test(phone)) {
-    document.getElementById("formMessage").textContent =
-      "Please enter a valid mobile number.";
-    return;
-  }
-
-  const text = [
-    "🎓 *New Course Admission Enquiry*",
-    "",
-    "*Institute:* Disha Computer Education",
-    `*Student Name:* ${name}`,
-    `*Mobile:* ${phone}`,
-    `*Course:* ${course}`,
-    `*Learning Mode:* ${mode}`,
-    `*City/Area:* ${city || "Not provided"}`,
-    `*Question:* ${message || "Please share course details."}`,
-    "",
-    "Please share the course fees, duration, syllabus and next batch details."
-  ].join("\n");
-
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-  const opened = window.open(url, "_blank", "noopener,noreferrer");
-
-  if (!opened) {
-    document.getElementById("formMessage").textContent =
-      "WhatsApp did not open automatically. Please allow pop-ups or use this link: " + url;
-  } else {
-    document.getElementById("formMessage").textContent =
-      "WhatsApp opened. Please review the message and press Send to submit your enquiry.";
-  }
-});
-
-document.getElementById("menuBtn").addEventListener("click", () => {
-  document.getElementById("navLinks").classList.toggle("open");
-});
-
-document.querySelectorAll("#navLinks a").forEach(link => {
-  link.addEventListener("click", () => document.getElementById("navLinks").classList.remove("open"));
-});
-
-let revealObserver;
-
-function observeReveals() {
-  if (!("IntersectionObserver" in window)) {
-    document.querySelectorAll(".reveal").forEach(el => el.classList.add("visible"));
-    return;
-  }
-
-  if (revealObserver) revealObserver.disconnect();
-
-  revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08 });
-
-  document.querySelectorAll(".reveal:not(.visible)").forEach(el => revealObserver.observe(el));
-}
-
-document.getElementById("year").textContent = new Date().getFullYear();
-addCourseOptions();
-renderCourses();
-observeReveals();
+document.getElementById("menuBtn").addEventListener("click",()=>document.getElementById("navLinks").classList.toggle("open"));
+document.querySelectorAll("#navLinks a").forEach(a=>a.addEventListener("click",()=>document.getElementById("navLinks").classList.remove("open")));
+document.getElementById("year").textContent=new Date().getFullYear();
+addOptions();renderCourses();
 </script>
-
 </body>
 </html>
