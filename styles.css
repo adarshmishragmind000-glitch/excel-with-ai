@@ -67,3 +67,220 @@
 #enrollMessage {
   overflow-wrap: anywhere;
 }
+/* ===== ADMIN & STUDENT DASHBOARD VISIBILITY FIX ===== */
+.dashboard-view {
+  background: #080d1d !important;
+  color: #f1f5ff !important;
+  min-height: 80vh;
+  padding: 40px 4% !important;
+}
+
+.dashboard-view h1,
+.dashboard-view h2,
+.dashboard-view h3,
+.dashboard-view p,
+.dashboard-view strong,
+.dashboard-view span,
+.dashboard-view label {
+  color: inherit;
+}
+
+.dashboard-view h1 {
+  color: #f8faff !important;
+}
+
+.dashboard-view .eyebrow {
+  color: #8fb5ff !important;
+  letter-spacing: 2px;
+}
+
+.dashboard-view .dashboard-top {
+  color: #f1f5ff !important;
+  margin-bottom: 28px;
+}
+
+.dashboard-view .dashboard-top small {
+  color: #aab8d5 !important;
+}
+
+.dashboard-view .dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.dashboard-view .dashboard-stats article {
+  background: #141e35 !important;
+  color: #f1f5ff !important;
+  border: 1px solid #2c3c5e !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  min-width: 0;
+}
+
+.dashboard-view .dashboard-stats article span {
+  display: block;
+  color: #b8c6e3 !important;
+  margin-bottom: 12px;
+}
+
+.dashboard-view .dashboard-stats article strong {
+  display: block;
+  color: #ffffff !important;
+  font-size: 28px;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-view .dashboard-panel {
+  background: #111a2e !important;
+  color: #eaf0ff !important;
+  border: 1px solid #2a3959 !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.dashboard-view .dashboard-panel h2,
+.dashboard-view .dashboard-panel h3 {
+  color: #ffffff !important;
+}
+
+.dashboard-view .dashboard-panel p {
+  color: #c6d2ea !important;
+}
+
+.dashboard-view .panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.dashboard-view .panel-heading p {
+  color: #aebcda !important;
+}
+
+.dashboard-view #studentSearch {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #0a1223 !important;
+  color: #ffffff !important;
+  border: 1px solid #3b4e73 !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+  margin: 8px 0 18px;
+}
+
+.dashboard-view #studentSearch::placeholder {
+  color: #9caccb !important;
+}
+
+.dashboard-view .request-table {
+  display: grid;
+  gap: 12px;
+}
+
+.dashboard-view .request-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  background: #17233b !important;
+  border: 1px solid #344666 !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  color: #f1f5ff !important;
+}
+
+.dashboard-view .request-row > div:first-child {
+  display: grid;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.dashboard-view .request-row strong {
+  color: #ffffff !important;
+  font-size: 16px;
+}
+
+.dashboard-view .request-row small {
+  display: block;
+  color: #bdcbe5 !important;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-view .request-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dashboard-view .request-actions button,
+.dashboard-view button {
+  cursor: pointer;
+}
+
+.dashboard-view .btn-primary {
+  color: #ffffff !important;
+}
+
+.dashboard-view .btn-outline {
+  color: #eaf0ff !important;
+  border-color: #53688f !important;
+}
+
+.dashboard-view .btn-quiet {
+  color: #d5def2 !important;
+}
+
+.dashboard-view button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dashboard-view .status-pill {
+  color: #86efac !important;
+  background: #123b31 !important;
+  padding: 7px 12px;
+  border-radius: 999px;
+}
+
+.dashboard-view .empty-state {
+  color: #cbd5e1 !important;
+  padding: 18px 0;
+}
+
+@media (max-width: 700px) {
+  .dashboard-view {
+    padding: 24px 16px !important;
+  }
+
+  .dashboard-view .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-view .dashboard-panel {
+    padding: 16px !important;
+  }
+
+  .dashboard-view .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-view .request-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dashboard-view .request-actions {
+    width: 100%;
+  }
+}
