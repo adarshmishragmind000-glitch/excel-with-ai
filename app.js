@@ -640,27 +640,27 @@ function renderDashboard(user) {
   }
 
   // Make Admin Student Records collapsible.
+// Only All Student Records card: show/hide
 if (admin) {
-  const panel = view.querySelector(".dashboard-panel");
+  const panel = view.querySelector("#studentRecords")
+    ?.closest(".dashboard-panel");
 
   if (panel && !panel.closest("details.admin-accordion")) {
     const details = document.createElement("details");
     details.className = "admin-accordion";
+    details.open = false;
 
     const summary = document.createElement("summary");
     summary.innerHTML = `
-      <span class="admin-accordion-title">📋 Student Records</span>
+      <span class="admin-accordion-title">📋 All Student Records</span>
       <span class="admin-accordion-hint">Click to open / close</span>
     `;
-
-    details.open = false;
 
     panel.parentNode.insertBefore(details, panel);
     details.appendChild(summary);
     details.appendChild(panel);
   }
 }
-
   if ($("footer")) {
     $("footer").hidden = true;
   }
