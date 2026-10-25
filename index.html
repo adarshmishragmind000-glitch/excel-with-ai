@@ -104,67 +104,104 @@
   <footer class="footer"><div class="section-wrap footer-inner"><a class="brand" href="#home"><span class="brand-mark">X<span>✦</span></span><span>excel<span class="brand-muted">with</span><b>AI</b><small>LEARN • AUTOMATE • GROW</small></span></a><p>Practical Excel and AI skills for real work.</p><div class="footer-links"><a href="#courses">Courses</a><a href="#features">Features</a><a href="#faq">FAQ</a><a href="#" data-open="loginModal">Student login</a></div><small>© <span id="year"></span> Excel with AI. Built for learning.</small></div></footer>
 
  
-<form id="enrollForm">
-  <label>Full Name
-    <input name="name" required maxlength="80" placeholder="Enter your full name">
-  </label>
 
-  <div class="form-row">
-    <label>Mobile Number
-      <input name="phone" required inputmode="tel" pattern="[0-9+() -]{10,16}" placeholder="Mobile number">
-    </label>
-    <label>Email (optional)
-      <input name="email" type="email" placeholder="you@example.com">
-    </label>
+  <!-- Enrollment Popup -->
+  <div class="modal-backdrop" id="enrollModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="enrollTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="modal-kicker">STUDENT REGISTRATION</div>
+      <h2 id="enrollTitle">Start your learning journey.</h2>
+      <p class="modal-sub">Register to receive your Student ID and access your learning account.</p>
+
+      <form id="enrollForm">
+        <label>Full Name
+          <input name="name" required maxlength="80" placeholder="Enter your full name">
+        </label>
+
+        <div class="form-row">
+          <label>Mobile Number
+            <input name="phone" required inputmode="tel" pattern="[0-9+() -]{10,16}" placeholder="Mobile number">
+          </label>
+          <label>Email (optional)
+            <input name="email" type="email" placeholder="you@example.com">
+          </label>
+        </div>
+
+        <label>Select Course
+          <select name="course" id="courseSelect" required>
+            <option value="Excel with AI">Excel with AI</option>
+            <option value="Excel Essentials">Excel Essentials</option>
+            <option value="Excel Mini-Software Lab">Excel Mini-Software Lab</option>
+          </select>
+        </label>
+
+        <label>Create Password
+          <input name="password" type="password" required minlength="6" autocomplete="new-password" placeholder="Minimum 6 characters">
+        </label>
+
+        <label>Payment Reference (optional)
+          <input name="paymentRef" maxlength="100" placeholder="UPI transaction reference">
+        </label>
+
+        <label>Message (optional)
+          <textarea name="message" rows="2" maxlength="500" placeholder="Any question?"></textarea>
+        </label>
+
+        <div class="form-note">
+          <span>🔒</span>
+          <span>Your account will be registered through Firebase.</span>
+        </div>
+
+        <button class="btn btn-primary btn-full" type="submit">
+          Register &amp; Get Student ID ↗
+        </button>
+      </form>
+
+      <div class="success-state" id="enrollSuccess" hidden>
+        <div class="success-check">✓</div>
+        <h3>Registration Successful!</h3>
+        <p>Your Student ID is:</p>
+        <h2 id="newStudentId"></h2>
+        <p>Keep your Student ID and password safe.</p>
+        <button class="btn btn-primary btn-full" id="goToStudentLogin" type="button">
+          Go to Student Login
+        </button>
+      </div>
+
+      <div id="enrollMessage" class="inline-message" hidden></div>
+    </div>
   </div>
 
-  <label>Select Course
-    <select name="course" id="courseSelect" required>
-      <option value="Excel with AI">Excel with AI</option>
-      <option value="Excel Essentials">Excel Essentials</option>
-      <option value="Excel Mini-Software Lab">Excel Mini-Software Lab</option>
-    </select>
-  </label>
+  <!-- Login Popup -->
+  <div class="modal-backdrop" id="loginModal" aria-hidden="true">
+    <div class="modal modal-small" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div class="modal-kicker">STUDENT SPACE</div>
+      <h2 id="loginTitle">Welcome back.</h2>
+      <p class="modal-sub">Log in using your Student ID or Admin email and password.</p>
 
-  <label>Create Password
-    <input name="password" type="password" required minlength="6" autocomplete="new-password" placeholder="Minimum 6 characters">
-  </label>
+      <form id="loginForm">
+        <label>Student ID or Admin Email
+          <input name="email" type="text" required autocomplete="username" placeholder="STU123456 or admin email">
+        </label>
 
-  <label>Payment Reference (optional)
-    <input name="paymentRef" maxlength="100" placeholder="UPI transaction reference">
-  </label>
+        <label>Password
+          <input name="password" type="password" required autocomplete="current-password" placeholder="Your password">
+        </label>
 
-  <label>Message (optional)
-    <textarea name="message" rows="2" maxlength="500" placeholder="Any question"></textarea>
-  </label>
+        <button class="btn btn-primary btn-full" type="submit">Continue</button>
 
-  <div class="form-note">
-    <span>🔒</span>
-    <span>Your account will be registered securely through Firebase.</span>
+        <div class="form-note">
+          Students use their Student ID. Admins use their existing Firebase email and password.
+        </div>
+      </form>
+
+      <div id="loginMessage" class="inline-message" hidden></div>
+    </div>
   </div>
-
-  <button class="btn btn-primary btn-full" type="submit">
-    Register & Get Student ID ↗
-  </button>
-</form>
-
-<div class="success-state" id="enrollSuccess" hidden>
-  <div class="success-check">✓</div>
-  <h3>Registration Successful!</h3>
-  <p>Your Student ID is:</p>
-  <h2 id="newStudentId"></h2>
-  <p>Save your Student ID and password for future login.</p>
-  <button class="btn btn-primary btn-full" id="goToStudentLogin" type="button">
-    Go to Student Login
-  </button>
-</div>
-
-<div id="enrollMessage" class="inline-message" hidden></div>
-<div class="success-state" id="enrollSuccess" hidden><div class="success-check">✓</div><h3>Request saved in demo mode</h3><p>Your request is stored in this browser. It has not been sent to the instructor or a server.</p><button class="btn btn-outline btn-full" data-close>Back to website</button></div></div></div>
-
-  <div class="modal-backdrop" id="loginModal" aria-hidden="true"><div class="modal modal-small" role="dialog" aria-modal="true" aria-labelledby="loginTitle"><button class="modal-close" data-close aria-label="Close">×</button><div class="modal-kicker">STUDENT SPACE</div><h2 id="loginTitle">Welcome back.</h2><p class="modal-sub">Sign in with the email and password registered in your Excel with AI Firebase project.</p><form id="loginForm"><label>Email<input name="email" type="email" required placeholder="you@example.com"></label><label>Password<input name="password" type="password" required placeholder="Your password"></label><button class="btn btn-primary btn-full" type="submit">Continue</button><div class="form-note">Firebase Authentication is connected. Admin access is assigned separately by the project owner. If your account is not assigned the admin role, it opens the student dashboard.</div></form><div id="loginMessage" class="inline-message" hidden></div></div></div>
 
   <div class="toast" id="toast" role="status"></div>
+
   <script type="module" src="app.js"></script>
   <script type="module" src="student-dashboard.js"></script>
 </body>
