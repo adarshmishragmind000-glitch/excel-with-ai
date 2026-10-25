@@ -526,3 +526,205 @@
   .hero-pillar, .pillar-link span { transition: none !important; }
 }
 
+/* ===== Excel with AI: Mentor Spotlight ===== */
+.mentor-section {
+  max-width: 1100px;
+  margin: 10px auto 30px;
+  padding: 48px 22px;
+}
+
+.mentor-card {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.82fr) 1.18fr;
+  align-items: center;
+  gap: clamp(28px, 5vw, 65px);
+  padding: clamp(24px, 5vw, 52px);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(155, 135, 255, 0.25);
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 5% 20%, rgba(111, 66, 193, 0.17), transparent 48%),
+    linear-gradient(135deg, #12172d, #0b1020 72%);
+  box-shadow: 0 25px 75px rgba(0, 0, 0, 0.2);
+}
+
+.mentor-photo-wrap {
+  position: relative;
+  max-width: 350px;
+  width: 100%;
+  margin: auto;
+}
+
+.mentor-photo-glow {
+  position: absolute;
+  inset: 10% -8%;
+  background: linear-gradient(135deg, #7048ff, #d16aff);
+  filter: blur(45px);
+  opacity: 0.35;
+  border-radius: 50%;
+}
+
+.mentor-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 28%;
+  border-radius: 20px;
+  border: 1px solid rgba(202, 183, 255, 0.42);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.3);
+}
+
+.mentor-photo-badge {
+  position: absolute;
+  z-index: 1;
+  left: 14px;
+  bottom: 14px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(12, 16, 35, 0.84);
+  color: #e8ddff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  backdrop-filter: blur(12px);
+}
+
+.mentor-content {
+  min-width: 0;
+}
+
+.mentor-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #b9a5ff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.mentor-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #70e8ba;
+  box-shadow: 0 0 14px rgba(112, 232, 186, 0.65);
+}
+
+.mentor-content h2 {
+  margin: 18px 0 10px;
+  color: #f5f5ff;
+  font-family: var(--display, "Space Grotesk", sans-serif);
+  font-size: clamp(27px, 3.5vw, 42px);
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+}
+
+.mentor-content h2 span {
+  display: block;
+  background: linear-gradient(90deg, #8bc5ff, #a69aff, #e4a4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.mentor-role {
+  margin: 0 0 18px;
+  color: #c8b8ff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mentor-description {
+  max-width: 520px;
+  color: #a9b4ce;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.mentor-credentials,
+.mentor-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.mentor-credentials span {
+  padding: 8px 13px;
+  border: 1px solid rgba(154, 135, 255, 0.3);
+  border-radius: 9px;
+  background: rgba(124, 92, 255, 0.1);
+  color: #e0d8ff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mentor-specialties span {
+  color: #aebbd7;
+  font-size: 10px;
+}
+
+.mentor-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.mentor-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 17px;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #4e8dff, #7960f6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+
+.mentor-primary-btn:hover {
+  transform: translateY(-2px);
+}
+
+.mentor-motto {
+  color: #8290b1;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 680px) {
+  .mentor-section {
+    padding: 28px 15px;
+  }
+
+  .mentor-card {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 24px 19px;
+    border-radius: 20px;
+  }
+
+  .mentor-photo-wrap {
+    width: min(100%, 300px);
+  }
+
+  .mentor-content h2 {
+    font-size: 31px;
+  }
+
+  .mentor-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
