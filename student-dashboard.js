@@ -686,8 +686,14 @@ async function enhanceStudentDashboard() {
               : "Learning progress saved."
           );
 
+                    // Reset render state after saving progress.
           lastRenderedUid = null;
-          await enhanceStudentDashboard();
+
+          setTimeout(() => {
+            enhanceStudentDashboard().catch((error) => {
+              console.error("Dashboard refresh failed:", error);
+            });
+          }, 0);
         } catch (error) {
           console.error("Progress save failed:", error);
 
