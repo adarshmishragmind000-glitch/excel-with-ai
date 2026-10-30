@@ -1,3 +1,4 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
   getAuth,
@@ -22,13 +23,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
+  apiKey: "AIzaSyCT9W9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
   authDomain: "excel-with-ai.firebaseapp.com",
   projectId: "excel-with-ai",
   storageBucket: "excel-with-ai.firebasestorage.app",
   messagingSenderId: "615391443440",
   appId: "1:615391443440:web:92b3a15f0e4596abc50535"
 };
+
+// Google Apps Script Web App URL
+const NOTICE_EMAIL_WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycby9wVwlJT1FcR2Wx7SFXGjL62R4JeEn560QmXBIlDEdAkkwQDiJXYczoYqxKVSrW0H7/exec";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -378,7 +383,8 @@ $("#enrollForm")?.addEventListener("submit", async e => {
       status: "Pending Approval",
       createdAt: serverTimestamp()
     });
-        const requestRef = doc(collection(db, "enrollmentRequests"));
+
+    const requestRef = doc(collection(db, "enrollmentRequests"));
 
     await setDoc(requestRef, {
       studentUid: user.uid,
@@ -461,7 +467,6 @@ function renderDashboard(user) {
   const status = user.status || "Pending Approval";
   const id = user.studentId || "";
 
-  // FIXED TEMPLATE STRING: ADMIN/STUDENT BRANCHES CLOSE CORRECTLY
   view.innerHTML = `
     <div class="dashboard-top">
       <div>
@@ -499,47 +504,77 @@ function renderDashboard(user) {
           </div>
 
           <div class="dashboard-panel live-class-admin">
-             <div class="panel-heading">
-               <div><h2>🔴 Live Online Class</h2><p>Publish or stop a Google Meet class on the homepage.</p></div>
-               <span id="liveAdminStatus" class="status-pill">Checking…</span>
-             </div>
-             <form id="liveClassForm">
-               <label>Class title<input id="liveClassTitle" maxlength="100" placeholder="Excel with AI — Live Class" required></label>
-               <label>Google Meet link<input id="liveClassUrl" type="url" placeholder="https://meet.google.com/..." required></label>
-               <div class="request-actions">
-                 <button class="btn btn-primary" type="submit">Activate Class</button>
-                 <button class="btn btn-outline" type="button" id="deactivateLiveClass">Deactivate</button>
-                 <button class="btn btn-quiet" type="button" id="deleteLiveClass">Delete Class</button>
-               </div>
-               <p id="liveClassMessage" role="status"></p>
-             </form>
-           </div>
+            <div class="panel-heading">
+              <div>
+                <h2>🔴 Live Online Class</h2>
+                <p>Publish or stop a Google Meet class on the homepage.</p>
+              </div>
+              <span id="liveAdminStatus" class="status-pill">Checking…</span>
+            </div>
 
-           <div class="dashboard-panel notice-admin-panel">
-             <div class="panel-heading">
-               <div>
-                 <h2>📢 Notice Management</h2>
-                 <p>Create and publish important website notices.</p>
-               </div>
-             </div>
+            <form id="liveClassForm">
+              <label>
+                Class title
+                <input id="liveClassTitle" maxlength="100"
+                  placeholder="Excel with AI — Live Class">
+              </label>
 
-             <form id="adminNoticeForm">
-               <label>
-                 Notice Title
-                 <input id="noticeTitle" type="text" maxlength="150" placeholder="Example: New Excel Class Announcement" required>
-               </label>
+              <label>
+                Google Meet link
+                <input id="liveClassUrl" type="url"
+                  placeholder="https://meet.google.com/..." required>
+              </label>
 
-               <label>
-                 Notice Message
-                 <textarea id="noticeMessage" rows="5" maxlength="5000" placeholder="Write your complete notice here..." required></textarea>
-               </label>
+              <div class="request-actions">
+                <button class="btn btn-primary" type="submit">
+                  Activate Class
+                </button>
+                <button class="btn btn-outline" type="button"
+                  id="deactivateLiveClass">
+                  Deactivate
+                </button>
+                <button class="btn btn-quiet" type="button"
+                  id="deleteLiveClass">
+                  Delete Class
+                </button>
+              </div>
 
-               <button type="submit" class="btn btn-primary" id="publishNoticeBtn">📢 Publish Notice</button>
-               <p id="noticePublishMessage" role="status" aria-live="polite"></p>
-             </form>
-           </div>
+              <p id="liveClassMessage" role="status"></p>
+            </form>
+          </div>
 
-           <div class="dashboard-panel">
+          <div class="dashboard-panel notice-admin-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>📢 Notice Management</h2>
+                <p>Create and publish important website notices.</p>
+              </div>
+            </div>
+
+            <form id="adminNoticeForm">
+              <label>
+                Notice Title
+                <input id="noticeTitle" type="text" maxlength="150"
+                  placeholder="Example: New Excel Class Announcement" required>
+              </label>
+
+              <label>
+                Notice Message
+                <textarea id="noticeMessage" rows="5" maxlength="5000"
+                  placeholder="Write your complete notice here..." required></textarea>
+              </label>
+
+              <button type="submit" class="btn btn-primary"
+                id="publishNoticeBtn">
+                📢 Publish Notice
+              </button>
+
+              <p id="noticePublishMessage" role="status"
+                aria-live="polite"></p>
+            </form>
+          </div>
+
+          <div class="dashboard-panel">
             <div class="panel-heading">
               <div>
                 <h2>All Student Records</h2>
@@ -551,11 +586,8 @@ function renderDashboard(user) {
               </button>
             </div>
 
-            <input
-              id="studentSearch"
-              type="search"
-              placeholder="Search ID, name, phone, email or course"
-            >
+            <input id="studentSearch" type="search"
+              placeholder="Search ID, name, phone, email or course">
 
             <div id="studentRecords">Loading records…</div>
           </div>
@@ -611,107 +643,194 @@ function renderDashboard(user) {
 
   if ($("main")) {
     // LIVE ONLINE CLASS ADMIN CONTROLS
-   if (admin) {
-     const liveClassRef = doc(db, "liveClasses", "current");
-     const liveForm = $("#liveClassForm");
-     const liveStatus = $("#liveAdminStatus");
-     const liveMessage = $("#liveClassMessage");
-     const showLiveMessage = (message) => { if (liveMessage) liveMessage.textContent = message; };
+    if (admin) {
+      const liveClassRef = doc(db, "liveClasses", "current");
+      const liveForm = $("#liveClassForm");
+      const liveStatus = $("#liveAdminStatus");
+      const liveMessage = $("#liveClassMessage");
 
-     getDoc(liveClassRef).then((snap) => {
-       if (!snap.exists()) { liveStatus.textContent = "OFFLINE"; return; }
-       const data = snap.data();
-       $("#liveClassTitle").value = data.title || "";
-       $("#liveClassUrl").value = data.meetUrl || "";
-       liveStatus.textContent = data.active === true ? "LIVE" : "OFFLINE";
-     }).catch((error) => { console.error(error); showLiveMessage("Could not load live class. Check Firestore Rules."); });
+      const showLiveMessage = (message) => {
+        if (liveMessage) liveMessage.textContent = message;
+      };
 
-     liveForm?.addEventListener("submit", async (event) => {
-       event.preventDefault();
-       const title = $("#liveClassTitle").value.trim();
-       const meetUrl = $("#liveClassUrl").value.trim();
-       let parsed;
-       try { parsed = new URL(meetUrl); } catch { showLiveMessage("Enter a valid Google Meet URL."); return; }
-       if (parsed.protocol !== "https:" || parsed.hostname !== "meet.google.com") {
-         showLiveMessage("Use a valid https://meet.google.com/ link."); return;
-       }
-       try {
-         await setDoc(liveClassRef, { title, meetUrl: parsed.href, active: true, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid });
-         liveStatus.textContent = "LIVE";
-         showLiveMessage("Class activated. Homepage is updating.");
-       } catch (error) { console.error(error); showLiveMessage("Activation failed. Check Firestore Rules."); }
-     });
+      getDoc(liveClassRef).then((snap) => {
+        if (!snap.exists()) {
+          liveStatus.textContent = "OFFLINE";
+          return;
+        }
 
-     $("#deactivateLiveClass")?.addEventListener("click", async () => {
-       try {
-         await setDoc(liveClassRef, { active: false, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid }, { merge: true });
-         liveStatus.textContent = "OFFLINE"; showLiveMessage("Class deactivated.");
-       } catch (error) { console.error(error); showLiveMessage("Deactivation failed. Check Firestore Rules."); }
-     });
+        const data = snap.data();
+        $("#liveClassTitle").value = data.title || "";
+        $("#liveClassUrl").value = data.meetUrl || "";
+        liveStatus.textContent = data.active === true ? "LIVE" : "OFFLINE";
+      }).catch((error) => {
+        console.error(error);
+        showLiveMessage("Could not load live class. Check Firestore Rules.");
+      });
 
-     $("#deleteLiveClass")?.addEventListener("click", async () => {
-       if (!confirm("Delete the live class and saved link?")) return;
-       try {
-         await deleteDoc(liveClassRef);
-         $("#liveClassTitle").value = ""; $("#liveClassUrl").value = "";
-         liveStatus.textContent = "OFFLINE"; showLiveMessage("Live class deleted.");
-       } catch (error) { console.error(error); showLiveMessage("Delete failed. Check Firestore Rules."); }
-     });
+      liveForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-     // ADMIN NOTICE PUBLISH SYSTEM
-     const noticeForm = $("#adminNoticeForm");
-     const noticeButton = $("#publishNoticeBtn");
-     const noticeStatus = $("#noticePublishMessage");
+        const title = $("#liveClassTitle").value.trim();
+        const meetUrl = $("#liveClassUrl").value.trim();
 
-     noticeForm?.addEventListener("submit", async (event) => {
-       event.preventDefault();
-       const title = $("#noticeTitle")?.value.trim() || "";
-       const message = $("#noticeMessage")?.value.trim() || "";
+        let parsed;
 
-       if (title.length < 3 || message.length < 3) {
-         if (noticeStatus) noticeStatus.textContent = "Please enter a title and message (at least 3 characters each).";
-         return;
-       }
-       if (!auth.currentUser) {
-         if (noticeStatus) noticeStatus.textContent = "Please log in as Admin again.";
-         return;
-       }
+        try {
+          parsed = new URL(meetUrl);
+        } catch {
+          showLiveMessage("Enter a valid Google Meet URL.");
+          return;
+        }
 
-       if (noticeButton) {
-         noticeButton.disabled = true;
-         noticeButton.textContent = "Publishing...";
-       }
-       if (noticeStatus) noticeStatus.textContent = "";
+        if (
+          parsed.protocol !== "https:" ||
+          parsed.hostname !== "meet.google.com"
+        ) {
+          showLiveMessage("Use a valid https://meet.google.com/ link.");
+          return;
+        }
 
-       try {
-         const noticeRef = doc(collection(db, "notices"));
-         await setDoc(noticeRef, {
-           title,
-           message,
-           status: "published",
-           createdAt: serverTimestamp(),
-           createdBy: auth.currentUser.uid
-         });
-         noticeForm.reset();
-         if (noticeStatus) noticeStatus.textContent = "✓ Notice published and saved successfully.";
-         toast("Notice published successfully.");
-       } catch (error) {
-         console.error("Notice publish error:", error);
-         if (noticeStatus) noticeStatus.textContent = "Notice publish failed: " + errorText(error);
-       } finally {
-         if (noticeButton) {
-           noticeButton.disabled = false;
-           noticeButton.textContent = "📢 Publish Notice";
-         }
-       }
-     });
-   }
+        try {
+          await setDoc(liveClassRef, {
+            title,
+            meetUrl: parsed.href,
+            active: true,
+            updatedAt: serverTimestamp(),
+            updatedBy: auth.currentUser.uid
+          });
 
-   $("main").hidden = true;
+          liveStatus.textContent = "LIVE";
+          showLiveMessage("Class activated. Homepage is updating.");
+        } catch (error) {
+          console.error(error);
+          showLiveMessage("Activation failed. Check Firestore Rules.");
+        }
+      });
+
+      $("#deactivateLiveClass")?.addEventListener("click", async () => {
+        try {
+          await setDoc(liveClassRef, {
+            active: false,
+            updatedAt: serverTimestamp(),
+            updatedBy: auth.currentUser.uid
+          }, { merge: true });
+
+          liveStatus.textContent = "OFFLINE";
+          showLiveMessage("Class deactivated.");
+        } catch (error) {
+          console.error(error);
+          showLiveMessage("Deactivation failed. Check Firestore Rules.");
+        }
+      });
+
+      $("#deleteLiveClass")?.addEventListener("click", async () => {
+        if (!confirm("Delete the live class and saved link?")) return;
+
+        try {
+          await deleteDoc(liveClassRef);
+          $("#liveClassTitle").value = "";
+          $("#liveClassUrl").value = "";
+          liveStatus.textContent = "OFFLINE";
+          showLiveMessage("Live class deleted.");
+        } catch (error) {
+          console.error(error);
+          showLiveMessage("Delete failed. Check Firestore Rules.");
+        }
+      });
+
+// ADMIN NOTICE PUBLISH + EMAIL TEST
+      const noticeForm = $("#adminNoticeForm");
+      const noticeButton = $("#publishNoticeBtn");
+      const noticeStatus = $("#noticePublishMessage");
+
+      noticeForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const title = $("#noticeTitle")?.value.trim() || "";
+        const message = $("#noticeMessage")?.value.trim() || "";
+
+        if (title.length < 3 || message.length < 3) {
+          if (noticeStatus) {
+            noticeStatus.textContent =
+              "Enter a valid title and message (minimum 3 characters).";
+          }
+          return;
+        }
+
+        if (!auth.currentUser) {
+          if (noticeStatus) {
+            noticeStatus.textContent = "Please log in as Admin again.";
+          }
+          return;
+        }
+
+        if (noticeButton) {
+          noticeButton.disabled = true;
+          noticeButton.textContent = "Publishing...";
+        }
+
+        if (noticeStatus) noticeStatus.textContent = "";
+
+        try {
+          // Save Notice in Firestore
+          const noticeRef = doc(collection(db, "notices"));
+
+          await setDoc(noticeRef, {
+            title,
+            message,
+            status: "published",
+            createdAt: serverTimestamp(),
+            createdBy: auth.currentUser.uid
+          });
+
+          // Get Firebase Authentication Token
+          const idToken = await auth.currentUser.getIdToken();
+
+          // TEST MODE: Send email only to Admin Gmail
+          await fetch(NOTICE_EMAIL_WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+              idToken,
+              noticeId: noticeRef.id,
+              testOnly: true
+            })
+          });
+
+          noticeForm.reset();
+
+          if (noticeStatus) {
+            noticeStatus.textContent =
+              "Notice saved. Email request submitted. Check Gmail Inbox, Spam and Sent.";
+          }
+
+          toast("Notice published. Test email request submitted.");
+
+        } catch (error) {
+          console.error("Notice publish/email error:", error);
+
+          if (noticeStatus) {
+            noticeStatus.textContent =
+              "Notice saved or email request failed: " + errorText(error);
+          }
+
+        } finally {
+          if (noticeButton) {
+            noticeButton.disabled = false;
+            noticeButton.textContent = "📢 Publish Notice";
+          }
+        }
+      });
+    }
+
+    $("main").hidden = true;
   }
 
-  // Make Admin Student Records collapsible.
-  // Only All Student Records card: show/hide
+  // Make Admin Student Records collapsible
   if (admin) {
     const panel = view.querySelector("#studentRecords")
       ?.closest(".dashboard-panel");
@@ -820,20 +939,21 @@ async function loadAdminStudents() {
                     ? `<button class="btn btn-quiet btn-sm" data-status="Rejected" data-uid="${escapeHtml(s.uid)}">Reject</button>`
                     : ""
                 }
-                <button
-                  class="btn btn-primary btn-sm"
-                  data-view="${escapeHtml(s.uid)}"
-                >View Student Data ↗</button>
 
-                <button
-                  class="btn btn-outline btn-sm"
-                  data-edit="${escapeHtml(s.uid)}"
-                >Edit</button>
+                <button class="btn btn-primary btn-sm"
+                  data-view="${escapeHtml(s.uid)}">
+                  View Student Data ↗
+                </button>
 
-                <button
-                  class="btn btn-quiet btn-sm"
-                  data-delete="${escapeHtml(s.uid)}"
-                >Delete</button>
+                <button class="btn btn-outline btn-sm"
+                  data-edit="${escapeHtml(s.uid)}">
+                  Edit
+                </button>
+
+                <button class="btn btn-quiet btn-sm"
+                  data-delete="${escapeHtml(s.uid)}">
+                  Delete
+                </button>
               </div>
             </div>
           `).join("")
@@ -880,6 +1000,7 @@ async function loadAdminStudents() {
 
           toast("Student status: " + newStatus);
           await loadAdminStudents();
+
         } catch (err) {
           console.error(err);
           toast(errorText(err));
@@ -926,6 +1047,7 @@ async function loadAdminStudents() {
 
           toast("Student record updated.");
           await loadAdminStudents();
+
         } catch (err) {
           console.error(err);
           toast("Update failed: " + errorText(err));
@@ -977,6 +1099,7 @@ async function loadAdminStudents() {
           );
 
           await loadAdminStudents();
+
         } catch (err) {
           console.error(err);
           toast("Delete failed: " + errorText(err));
@@ -1012,6 +1135,7 @@ async function loadAdminStudents() {
       }
 
       renderRows();
+
     } catch (err) {
       console.error(err);
       target.textContent =
@@ -1087,9 +1211,11 @@ $("#loginForm")?.addEventListener("submit", async e => {
       course: profile?.course || "",
       status: profile?.status || "Pending Approval"
     });
+
   } catch (err) {
     console.error("Login error:", err);
     showMessage("loginMessage", errorText(err));
+
   } finally {
     if (button) {
       button.disabled = false;
@@ -1136,6 +1262,7 @@ onAuthStateChanged(auth, async firebaseUser => {
       course: profile?.course || "",
       status: profile?.status || "Pending Approval"
     });
+
   } catch (err) {
     console.error("Dashboard restore failed:", err);
   }
@@ -1153,6 +1280,7 @@ $$(".faq-list details").forEach(detail => {
     }
   });
 });
+
 // PUBLIC HOMEPAGE NOTICE LOADER
 async function loadPublicNotices() {
   const section = $("#publicNoticeSection");
