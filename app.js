@@ -1153,3 +1153,63 @@ $$(".faq-list details").forEach(detail => {
     }
   });
 });
+// PUBLIC HOMEPAGE NOTICE LOADER
+async function loadPublicNotices() {
+  const section = $("#publicNoticeSection");
+  const target = $("#publicNoticeList");
+
+  if (!section || !target) return;
+
+  try {
+    const snapshot = await getDocs(collection(db, "notices"));
+
+    const notices = snapshot.docs
+      .map(item => ({
+        id: item.id,
+        ...item.data()
+      }))
+      .filter(item => item.status === "published")
+      .sort((a, b) => {
+        const dateA = a.createdAt?.toMillis?.() || 0;
+        const dateB = b.createdAt?.toMillis?.() || 0;
+        return dateB - dateA;
+      })
+      .slice(0, 10);
+
+    if (notices.length === 0) {
+      section.hidden = true;
+      return;
+    }
+
+    target.innerHTML = notices.map(notice => {
+      const date = notice.createdAt?.toDate
+        ? notice.createdAt.toDate().toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+          })
+        : "Recently published";
+
+      return `
+        <article class="public-notice-card">
+          <div class="public-notice-card-top">
+            <span class="public-notice-badge">NEW UPDATE</span>
+            <time>${escapeHtml(date)}</time>
+          </div>
+
+          <h3>${escapeHtml(notice.title)}</h3>
+          <p>${escapeHtml(notice.message).replace(/\n/g, "<br>")}</p>
+        </article>
+      `;
+    }).join("");
+
+    section.hidden = false;
+
+  } catch (error) {
+    console.error("Homepage notices loading error:", error);
+    section.hidden = true;
+  }
+}
+
+// Load notices when website opens
+loadPublicNotices();
