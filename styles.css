@@ -994,3 +994,122 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
   .float-chip { font-size: 9px; }
   .live-class-popup { right: 8px; width: calc(100vw - 16px); max-width: calc(100vw - 16px); }
 }
+/* ===== PUBLIC NOTICE BOARD ===== */
+
+.public-notice-section {
+  padding: 45px 20px;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 40%),
+    #0b1224;
+}
+
+.public-notice-container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.public-notice-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.public-notice-icon {
+  width: 55px;
+  height: 55px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(59, 130, 246, 0.16);
+  font-size: 26px;
+}
+
+.public-notice-label {
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.public-notice-heading h2 {
+  color: #ffffff;
+  font-size: 28px;
+  margin: 4px 0;
+}
+
+.public-notice-heading p {
+  color: #aab8d0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.public-notice-list {
+  display: grid;
+  gap: 16px;
+}
+
+.public-notice-card {
+  padding: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-left: 4px solid #3b82f6;
+  border-radius: 15px;
+  background: rgba(22, 34, 57, 0.85);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.public-notice-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.public-notice-badge {
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.15);
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.public-notice-card time {
+  color: #9caec8;
+  font-size: 12px;
+}
+
+.public-notice-card h3 {
+  color: #ffffff;
+  font-size: 19px;
+  margin: 0 0 10px;
+}
+
+.public-notice-card p {
+  color: #cbd5e1;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .public-notice-section {
+    padding: 30px 16px;
+  }
+
+  .public-notice-heading h2 {
+    font-size: 23px;
+  }
+
+  .public-notice-card {
+    padding: 17px;
+  }
+
+  .public-notice-card h3 {
+    font-size: 17px;
+  }
+}
