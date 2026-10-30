@@ -378,8 +378,7 @@ $("#enrollForm")?.addEventListener("submit", async e => {
       status: "Pending Approval",
       createdAt: serverTimestamp()
     });
-
-    const requestRef = doc(collection(db, "enrollmentRequests"));
+        const requestRef = doc(collection(db, "enrollmentRequests"));
 
     await setDoc(requestRef, {
       studentUid: user.uid,
@@ -516,6 +515,30 @@ function renderDashboard(user) {
              </form>
            </div>
 
+           <div class="dashboard-panel notice-admin-panel">
+             <div class="panel-heading">
+               <div>
+                 <h2>📢 Notice Management</h2>
+                 <p>Create and publish important website notices.</p>
+               </div>
+             </div>
+
+             <form id="adminNoticeForm">
+               <label>
+                 Notice Title
+                 <input id="noticeTitle" type="text" maxlength="150" placeholder="Example: New Excel Class Announcement" required>
+               </label>
+
+               <label>
+                 Notice Message
+                 <textarea id="noticeMessage" rows="5" maxlength="5000" placeholder="Write your complete notice here..." required></textarea>
+               </label>
+
+               <button type="submit" class="btn btn-primary" id="publishNoticeBtn">📢 Publish Notice</button>
+               <p id="noticePublishMessage" role="status" aria-live="polite"></p>
+             </form>
+           </div>
+
            <div class="dashboard-panel">
             <div class="panel-heading">
               <div>
@@ -634,33 +657,82 @@ function renderDashboard(user) {
          liveStatus.textContent = "OFFLINE"; showLiveMessage("Live class deleted.");
        } catch (error) { console.error(error); showLiveMessage("Delete failed. Check Firestore Rules."); }
      });
+
+     // ADMIN NOTICE PUBLISH SYSTEM
+     const noticeForm = $("#adminNoticeForm");
+     const noticeButton = $("#publishNoticeBtn");
+     const noticeStatus = $("#noticePublishMessage");
+
+     noticeForm?.addEventListener("submit", async (event) => {
+       event.preventDefault();
+       const title = $("#noticeTitle")?.value.trim() || "";
+       const message = $("#noticeMessage")?.value.trim() || "";
+
+       if (title.length < 3 || message.length < 3) {
+         if (noticeStatus) noticeStatus.textContent = "Please enter a title and message (at least 3 characters each).";
+         return;
+       }
+       if (!auth.currentUser) {
+         if (noticeStatus) noticeStatus.textContent = "Please log in as Admin again.";
+         return;
+       }
+
+       if (noticeButton) {
+         noticeButton.disabled = true;
+         noticeButton.textContent = "Publishing...";
+       }
+       if (noticeStatus) noticeStatus.textContent = "";
+
+       try {
+         const noticeRef = doc(collection(db, "notices"));
+         await setDoc(noticeRef, {
+           title,
+           message,
+           status: "published",
+           createdAt: serverTimestamp(),
+           createdBy: auth.currentUser.uid
+         });
+         noticeForm.reset();
+         if (noticeStatus) noticeStatus.textContent = "✓ Notice published and saved successfully.";
+         toast("Notice published successfully.");
+       } catch (error) {
+         console.error("Notice publish error:", error);
+         if (noticeStatus) noticeStatus.textContent = "Notice publish failed: " + errorText(error);
+       } finally {
+         if (noticeButton) {
+           noticeButton.disabled = false;
+           noticeButton.textContent = "📢 Publish Notice";
+         }
+       }
+     });
    }
 
    $("main").hidden = true;
   }
 
   // Make Admin Student Records collapsible.
-// Only All Student Records card: show/hide
-if (admin) {
-  const panel = view.querySelector("#studentRecords")
-    ?.closest(".dashboard-panel");
+  // Only All Student Records card: show/hide
+  if (admin) {
+    const panel = view.querySelector("#studentRecords")
+      ?.closest(".dashboard-panel");
 
-  if (panel && !panel.closest("details.admin-accordion")) {
-    const details = document.createElement("details");
-    details.className = "admin-accordion";
-    details.open = false;
+    if (panel && !panel.closest("details.admin-accordion")) {
+      const details = document.createElement("details");
+      details.className = "admin-accordion";
+      details.open = false;
 
-    const summary = document.createElement("summary");
-    summary.innerHTML = `
-      <span class="admin-accordion-title">📋 All Student Records</span>
-      <span class="admin-accordion-hint">Click to open / close</span>
-    `;
+      const summary = document.createElement("summary");
+      summary.innerHTML = `
+        <span class="admin-accordion-title">📋 All Student Records</span>
+        <span class="admin-accordion-hint">Click to open / close</span>
+      `;
 
-    panel.parentNode.insertBefore(details, panel);
-    details.appendChild(summary);
-    details.appendChild(panel);
+      panel.parentNode.insertBefore(details, panel);
+      details.appendChild(summary);
+      details.appendChild(panel);
+    }
   }
-}
+
   if ($("footer")) {
     $("footer").hidden = true;
   }
@@ -749,9 +821,9 @@ async function loadAdminStudents() {
                     : ""
                 }
                 <button
-  class="btn btn-primary btn-sm"
-  data-view="${escapeHtml(s.uid)}"
->View Student Data ↗</button>
+                  class="btn btn-primary btn-sm"
+                  data-view="${escapeHtml(s.uid)}"
+                >View Student Data ↗</button>
 
                 <button
                   class="btn btn-outline btn-sm"
@@ -768,13 +840,14 @@ async function loadAdminStudents() {
         }
       </div>
     `;
+
     $$("[data-view]", target).forEach(button => {
-  button.addEventListener("click", () => {
-    const uid = button.dataset.view;
-    window.location.href =
-      "student-details.html?uid=" + encodeURIComponent(uid);
-  });
-});
+      button.addEventListener("click", () => {
+        const uid = button.dataset.view;
+        window.location.href =
+          "student-details.html?uid=" + encodeURIComponent(uid);
+      });
+    });
 
     $$("[data-status]", target).forEach(button => {
       button.addEventListener("click", async () => {
