@@ -23,7 +23,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCT9W9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
+  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
   authDomain: "excel-with-ai.firebaseapp.com",
   projectId: "excel-with-ai",
   storageBucket: "excel-with-ai.firebasestorage.app",
