@@ -123,7 +123,7 @@ function createPopup() {
     wrapper.classList.remove("email-popup-visible");
 
     // Show again after 7 days if the visitor has not subscribed.
-    const nextShow = Date.now() + (7 * 24 * 60 * 60 * 1000);
+   const nextShow = Date.now() + (24 * 60 * 60 * 1000);
     localStorage.setItem(DISMISSED_KEY, String(nextShow));
   };
 
