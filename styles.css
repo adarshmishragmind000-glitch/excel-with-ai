@@ -1204,14 +1204,14 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
 }
 
 .public-notice-card h3 {
-  color: #123c83;
+  color: white;
   font-size: 15px;
   line-height: 1.5;
   margin: 5px 0 10px;
 }
 
 .public-notice-card p {
-  color: #222;
+  color: white;
   font-size: 14px;
   line-height: 1.65;
   white-space: normal;
