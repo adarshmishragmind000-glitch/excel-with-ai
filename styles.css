@@ -1114,140 +1114,116 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
   }
 }
 
-/* NOTICE CONTENT - CLEAN WHITE DESIGN */
 
-.notice-modal-box {
-  background: #ffffff !important;
-  color: #222222 !important;
-}
+/* =========================================
+   NIELIT STYLE NOTICE POPUP - FINAL DESIGN
+   Keep existing popup, yellow header & close button
+========================================= */
 
-.notice-modal-list {
-  background: #ffffff !important;
-  padding: 0 20px !important;
-  overflow-y: auto;
-}
-
-/* Individual notice - no card background */
-.public-notice-card {
-  background: #ffffff !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 17px 2px !important;
-  margin: 0 !important;
-  border-bottom: 1px solid #d6d6d6 !important;
-}
-
-/* Last notice */
-.public-notice-card:last-child {
-  border-bottom: none !important;
-}
-
-/* Notice date and label */
-.public-notice-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-}
-
-.public-notice-badge {
-  color: #d71920 !important;
-  background: transparent !important;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.public-notice-card time {
-  color: #777777 !important;
-  font-size: 12px;
-}
-
-/* Notice title */
-.public-notice-card h3 {
-  color: #0645ad !important;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.5;
-  margin: 5px 0 8px;
-}
-
-/* Notice message */
-.public-notice-card p {
-  color: #222222 !important;
-  font-size: 14px;
-  line-height: 1.65;
-  margin: 0;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-/* Mobile */
-@media (max-width: 600px) {
-  .notice-modal-list {
-    padding: 0 12px !important;
-  }
-
-  .public-notice-card {
-    padding: 14px 2px !important;
-  }
-
-  .public-notice-card h3 {
-    font-size: 14px;
-  }
-
-  .public-notice-card p {
-    font-size: 13px;
-  }
-}
-
-/* REMOVE NOTICE CARDS - KEEP POPUP SAME */
-
+/* Popup body */
 .notice-modal .notice-modal-box {
-  background: #fff !important;
+  background: #ffffff !important;
+  color: #222222 !important;
 }
 
+/* Scrollable notice area */
 .notice-modal .notice-modal-list {
-  background: #fff !important;
+  display: block !important;
+  background: #ffffff !important;
   padding: 0 18px !important;
+  overflow-y: auto !important;
 }
 
+/* Remove all individual card styling */
 .notice-modal .public-notice-card {
   display: block !important;
   width: 100% !important;
-  background: #fff !important;
-  background-color: #fff !important;
-  color: #222 !important;
-  border: none !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #222222 !important;
+
+  border: 0 !important;
   border-radius: 0 !important;
+  border-left: 0 !important;
   box-shadow: none !important;
+
   margin: 0 !important;
-  padding: 18px 2px !important;
-  border-bottom: 1px solid #d5d5d5 !important;
+  padding: 16px 2px !important;
+
+  border-bottom: 1px solid #d8d8d8 !important;
 }
 
+/* Last notice */
 .notice-modal .public-notice-card:last-child {
   border-bottom: none !important;
 }
 
+/* Notice top row */
+.notice-modal .public-notice-card-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-bottom: 9px !important;
+  background: transparent !important;
+}
+
+/* Important notice label */
+.notice-modal .public-notice-badge {
+  color: #d71920 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+/* Date */
+.notice-modal .public-notice-card time {
+  color: #666666 !important;
+  background: transparent !important;
+  font-size: 12px !important;
+}
+
+/* Notice heading */
 .notice-modal .public-notice-card h3 {
   color: #0645ad !important;
-  margin: 7px 0 !important;
+  background: transparent !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  margin: 5px 0 9px !important;
 }
 
+/* Notice description */
 .notice-modal .public-notice-card p {
-  color: #222 !important;
+  color: #222222 !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  line-height: 1.65 !important;
   margin: 0 !important;
-  line-height: 1.7 !important;
-  background: transparent !important;
+  padding: 0 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
 }
 
-.notice-modal .public-notice-card-top {
-  background: transparent !important;
-}
+/* Mobile */
+@media (max-width: 600px) {
+  .notice-modal .notice-modal-list {
+    padding: 0 12px !important;
+  }
 
-.notice-modal .public-notice-badge,
-.notice-modal .public-notice-card time {
-  background: transparent !important;
+  .notice-modal .public-notice-card {
+    padding: 14px 2px !important;
+  }
+
+  .notice-modal .public-notice-card h3 {
+    font-size: 14px !important;
+  }
+
+  .notice-modal .public-notice-card p {
+    font-size: 13px !important;
+  }
 }
