@@ -1201,3 +1201,53 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
     font-size: 13px;
   }
 }
+
+/* REMOVE NOTICE CARDS - KEEP POPUP SAME */
+
+.notice-modal .notice-modal-box {
+  background: #fff !important;
+}
+
+.notice-modal .notice-modal-list {
+  background: #fff !important;
+  padding: 0 18px !important;
+}
+
+.notice-modal .public-notice-card {
+  display: block !important;
+  width: 100% !important;
+  background: #fff !important;
+  background-color: #fff !important;
+  color: #222 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 18px 2px !important;
+  border-bottom: 1px solid #d5d5d5 !important;
+}
+
+.notice-modal .public-notice-card:last-child {
+  border-bottom: none !important;
+}
+
+.notice-modal .public-notice-card h3 {
+  color: #0645ad !important;
+  margin: 7px 0 !important;
+}
+
+.notice-modal .public-notice-card p {
+  color: #222 !important;
+  margin: 0 !important;
+  line-height: 1.7 !important;
+  background: transparent !important;
+}
+
+.notice-modal .public-notice-card-top {
+  background: transparent !important;
+}
+
+.notice-modal .public-notice-badge,
+.notice-modal .public-notice-card time {
+  background: transparent !important;
+}
