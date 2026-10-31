@@ -1281,14 +1281,51 @@ $$(".faq-list details").forEach(detail => {
   });
 });
 
-// PUBLIC HOMEPAGE NOTICE LOADER
-async function loadPublicNotices() {
-  const section = $("#publicNoticeSection");
-  const target = $("#publicNoticeList");
 
-  if (!section || !target) return;
+// ========================================
+// HOMEPAGE NOTICE POPUP SYSTEM
+// ========================================
+
+async function loadPublicNotices() {
+
+  const modal = document.getElementById("publicNoticeModal");
+  const target = document.getElementById("publicNoticeList");
+  const closeBtn = document.getElementById("closePublicNotice");
+  const openBtn = document.getElementById("openPublicNotice");
+
+  if (!modal || !target || !closeBtn || !openBtn) return;
+
+  function showNoticePopup() {
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeNoticePopup() {
+    modal.hidden = true;
+    document.body.style.overflow = "";
+    sessionStorage.setItem("excelAI_notice_closed", "yes");
+  }
+
+  closeBtn.addEventListener("click", closeNoticePopup);
+
+  openBtn.addEventListener("click", showNoticePopup);
+
+  // Close when clicking outside the popup
+  modal.addEventListener("click", function (event) {
+    if (event.target === modal) {
+      closeNoticePopup();
+    }
+  });
+
+  // Close with Escape key
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !modal.hidden) {
+      closeNoticePopup();
+    }
+  });
 
   try {
+
     const snapshot = await getDocs(collection(db, "notices"));
 
     const notices = snapshot.docs
@@ -1302,42 +1339,54 @@ async function loadPublicNotices() {
         const dateB = b.createdAt?.toMillis?.() || 0;
         return dateB - dateA;
       })
-      .slice(0, 10);
+      .slice(0, 30);
 
     if (notices.length === 0) {
-      section.hidden = true;
+      modal.hidden = true;
+      openBtn.hidden = true;
       return;
     }
 
     target.innerHTML = notices.map(notice => {
+
       const date = notice.createdAt?.toDate
         ? notice.createdAt.toDate().toLocaleDateString("en-IN", {
             day: "2-digit",
-            month: "short",
+            month: "long",
             year: "numeric"
           })
         : "Recently published";
 
       return `
         <article class="public-notice-card">
+
           <div class="public-notice-card-top">
-            <span class="public-notice-badge">NEW UPDATE</span>
+            <span class="public-notice-badge">👉 IMPORTANT NOTICE</span>
             <time>${escapeHtml(date)}</time>
           </div>
 
-          <h3>${escapeHtml(notice.title)}</h3>
-          <p>${escapeHtml(notice.message).replace(/\n/g, "<br>")}</p>
+          <h3>${escapeHtml(notice.title || "")}</h3>
+
+          <p>${escapeHtml(notice.message || "").replace(/\n/g, "<br>")}</p>
+
         </article>
       `;
+
     }).join("");
 
-    section.hidden = false;
+    openBtn.hidden = false;
+
+    // Automatically show popup unless already closed in this tab session
+    if (sessionStorage.getItem("excelAI_notice_closed") !== "yes") {
+      showNoticePopup();
+    }
 
   } catch (error) {
-    console.error("Homepage notices loading error:", error);
-    section.hidden = true;
+    console.error("Notice popup error:", error);
+    modal.hidden = true;
+    openBtn.hidden = true;
   }
 }
 
-// Load notices when website opens
 loadPublicNotices();
+
