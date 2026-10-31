@@ -32,22 +32,30 @@
   </header>
 
   <main>
-     <!-- PUBLIC NOTICE BOARD -->
-<section id="publicNoticeSection" class="public-notice-section" hidden>
-  <div class="public-notice-container">
-    <div class="public-notice-heading">
-      <span class="public-notice-icon">📢</span>
-      <div>
-        <span class="public-notice-label">LATEST UPDATES</span>
-        <h2>Notice Board</h2>
-        <p>Important announcements and updates.</p>
-      </div>
+    
+<!-- NOTICE POPUP -->
+<div id="publicNoticeModal" class="notice-modal" hidden>
+  <div class="notice-modal-box">
+
+    <div class="notice-modal-header">
+      <h2>📢 Important Notifications</h2>
+      <button id="closePublicNotice" type="button"
+        aria-label="Close notice">✕</button>
     </div>
 
-    <div id="publicNoticeList" class="public-notice-list">
+    <div id="publicNoticeList" class="notice-modal-list">
       <p>Loading notices...</p>
     </div>
+
   </div>
+</div>
+
+<!-- REOPEN NOTICE BUTTON -->
+<button id="openPublicNotice" class="notice-open-btn"
+  type="button" hidden>
+  📢 Notices
+</button>
+
 </section>
     <section class="hero section-wrap hero-premium" id="home">
   <div class="hero-centered reveal">
