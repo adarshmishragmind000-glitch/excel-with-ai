@@ -1193,7 +1193,7 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
 }
 
 .public-notice-badge {
-  color: #d71920;
+  color: black;
   font-size: 12px;
   font-weight: 800;
 }
