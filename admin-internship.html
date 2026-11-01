@@ -200,7 +200,7 @@ td select{min-width:130px;padding:8px}
               <th>Internship Track</th>
               <th>Applied On</th>
               <th>Status</th>
-              <th>Details</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="applicationsBody">
@@ -237,7 +237,8 @@ import {
   getDocs,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -448,13 +449,56 @@ function renderApplications() {
         </select>
       </td>
       <td>
-        <button class="secondary" data-view-id="${safe(a.id)}">
-          View
-        </button>
+        <div class="actions" style="margin:0;flex-wrap:nowrap">
+          <button type="button" class="secondary" data-view-id="${safe(a.id)}">View</button>
+          <button type="button" class="danger" data-delete-id="${safe(a.id)}">Delete</button>
+        </div>
       </td>
     </tr>
   `).join("");
 }
+
+// DELETE APPLICATION — admin only, with confirmation
+$("applicationsBody").addEventListener("click", async event => {
+  const deleteButton = event.target.closest("button[data-delete-id]");
+  if (!deleteButton) return;
+  if (!currentAdmin) {
+    showMessage("dashboardMessage", "Only an authenticated admin can delete applications.");
+    return;
+  }
+
+  const id = deleteButton.dataset.deleteId;
+  const application = applications.find(item => item.id === id);
+  if (!application) return;
+
+  const studentName = application.name || application.email || "this application";
+  const confirmed = window.confirm(
+    `Delete the internship application for ${studentName}?\n\nThis action cannot be undone.`
+  );
+  if (!confirmed) return;
+
+  deleteButton.disabled = true;
+  deleteButton.textContent = "Deleting...";
+
+  try {
+    await deleteDoc(doc(db, "internshipApplications", id));
+    applications = applications.filter(item => item.id !== id);
+
+    if ($("detailsBox").dataset.applicationId === id) {
+      $("detailsBox").classList.add("hidden");
+      $("detailsBox").dataset.applicationId = "";
+    }
+
+    updateStats();
+    renderApplications();
+    showMessage("dashboardMessage", "Application deleted successfully.", "success");
+  } catch (error) {
+    console.error("Delete application error:", error);
+    showMessage("dashboardMessage", "Delete failed: " + error.message);
+    deleteButton.disabled = false;
+    deleteButton.textContent = "Delete";
+  }
+});
 
 // UPDATE STATUS
 $("applicationsBody").addEventListener("change", async event => {
@@ -523,12 +567,14 @@ $("applicationsBody").addEventListener("click", event => {
     <p><strong>${safe(label)}:</strong><br>${safe(value || "—")}</p>
   `).join("");
 
+  $("detailsBox").dataset.applicationId = id;
   $("detailsBox").classList.remove("hidden");
   $("detailsBox").scrollIntoView({behavior:"smooth"});
 });
 
 $("closeDetails").addEventListener("click", () => {
   $("detailsBox").classList.add("hidden");
+  $("detailsBox").dataset.applicationId = "";
 });
 
 // SEARCH AND FILTER
