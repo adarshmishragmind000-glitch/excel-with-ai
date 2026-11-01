@@ -1195,25 +1195,25 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
 }
 
 .public-notice-badge {
-  color: #d71920;
+  color: red;
   font-size: 12px;
   font-weight: 800;
 }
 
 .public-notice-card time {
-  color: #666;
+  color: red;
   font-size: 12px;
 }
 
 .public-notice-card h3 {
-  color: #123c83;
+  color: white;
   font-size: 15px;
   line-height: 1.5;
   margin: 5px 0 10px;
 }
 
 .public-notice-card p {
-  color: #222;
+  color: white;
   font-size: 14px;
   line-height: 1.65;
   white-space: normal;
@@ -1230,7 +1230,7 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
   border-radius: 30px;
   padding: 13px 20px;
   color: white;
-  background: #315efb;
+  background: white;
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 5px 20px rgba(0,0,0,.3);
