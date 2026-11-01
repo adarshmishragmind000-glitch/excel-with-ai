@@ -229,6 +229,22 @@ main{display:block!important}
  .ai-formula-card{padding:23px 16px!important}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Final responsive safety overrides for the redesigned homepage */
+.modal, .modal-backdrop .modal { color:#f4f6ff!important; background:linear-gradient(145deg,#151f37,#0d1428)!important; }
+.modal h1,.modal h2,.modal h3,.modal .modal-kicker { color:#f4f6ff!important; }
+.modal .modal-sub,.modal p { color:#b9c6df!important; }
+.modal label { color:#dce5f7!important; }
+.modal input,.modal select,.modal textarea { color:#f4f6ff!important; background:#0a1122!important; border-color:#465777!important; }
+.modal input::placeholder,.modal textarea::placeholder { color:#93a2bf!important; }
+@media (max-width:700px) {
+  .modal-backdrop { align-items:flex-start!important; padding: max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))!important; }
+  .modal { width:100%!important; max-width:520px!important; max-height:calc(100dvh - 20px)!important; margin:auto!important; padding:24px 17px!important; }
+  .modal h2 { font-size:clamp(22px,6vw,27px)!important; line-height:1.25!important; }
+  .form-row { grid-template-columns:minmax(0,1fr)!important; }
+  .modal input,.modal select,.modal textarea { min-height:43px; font-size:14px!important; }
+}
+
 </style>
 </head>
 <body>
@@ -655,6 +671,34 @@ main{display:block!important}
  <script src="/home-learning.js" defer></script>
   <script type="module" src="/live-class.js"></script>
   <script type="module" src="notification-popup.js"></script>
+
+
+<script>
+(() => {
+  const toggle = document.getElementById("menuToggle");
+  const nav = document.getElementById("mainNav");
+  if (!toggle || !nav || toggle.dataset.menuReady === "1") return;
+  toggle.dataset.menuReady = "1";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+  });
+  nav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+    });
+  });
+  document.addEventListener("click", event => {
+    if (!nav.contains(event.target) && !toggle.contains(event.target)) {
+      nav.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
