@@ -1230,8 +1230,8 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
   border-radius: 30px;
   padding: 13px 20px;
   color: white;
-  background: white;
-  font-weight: red;
+  background: red;
+  font-weight: bold;
   cursor: pointer;
   box-shadow: 0 5px 20px rgba(0,0,0,.3);
 }
