@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Excel with AI Student and Admin Dashboard"
+  >
+
+  <title>My Dashboard | Excel with AI</title>
+
+  <!-- Existing Website CSS -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Existing Student Dashboard CSS -->
+  <link rel="stylesheet" href="student-dashboard.css">
+
+  <!-- Optional existing learning dashboard CSS -->
+  <link rel="stylesheet" href="home-learning.css">
+
+</head>
+
+<body>
+
+  <!-- Dashboard Loading Screen -->
+  <main
+    id="main"
+    class="dashboard-shell"
+    aria-live="polite"
+  >
+    <div class="dashboard-loading">
+      <h2>Excel with AI</h2>
+      <p>Checking your secure login...</p>
+    </div>
+  </main>
+
+
+  <!--
+    IMPORTANT:
+    dashboardView must remain OUTSIDE main.
+    app.js hides main after rendering the dashboard.
+  -->
+
+  <section
+    id="dashboardView"
+    class="dashboard-view section-wrap dashboard-shell"
+    aria-live="polite"
+    hidden
+  >
+    <div class="dashboard-loading">
+      <h2>Loading Dashboard...</h2>
+      <p>Please wait while we load your account.</p>
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="section-wrap">
+      <p>
+        © <span id="year"></span>
+        Excel with AI. All Rights Reserved.
+      </p>
+    </div>
+  </footer>
+
+
+  <!-- Firebase App and Dashboard Logic -->
+  <script type="module" src="app.js"></script>
+
+  <!-- Student Learning Dashboard Features -->
+  <script type="module" src="student-dashboard.js"></script>
+
+</body>
+</html>
