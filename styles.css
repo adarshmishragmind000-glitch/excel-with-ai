@@ -1257,3 +1257,29 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
     font-size: 13px;
   }
 }
+
+/* INTERNSHIP NAVBAR HIGHLIGHT */
+.nav a.nav-internship {
+  color: #ffffff !important;
+  background: linear-gradient(110deg, #315efb, #8055ef);
+  padding: 9px 15px;
+  border-radius: 9px;
+  font-weight: 800;
+  box-shadow: 0 4px 16px rgba(80, 90, 255, .25);
+}
+
+.nav a.nav-internship span {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #ffcf40;
+  color: #171717;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.nav a.nav-internship:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
