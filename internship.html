@@ -137,6 +137,7 @@ button,input,select,textarea{font:inherit}
   <a href="#tracks">Internship Tracks</a>
   <a href="#eligibility">Eligibility</a>
   <a href="#apply" class="nav-internship">Apply Now</a>
+  <a href="internship-login.html">Student Login</a>
  </nav>
 
  <div class="nav-actions">
@@ -392,6 +393,29 @@ button,input,select,textarea{font:inherit}
       <input name="email" type="email" required maxlength="120" placeholder="you@example.com">
      </label>
     </div>
+    <div class="form-row">
+  <label>Create Password *
+    <input
+      name="password"
+      type="password"
+      required
+      minlength="6"
+      maxlength="64"
+      autocomplete="new-password"
+      placeholder="Create password (minimum 6 characters)">
+  </label>
+
+  <label>Confirm Password *
+    <input
+      name="confirmPassword"
+      type="password"
+      required
+      minlength="6"
+      maxlength="64"
+      autocomplete="new-password"
+      placeholder="Re-enter password">
+  </label>
+</div>
 
     <div class="form-row">
      <label>Mobile Number *
@@ -482,24 +506,35 @@ document.querySelectorAll("#internshipNav a").forEach(link=>{
 
 <!-- FIREBASE APPLICATION SUBMISSION -->
 <script type="module">
+ 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
 import {
- getFirestore,
- collection,
- addDoc,
- serverTimestamp
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyj1GLY0JHK5pmo0",
- authDomain: "excel-with-ai.firebaseapp.com",
- projectId: "excel-with-ai",
- storageBucket: "excel-with-ai.firebasestorage.app",
- messagingSenderId: "615391443440",
- appId: "1:615391443440:web:92b3a15f0e4596abc50535"
+  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
+  authDomain: "excel-with-ai.firebaseapp.com",
+  projectId: "excel-with-ai",
+  storageBucket: "excel-with-ai.firebasestorage.app",
+  messagingSenderId: "615391443440",
+  appId: "1:615391443440:web:92b3a15f0e4596abc50535"
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
 const form = document.getElementById("internshipApplicationForm");
@@ -507,68 +542,122 @@ const button = document.getElementById("internshipSubmitBtn");
 const message = document.getElementById("applicationMessage");
 
 form.addEventListener("submit", async (event) => {
- event.preventDefault();
+  event.preventDefault();
 
- if (!form.reportValidity()) return;
+  if (!form.reportValidity()) return;
 
- const data = new FormData(form);
+  const data = new FormData(form);
 
- const application = {
-  name: String(data.get("name") || "").trim(),
-  email: String(data.get("email") || "").trim().toLowerCase(),
-  phone: String(data.get("phone") || "").trim(),
-  qualification: String(data.get("qualification") || "").trim(),
-  college: String(data.get("college") || "").trim(),
-  track: String(data.get("track") || "").trim(),
-  skills: String(data.get("skills") || "").trim(),
-  motivation: String(data.get("motivation") || "").trim(),
-  consent: data.get("consent") === "on",
-  programDuration: "6 Weeks",
-  programMode: "Online",
-  feeStatus: "To Be Decided",
-  certificatePolicy: "Assessment Based",
-  status: "new",
-  createdAt: serverTimestamp()
- };
+  const email = String(data.get("email") || "").trim().toLowerCase();
+  const password = String(data.get("password") || "");
+  const confirmPassword = String(data.get("confirmPassword") || "");
 
- if (!application.consent) {
-  message.textContent = "Please accept the consent checkbox.";
-  message.style.color = "#ff9b9b";
-  return;
- }
+  if (password.length < 6) {
+    message.textContent = "Password must be at least 6 characters.";
+    return;
+  }
 
- button.disabled = true;
- button.textContent = "Submitting...";
- message.textContent = "";
+  if (password !== confirmPassword) {
+    message.textContent = "Password and Confirm Password do not match.";
+    return;
+  }
 
- try {
-  const result = await addDoc(
-   collection(db, "internshipApplications"),
-   application
-  );
+  const application = {
+    name: String(data.get("name") || "").trim(),
+    email,
+    phone: String(data.get("phone") || "").trim(),
+    qualification: String(data.get("qualification") || "").trim(),
+    college: String(data.get("college") || "").trim(),
+    track: String(data.get("track") || "").trim(),
+    skills: String(data.get("skills") || "").trim(),
+    motivation: String(data.get("motivation") || "").trim(),
+    consent: data.get("consent") === "on",
+    status: "new",
+    createdAt: serverTimestamp()
+  };
 
-  form.reset();
+  if (!application.consent) {
+    message.textContent = "Please accept the consent checkbox.";
+    return;
+  }
 
-  message.textContent =
-   "✓ Application submitted successfully. Your Application ID: " +
-   result.id + ". Please save this ID for your reference.";
+  button.disabled = true;
+  button.textContent = "Creating Account...";
+  message.textContent = "";
 
-  message.style.color = "#79e6a6";
+  try {
+    let userCredential;
 
- } catch (error) {
-  console.error("Internship application error:", error);
+    try {
+      // Create new student account
+      userCredential = await createUserWithEmailAndPassword(
+        auth, email, password
+      );
 
-  message.textContent =
-   "Application could not be submitted. Please try again later. Error: " +
-   (error.code || "unknown");
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        // Allow retry if account exists but application was not saved
+        userCredential = await signInWithEmailAndPassword(
+          auth, email, password
+        );
+      } else {
+        throw error;
+      }
+    }
 
-  message.style.color = "#ff9b9b";
+    const user = userCredential.user;
 
- } finally {
-  button.disabled = false;
-  button.textContent = "Submit Internship Application ↗";
- }
+    // One application document per student account
+    const applicationRef = doc(
+      db,
+      "internshipApplications",
+      user.uid
+    );
+
+    const existing = await getDoc(applicationRef);
+
+    if (existing.exists()) {
+      message.textContent =
+        "An application already exists for this email. Please use Student Login.";
+      message.style.color = "#ffcf70";
+      return;
+    }
+
+    await setDoc(applicationRef, {
+      ...application,
+      uid: user.uid
+    });
+
+    form.reset();
+
+    message.innerHTML =
+      "✓ Application submitted successfully! Your account is ready. " +
+      '<a href="internship-login.html" style="color:#83b4ff;">Go to Student Login ↗</a>';
+
+    message.style.color = "#79e6a6";
+
+  } catch (error) {
+    console.error("Internship registration error:", error);
+
+    const errors = {
+      "auth/email-already-in-use": "This email already has an account. Check your password or use Student Login.",
+      "auth/invalid-email": "Please enter a valid email address.",
+      "auth/weak-password": "Choose a stronger password.",
+      "auth/invalid-credential": "This email already has an account. The password may be incorrect.",
+      "auth/network-request-failed": "Check your internet connection."
+    };
+
+    message.textContent =
+      errors[error.code] || "Application failed: " + error.message;
+
+    message.style.color = "#ff9b9b";
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Submit Internship Application ↗";
+  }
 });
+
 </script>
 
 </body>
