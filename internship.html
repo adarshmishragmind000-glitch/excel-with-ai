@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d1d">
+<title>IT Internship Program | Excel with AI</title>
+<meta name="description" content="Apply for practical IT internships in Web Development, Python, Data Analytics, Cyber Security and Artificial Intelligence.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d1d;color:#f4f6ff;font-family:'DM Sans',sans-serif}
+a{text-decoration:none;color:inherit}
+button,input,select,textarea{font:inherit}
+.topbar{height:76px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;background:#080d1d;border-bottom:1px solid rgba(255,255,255,.09);position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.brand-mark{background:linear-gradient(135deg,#4787ff,#9255ed);padding:10px 13px;border-radius:12px}
+.brand small{display:block;font-size:8px;letter-spacing:2px;color:#91a4ca}
+.nav{display:flex;align-items:center;gap:25px;font-size:13px;color:#c6cee1}
+.nav a:hover{color:#fff}
+.nav .nav-internship{background:linear-gradient(110deg,#315efb,#8055ef);padding:10px 14px;border-radius:9px;color:white;font-weight:800}
+.nav-internship span{font-size:9px;background:#ffcf40;color:#171717;padding:3px 5px;border-radius:4px;margin-left:4px}
+.nav-actions{display:flex;gap:10px;align-items:center}
+.btn{border:0;border-radius:10px;padding:12px 17px;font-weight:700;cursor:pointer}
+.btn-primary{background:linear-gradient(110deg,#4387ff,#7958ef);color:white}
+.menu-toggle{display:none;background:none;color:white;border:0;font-size:25px}
+.wrap{max-width:1120px;margin:auto;padding:0 24px}
+.hero{padding:85px 0 65px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(75,91,220,.2),transparent 60%)}
+.eyebrow{color:#80a9ff;font-size:11px;letter-spacing:2px;font-weight:800}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(38px,6vw,66px);line-height:1.08;margin:18px 0}
+.gradient{background:linear-gradient(90deg,#70c5ff,#b68aff);color:transparent;background-clip:text}
+.hero p{max-width:720px;margin:0 auto;color:#aebbd5;line-height:1.8;font-size:16px}
+.hero-actions{display:flex;justify-content:center;gap:12px;margin-top:28px;flex-wrap:wrap}
+.section{padding:55px 0}
+.section-title{text-align:center;margin-bottom:30px}
+.section-title h2{font-family:'Space Grotesk',sans-serif;font-size:32px;margin:8px 0}
+.section-title p{color:#aebbd5;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+.track{padding:23px;border:1px solid #293858;background:#111b32;border-radius:17px;transition:.2s}
+.track:hover{transform:translateY(-4px);border-color:#6389ff}
+.track .emoji{font-size:28px}
+.track h3{font-size:18px;margin:13px 0 8px}
+.track p{color:#aebbd5;font-size:13px;line-height:1.7;margin:0}
+.track ul{padding-left:18px;color:#d5def1;font-size:13px;line-height:1.9}
+.eligibility{background:#111b32;border:1px solid #293858;border-radius:18px;padding:28px}
+.eligibility ul{color:#d5def1;line-height:2}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step{padding:20px;background:#111b32;border:1px solid #293858;border-radius:14px}
+.step b{color:#8db3ff;font-size:12px}
+.step h3{font-size:16px}
+.step p{font-size:13px;color:#aebbd5;line-height:1.6}
+.apply-area{display:grid;grid-template-columns:.85fr 1.15fr;gap:25px;align-items:start}
+.apply-info,.apply-form{padding:28px;background:#111b32;border:1px solid #293858;border-radius:18px}
+.apply-info h2{font-size:28px;font-family:'Space Grotesk'}
+.apply-info p,.apply-info li{color:#b8c5dc;line-height:1.8;font-size:14px}
+.apply-form label{display:block;font-size:13px;font-weight:700;margin-bottom:14px;color:#dce5f7}
+.apply-form input,.apply-form select,.apply-form textarea{width:100%;margin-top:7px;padding:12px 13px;border:1px solid #3a4b6c;border-radius:9px;background:#0a1224;color:white;outline:none}
+.apply-form input:focus,.apply-form select:focus,.apply-form textarea:focus{border-color:#7196ff}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.consent{display:flex!important;gap:9px;align-items:flex-start;font-weight:400!important;line-height:1.5}
+.consent input{width:auto;margin-top:3px}
+.form-note{font-size:12px;color:#9eacc5;line-height:1.6;margin:12px 0}
+.submit{width:100%;padding:14px}
+#applicationMessage{margin-top:14px;font-size:13px;line-height:1.6}
+.footer{text-align:center;border-top:1px solid #26324b;padding:28px;color:#8999b7;font-size:12px}
+@media(max-width:850px){
+ .nav{display:none;position:absolute;top:76px;left:0;right:0;background:#0c1428;padding:20px;flex-direction:column;align-items:stretch}
+ .nav.open{display:flex}
+ .menu-toggle{display:block}
+ .nav-actions .btn-quiet{display:none}
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .apply-area{grid-template-columns:1fr}
+ .steps{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+ .topbar{padding:0 16px}
+ .nav-actions .btn{padding:9px 11px;font-size:11px}
+ .wrap{padding:0 16px}
+ .hero{padding:60px 0 45px}
+ .grid,.steps,.form-row{grid-template-columns:1fr}
+ .section{padding:38px 0}
+ .apply-info,.apply-form{padding:20px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">X✦</span>
+    <span>excel with AI<small>LEARN • AUTOMATE • GROW</small></span>
+  </a>
+
+  <nav class="nav" id="internshipNav">
+    <a href="index.html">Home</a>
+    <a href="courses.html">Courses</a>
+    <a href="#tracks">Internship Tracks</a>
+    <a href="#eligibility">Eligibility</a>
+    <a href="#apply" class="nav-internship">Apply Now</a>
+  </nav>
+
+  <div class="nav-actions">
+    <a class="btn btn-primary" href="#apply">Apply for Internship ↗</a>
+  </div>
+
+  <button class="menu-toggle" id="internshipMenuToggle" aria-label="Open menu">☰</button>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">PRACTICAL IT TRAINING • REAL-WORLD PROJECTS</div>
+    <h1>Turn Your Knowledge<br>Into <span class="gradient">Real IT Skills.</span></h1>
+    <p>
+      Learn by doing. Work on practical assignments, build portfolio projects
+      and develop industry-relevant skills through our IT Internship Program.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#apply">Start Your Application ↗</a>
+      <a class="btn" style="border:1px solid #536484;color:white" href="#tracks">Explore Internship Tracks</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tracks">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="eyebrow">CHOOSE YOUR LEARNING PATH</div>
+      <h2>IT Internship Tracks</h2>
+      <p>Choose the technology area that matches your interest and career goals.</p>
+    </div>
+
+    <div class="grid">
+      <article class="track">
+        <div class="emoji">💻</div>
+        <h3>Web Development</h3>
+        <p>Learn to design and develop responsive websites.</p>
+        <ul>
+          <li>HTML5 & CSS3</li>
+          <li>JavaScript & Responsive Design</li>
+          <li>GitHub & Website Deployment</li>
+          <li>Portfolio and Business Website Project</li>
+        </ul>
+      </article>
+
+      <article class="track">
+        <div class="emoji">🐍</div>
+        <h3>Python Programming</h3>
+        <p>Build programming logic and useful applications.</p>
+        <ul>
+          <li>Python Fundamentals</li>
+          <li>Conditions, Loops & Functions</li>
+          <li>File Handling</li>
+          <li>Automation and Mini Projects</li>
+        </ul>
+      </article>
+
+      <article class="track">
+        <div class="emoji">📊</div>
+        <h3>Data Analytics & Excel AI</h3>
+        <p>Understand data and turn it into useful insights.</p>
+        <ul>
+          <li>Advanced Excel & Formulas</li>
+          <li>Data Cleaning and Analysis</li>
+          <li>Dashboards and Reports</li>
+          <li>AI-assisted Spreadsheet Workflows</li>
+        </ul>
+      </article>
+
+      <article class="track">
+        <div class="emoji">🛡️</div>
+        <h3>Cyber Security</h3>
+        <p>Learn essential security concepts in a safe lab environment.</p>
+        <ul>
+          <li>Networking Fundamentals</li>
+          <li>Cyber Security Basics</li>
+          <li>Web Security Awareness</li>
+          <li>Ethical and Defensive Practices</li>
+        </ul>
+      </article>
+
+      <article class="track">
+        <div class="emoji">🤖</div>
+        <h3>Artificial Intelligence</h3>
+        <p>Explore AI tools and beginner-friendly AI workflows.</p>
+        <ul>
+          <li>AI Fundamentals</li>
+          <li>Prompt Engineering</li>
+          <li>AI Productivity Tools</li>
+          <li>Practical AI Mini Project</li>
+        </ul>
+      </article>
+
+      <article class="track">
+        <div class="emoji">🗄️</div>
+        <h3>Database & Backend Basics</h3>
+        <p>Understand how applications store and manage information.</p>
+        <ul>
+          <li>Database Fundamentals</li>
+          <li>SQL Basics</li>
+          <li>CRUD Operations</li>
+          <li>Backend Concepts and Mini Project</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="eligibility">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="eyebrow">WHO CAN APPLY?</div>
+      <h2>Eligibility & Requirements</h2>
+    </div>
+
+    <div class="eligibility">
+      <ul>
+        <li>BCA students and graduates</li>
+        <li>B.Tech / B.E. Computer Science and IT students</li>
+        <li>MCA and other computer-related students</li>
+        <li>Students from IT, Computer Applications and related disciplines</li>
+        <li>Beginners with a genuine interest in learning IT skills may also apply</li>
+      </ul>
+      <p style="color:#9eacc5;font-size:13px;line-height:1.7">
+        Applicants will be reviewed according to their selected track, interest
+        and current skill level. Final selection and program details will be
+        communicated after application review.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="eyebrow">LEARN • BUILD • IMPROVE</div>
+      <h2>How the Internship Works</h2>
+      <p>A practical learning journey focused on building real skills.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <b>STEP 01</b>
+        <h3>Apply Online</h3>
+        <p>Choose your preferred IT track and submit your details.</p>
+      </div>
+      <div class="step">
+        <b>STEP 02</b>
+        <h3>Application Review</h3>
+        <p>Your interests and basic details are reviewed by the team.</p>
+      </div>
+      <div class="step">
+        <b>STEP 03</b>
+        <h3>Practical Training</h3>
+        <p>Learn concepts, complete tasks and build guided projects.</p>
+      </div>
+      <div class="step">
+        <b>STEP 04</b>
+        <h3>Project Evaluation</h3>
+        <p>Submit your work for review and feedback. Certificate eligibility will depend on program completion and evaluation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="apply">
+  <div class="wrap">
+    <div class="section-title">
+      <div class="eyebrow">YOUR NEXT STEP STARTS HERE</div>
+      <h2>Apply for IT Internship</h2>
+      <p>Fill in the application form. Our team can review your request.</p>
+    </div>
+
+    <div class="apply-area">
+      <div class="apply-info">
+        <div class="eyebrow">APPLICATION INFORMATION</div>
+        <h2>Start Building Your Future.</h2>
+        <p>
+          Tell us about your education, interests and preferred technology track.
+          Submit your application for review.
+        </p>
+        <ul>
+          <li>Practical, skill-focused learning</li>
+          <li>Technology-specific learning tracks</li>
+          <li>Guided assignments and project work</li>
+          <li>Feedback and project evaluation</li>
+        </ul>
+        <p><strong>Note:</strong> Submitting this form is an application request, not confirmation of selection or enrollment.</p>
+      </div>
+
+      <form class="apply-form" id="internshipApplicationForm">
+        <div class="form-row">
+          <label>Full Name *
+            <input name="name" required maxlength="80" placeholder="Your full name">
+          </label>
+          <label>Email Address *
+            <input name="email" type="email" required maxlength="120" placeholder="you@example.com">
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>Mobile Number *
+            <input name="phone" type="tel" required maxlength="16"
+              pattern="[0-9+() -]{10,16}" placeholder="Your contact number">
+          </label>
+          <label>Qualification *
+            <select name="qualification" required>
+              <option value="">Select qualification</option>
+              <option>BCA</option>
+              <option>B.Tech - Computer Science</option>
+              <option>B.Tech - IT</option>
+              <option>B.E. - Computer Science</option>
+              <option>MCA</option>
+              <option>Other Graduate</option>
+              <option>Other / Beginner</option>
+            </select>
+          </label>
+        </div>
+
+        <label>College / Institute Name *
+          <input name="college" required maxlength="150" placeholder="Enter college or institute name">
+        </label>
+
+        <label>Preferred Internship Track *
+          <select name="track" required>
+            <option value="">Choose your track</option>
+            <option>Web Development</option>
+            <option>Python Programming</option>
+            <option>Data Analytics & Excel AI</option>
+            <option>Cyber Security</option>
+            <option>Artificial Intelligence</option>
+            <option>Database & Backend Basics</option>
+          </select>
+        </label>
+
+        <label>Current Skills (optional)
+          <textarea name="skills" rows="3" maxlength="700" placeholder="Example: HTML, CSS, C, C++, Python, Excel..."></textarea>
+        </label>
+
+        <label>Why do you want to join? *
+          <textarea name="motivation" rows="3" required maxlength="1000" placeholder="Tell us about your learning goals..."></textarea>
+        </label>
+
+        <label class="consent">
+          <input type="checkbox" name="consent" required>
+          <span>I agree that my information may be used to review and contact me about this internship application.</span>
+        </label>
+
+        <p class="form-note">
+          Your application details will be stored securely in the institute's
+          Firebase database for application review.
+        </p>
+
+        <button class="btn btn-primary submit" id="internshipSubmitBtn" type="submit">
+          Submit Internship Application ↗
+        </button>
+
+        <div id="applicationMessage" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  Excel with AI • Practical IT Learning & Internship Program
+  <br><br>
+  <a href="index.html">← Back to Homepage</a>
+</footer>
+
+<script>
+document.getElementById("internshipMenuToggle").addEventListener("click",()=>{
+  document.getElementById("internshipNav").classList.toggle("open");
+});
+document.querySelectorAll("#internshipNav a").forEach(link=>{
+  link.addEventListener("click",()=>{
+    document.getElementById("internshipNav").classList.remove("open");
+  });
+});
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyj1GLY0JHK5pmo0",
+  authDomain: "excel-with-ai.firebaseapp.com",
+  projectId: "excel-with-ai",
+  storageBucket: "excel-with-ai.firebasestorage.app",
+  messagingSenderId: "615391443440",
+  appId: "1:615391443440:web:92b3a15f0e4596abc50535"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const form = document.getElementById("internshipApplicationForm");
+const button = document.getElementById("internshipSubmitBtn");
+const message = document.getElementById("applicationMessage");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!form.reportValidity()) return;
+
+  const data = new FormData(form);
+  const application = {
+    name: String(data.get("name") || "").trim(),
+    email: String(data.get("email") || "").trim().toLowerCase(),
+    phone: String(data.get("phone") || "").trim(),
+    qualification: String(data.get("qualification") || "").trim(),
+    college: String(data.get("college") || "").trim(),
+    track: String(data.get("track") || "").trim(),
+    skills: String(data.get("skills") || "").trim(),
+    motivation: String(data.get("motivation") || "").trim(),
+    consent: data.get("consent") === "on",
+    status: "new",
+    createdAt: serverTimestamp()
+  };
+
+  if (!application.consent) {
+    message.textContent = "Please accept the consent checkbox.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Submitting...";
+  message.textContent = "";
+
+  try {
+    const result = await addDoc(
+      collection(db, "internshipApplications"),
+      application
+    );
+
+    form.reset();
+    message.textContent =
+      "✓ Application submitted successfully. Application ID: " + result.id +
+      ". Please save this ID for your reference.";
+    message.style.color = "#79e6a6";
+
+  } catch (error) {
+    console.error("Internship application error:", error);
+    message.textContent =
+      "Application could not be submitted. Please try again later. (" +
+      error.code + ")";
+    message.style.color = "#ff9b9b";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Submit Internship Application ↗";
+  }
+});
+</script>
+
+</body>
+</html>
