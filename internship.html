@@ -393,34 +393,23 @@ button,input,select,textarea{font:inherit}
       <input name="email" type="email" required maxlength="120" placeholder="you@example.com">
      </label>
     </div>
-    <div class="form-row">
-  <label>Create Password *
-    <input
-      name="password"
-      type="password"
-      required
-      minlength="6"
-      maxlength="64"
-      autocomplete="new-password"
-      placeholder="Create password (minimum 6 characters)">
-  </label>
 
-  <label>Confirm Password *
-    <input
-      name="confirmPassword"
-      type="password"
-      required
-      minlength="6"
-      maxlength="64"
-      autocomplete="new-password"
-      placeholder="Re-enter password">
-  </label>
-</div>
+    <div class="form-row">
+     <label>Create Password *
+      <input name="password" type="password" required minlength="6" maxlength="64"
+       autocomplete="new-password" placeholder="Create password (minimum 6 characters)">
+     </label>
+
+     <label>Confirm Password *
+      <input name="confirmPassword" type="password" required minlength="6" maxlength="64"
+       autocomplete="new-password" placeholder="Re-enter password">
+     </label>
+    </div>
 
     <div class="form-row">
      <label>Mobile Number *
       <input name="phone" type="tel" required maxlength="16"
-       pattern="[0-9+() -]{10,16}" placeholder="Your contact number">
+       pattern="[0-9]{10,16}" placeholder="10 to 16 digit mobile number">
      </label>
 
      <label>Qualification *
@@ -460,7 +449,7 @@ button,input,select,textarea{font:inherit}
     </label>
 
     <label>Why do you want to join? *
-     <textarea name="motivation" rows="3" required maxlength="1000" placeholder="Tell us about your learning goals..."></textarea>
+     <textarea name="motivation" rows="3" required minlength="3" maxlength="1000" placeholder="Tell us about your learning goals..."></textarea>
     </label>
 
     <label class="consent">
@@ -470,7 +459,8 @@ button,input,select,textarea{font:inherit}
 
     <p class="form-note">
      Your application details will be stored in the institute's Firebase database
-     for application review. Please check your details before submitting.
+     for application review. Your password is securely handled by Firebase Authentication
+     and is not stored in the application document.
     </p>
 
     <button class="btn btn-primary submit" id="internshipSubmitBtn" type="submit">
@@ -504,33 +494,33 @@ document.querySelectorAll("#internshipNav a").forEach(link=>{
 });
 </script>
 
-<!-- FIREBASE APPLICATION SUBMISSION -->
+<!-- FIREBASE STUDENT ACCOUNT + APPLICATION SUBMISSION -->
 <script type="module">
- 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+ getAuth,
+ createUserWithEmailAndPassword
+} from
+"https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 import {
-  getFirestore,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+ getFirestore,
+ doc,
+ setDoc,
+ serverTimestamp
+} from
+"https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
-  authDomain: "excel-with-ai.firebaseapp.com",
-  projectId: "excel-with-ai",
-  storageBucket: "excel-with-ai.firebasestorage.app",
-  messagingSenderId: "615391443440",
-  appId: "1:615391443440:web:92b3a15f0e4596abc50535"
+ apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
+ authDomain: "excel-with-ai.firebaseapp.com",
+ projectId: "excel-with-ai",
+ storageBucket: "excel-with-ai.firebasestorage.app",
+ messagingSenderId: "615391443440",
+ appId: "1:615391443440:web:92b3a15f0e4596abc50535"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -542,120 +532,127 @@ const button = document.getElementById("internshipSubmitBtn");
 const message = document.getElementById("applicationMessage");
 
 form.addEventListener("submit", async (event) => {
-  event.preventDefault();
 
-  if (!form.reportValidity()) return;
+ event.preventDefault();
 
-  const data = new FormData(form);
+ if (!form.reportValidity()) return;
 
-  const email = String(data.get("email") || "").trim().toLowerCase();
-  const password = String(data.get("password") || "");
-  const confirmPassword = String(data.get("confirmPassword") || "");
+ const data = new FormData(form);
 
-  if (password.length < 6) {
-    message.textContent = "Password must be at least 6 characters.";
-    return;
-  }
+ const email = String(data.get("email") || "").trim().toLowerCase();
+ const password = String(data.get("password") || "");
+ const confirmPassword = String(data.get("confirmPassword") || "");
 
-  if (password !== confirmPassword) {
-    message.textContent = "Password and Confirm Password do not match.";
-    return;
-  }
+ if (password.length < 6) {
+  message.textContent = "Password must be at least 6 characters.";
+  message.style.color = "#ff9b9b";
+  return;
+ }
 
-  const application = {
-    name: String(data.get("name") || "").trim(),
-    email,
-    phone: String(data.get("phone") || "").trim(),
-    qualification: String(data.get("qualification") || "").trim(),
-    college: String(data.get("college") || "").trim(),
-    track: String(data.get("track") || "").trim(),
-    skills: String(data.get("skills") || "").trim(),
-    motivation: String(data.get("motivation") || "").trim(),
-    consent: data.get("consent") === "on",
-    status: "new",
-    createdAt: serverTimestamp()
+ if (password !== confirmPassword) {
+  message.textContent = "Password and Confirm Password do not match.";
+  message.style.color = "#ff9b9b";
+  return;
+ }
+
+ const application = {
+  name: String(data.get("name") || "").trim(),
+  email: email,
+  phone: String(data.get("phone") || "").trim(),
+  qualification: String(data.get("qualification") || "").trim(),
+  college: String(data.get("college") || "").trim(),
+  track: String(data.get("track") || "").trim(),
+  skills: String(data.get("skills") || "").trim(),
+  motivation: String(data.get("motivation") || "").trim(),
+  consent: data.get("consent") === "on",
+  status: "new",
+  createdAt: serverTimestamp()
+ };
+
+ if (!application.consent) {
+  message.textContent = "Please accept the consent checkbox.";
+  message.style.color = "#ff9b9b";
+  return;
+ }
+
+ if (application.motivation.length < 3) {
+  message.textContent = "Please write at least 3 characters about why you want to join.";
+  message.style.color = "#ff9b9b";
+  return;
+ }
+
+ button.disabled = true;
+ button.textContent = "Creating Account...";
+ message.textContent = "";
+
+ try {
+
+  // CREATE FIREBASE STUDENT ACCOUNT
+  const userCredential = await createUserWithEmailAndPassword(
+   auth,
+   email,
+   password
+  );
+
+  const user = userCredential.user;
+
+  // SAVE APPLICATION USING AUTHENTICATED STUDENT UID
+  const applicationRef = doc(
+   db,
+   "internshipApplications",
+   user.uid
+  );
+
+  await setDoc(applicationRef, {
+   ...application,
+   uid: user.uid
+  });
+
+  form.reset();
+
+  message.innerHTML =
+   '✓ Application submitted successfully! Your student account is ready. ' +
+   '<a href="internship-login.html" style="color:#83b4ff;font-weight:700;">Go to Student Login ↗</a>';
+
+  message.style.color = "#79e6a6";
+
+ } catch (error) {
+
+  console.error("Internship registration error:", error);
+
+  const errorMessages = {
+   "auth/email-already-in-use":
+    "This email already has a student account. Please use Student Login.",
+
+   "auth/invalid-email":
+    "Please enter a valid email address.",
+
+   "auth/weak-password":
+    "Password must be at least 6 characters.",
+
+   "auth/operation-not-allowed":
+    "Email/Password sign-in is not enabled in Firebase Authentication.",
+
+   "auth/network-request-failed":
+    "Network error. Please check your internet connection and try again.",
+
+   "permission-denied":
+    "Firestore permission denied. Please confirm that the latest Internship Rules are published."
   };
 
-  if (!application.consent) {
-    message.textContent = "Please accept the consent checkbox.";
-    return;
-  }
+  message.textContent =
+   errorMessages[error.code] ||
+   "Application could not be submitted. " + error.code + ": " + error.message;
 
-  button.disabled = true;
-  button.textContent = "Creating Account...";
-  message.textContent = "";
+  message.style.color = "#ff9b9b";
 
-  try {
-    let userCredential;
+ } finally {
 
-    try {
-      // Create new student account
-      userCredential = await createUserWithEmailAndPassword(
-        auth, email, password
-      );
+  button.disabled = false;
+  button.textContent = "Submit Internship Application ↗";
 
-    } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
-        // Allow retry if account exists but application was not saved
-        userCredential = await signInWithEmailAndPassword(
-          auth, email, password
-        );
-      } else {
-        throw error;
-      }
-    }
+ }
 
-    const user = userCredential.user;
-
-    // One application document per student account
-    const applicationRef = doc(
-      db,
-      "internshipApplications",
-      user.uid
-    );
-
-    const existing = await getDoc(applicationRef);
-
-    if (existing.exists()) {
-      message.textContent =
-        "An application already exists for this email. Please use Student Login.";
-      message.style.color = "#ffcf70";
-      return;
-    }
-
-    await setDoc(applicationRef, {
-      ...application,
-      uid: user.uid
-    });
-
-    form.reset();
-
-    message.innerHTML =
-      "✓ Application submitted successfully! Your account is ready. " +
-      '<a href="internship-login.html" style="color:#83b4ff;">Go to Student Login ↗</a>';
-
-    message.style.color = "#79e6a6";
-
-  } catch (error) {
-    console.error("Internship registration error:", error);
-
-    const errors = {
-      "auth/email-already-in-use": "This email already has an account. Check your password or use Student Login.",
-      "auth/invalid-email": "Please enter a valid email address.",
-      "auth/weak-password": "Choose a stronger password.",
-      "auth/invalid-credential": "This email already has an account. The password may be incorrect.",
-      "auth/network-request-failed": "Check your internet connection."
-    };
-
-    message.textContent =
-      errors[error.code] || "Application failed: " + error.message;
-
-    message.style.color = "#ff9b9b";
-
-  } finally {
-    button.disabled = false;
-    button.textContent = "Submit Internship Application ↗";
-  }
 });
 
 </script>
