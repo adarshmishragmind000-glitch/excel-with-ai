@@ -1,0 +1,593 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internship Admin Dashboard | Excel with AI</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#080d1c;
+  color:#f1f5ff;
+}
+header{
+  background:#101a31;
+  padding:20px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #293653;
+  flex-wrap:wrap;
+  gap:12px;
+}
+header h2{margin:0;color:#fff}
+header span{color:#9caeff;font-size:13px}
+.container{max-width:1250px;margin:30px auto;padding:0 18px}
+.panel{
+  background:#111d35;
+  border:1px solid #293a5d;
+  border-radius:15px;
+  padding:22px;
+  margin-bottom:22px;
+}
+h2,h3{margin-top:0}
+input,select{
+  background:#091327;
+  color:white;
+  border:1px solid #3b4d70;
+  border-radius:8px;
+  padding:12px;
+  width:100%;
+  outline:none;
+}
+label{display:block;margin:12px 0 7px;font-size:14px}
+button{
+  border:0;
+  border-radius:8px;
+  padding:11px 17px;
+  background:linear-gradient(90deg,#397ef5,#7852ed);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.secondary{background:#293956}
+button.danger{background:#b83248}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.login-box{max-width:430px;margin:65px auto}
+.hidden{display:none!important}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px;
+}
+.stat{
+  background:#0b1730;
+  border:1px solid #304363;
+  border-radius:12px;
+  padding:18px;
+}
+.stat strong{font-size:27px;display:block;margin-top:8px}
+.filters{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:12px;
+  margin:18px 0;
+}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{
+  padding:13px 11px;
+  border-bottom:1px solid #293956;
+  text-align:left;
+  font-size:13px;
+}
+th{color:#9eb8ff;background:#0b1730}
+td select{min-width:130px;padding:8px}
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  background:#293956;
+}
+.message{margin-top:15px;font-size:14px;white-space:pre-wrap}
+.success{color:#39e6a0}
+.error{color:#ff7272}
+.muted{color:#9cacc9;font-size:13px}
+#detailsBox p{line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:700px){
+  .filters{grid-template-columns:1fr}
+  header{align-items:flex-start}
+  .container{margin:18px auto}
+  .panel{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h2>Excel with AI</h2>
+    <span>Internship Application Management</span>
+  </div>
+  <div id="adminHeader" class="hidden">
+    <span id="adminEmail"></span>
+    <button class="secondary" id="logoutBtn">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <section id="loginSection" class="panel login-box">
+    <h2>Admin Login</h2>
+    <p class="muted">Login with your institute admin account.</p>
+
+    <form id="loginForm">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" required>
+
+      <label>Password</label>
+      <input type="password" id="loginPassword" required>
+
+      <div class="actions">
+        <button type="submit" id="loginBtn">Login to Dashboard</button>
+      </div>
+    </form>
+    <div id="loginMessage" class="message"></div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="dashboardSection" class="hidden">
+
+    <div class="panel">
+      <h2>Internship Dashboard</h2>
+      <p class="muted">Manage and review student internship applications.</p>
+
+      <div class="stats">
+        <div class="stat">Total Applications<strong id="totalCount">0</strong></div>
+        <div class="stat">New<strong id="newCount">0</strong></div>
+        <div class="stat">Shortlisted<strong id="shortCount">0</strong></div>
+        <div class="stat">Selected<strong id="selectedCount">0</strong></div>
+        <div class="stat">Rejected<strong id="rejectedCount">0</strong></div>
+      </div>
+
+      <div class="actions">
+        <button id="refreshBtn">Refresh Applications</button>
+        <button id="exportBtn" class="secondary">Export CSV</button>
+      </div>
+      <div id="dashboardMessage" class="message"></div>
+    </div>
+
+    <div class="panel">
+      <h3>All Applications</h3>
+
+      <div class="filters">
+        <input id="searchInput" placeholder="Search name, email or phone...">
+
+        <select id="trackFilter">
+          <option value="">All Internship Tracks</option>
+          <option>Web Development</option>
+          <option>Python Programming</option>
+          <option>Data Analytics & Excel AI</option>
+          <option>Cyber Security</option>
+          <option>Artificial Intelligence</option>
+          <option>Database & Backend Basics</option>
+        </select>
+
+        <select id="statusFilter">
+          <option value="">All Status</option>
+          <option value="new">New</option>
+          <option value="shortlisted">Shortlisted</option>
+          <option value="selected">Selected</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Contact</th>
+              <th>Qualification</th>
+              <th>Internship Track</th>
+              <th>Applied On</th>
+              <th>Status</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="applicationsBody">
+            <tr><td colspan="7">Loading applications...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" id="resultCount"></p>
+    </div>
+
+    <div id="detailsBox" class="panel hidden">
+      <h3>Application Details</h3>
+      <div id="detailsContent"></div>
+      <button class="secondary" id="closeDetails">Close Details</button>
+    </div>
+
+  </section>
+</div>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyj1GL0YJHK5pmo0",
+  authDomain: "excel-with-ai.firebaseapp.com",
+  projectId: "excel-with-ai",
+  storageBucket: "excel-with-ai.firebasestorage.app",
+  messagingSenderId: "615391443440",
+  appId: "1:615391443440:web:92b3a15f0e4596abc50535"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = id => document.getElementById(id);
+
+let applications = [];
+let currentAdmin = null;
+
+const allowedStatuses = [
+  "new", "shortlisted", "selected", "rejected"
+];
+
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
+function showMessage(id, message, type="error") {
+  $(id).textContent = message;
+  $(id).className = "message " + type;
+}
+
+function dateText(timestamp) {
+  if (!timestamp) return "—";
+  const date = timestamp.toDate
+    ? timestamp.toDate()
+    : new Date(timestamp);
+  return isNaN(date.getTime())
+    ? "—"
+    : date.toLocaleString("en-IN");
+}
+
+// LOGIN
+$("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  $("loginBtn").disabled = true;
+  showMessage("loginMessage", "Checking login...", "success");
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("loginEmail").value.trim(),
+      $("loginPassword").value
+    );
+  } catch (error) {
+    showMessage("loginMessage", "Login failed: " + error.message);
+  } finally {
+    $("loginBtn").disabled = false;
+  }
+});
+
+// VERIFY ADMIN ROLE
+onAuthStateChanged(auth, async user => {
+  currentAdmin = null;
+  $("dashboardSection").classList.add("hidden");
+  $("adminHeader").classList.add("hidden");
+  $("loginSection").classList.remove("hidden");
+
+  if (!user) return;
+
+  try {
+    const roleRef = doc(db, "userRoles", user.uid);
+    const roleSnap = await getDoc(roleRef);
+
+    if (!roleSnap.exists() || roleSnap.data().role !== "admin") {
+      showMessage(
+        "loginMessage",
+        "Access denied. This account is not an admin."
+      );
+      await signOut(auth);
+      return;
+    }
+
+    currentAdmin = user;
+
+    $("loginSection").classList.add("hidden");
+    $("dashboardSection").classList.remove("hidden");
+    $("adminHeader").classList.remove("hidden");
+    $("adminEmail").textContent = user.email || "Admin";
+
+    await loadApplications();
+
+  } catch (error) {
+    showMessage(
+      "loginMessage",
+      "Admin verification failed: " + error.message
+    );
+    await signOut(auth);
+  }
+});
+
+// LOAD APPLICATIONS
+async function loadApplications() {
+  if (!currentAdmin) return;
+
+  showMessage("dashboardMessage", "Loading applications...", "success");
+
+  try {
+    const snapshot = await getDocs(
+      collection(db, "internshipApplications")
+    );
+
+    applications = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    applications.sort((a, b) => {
+      const dateA = a.createdAt?.toMillis?.() || 0;
+      const dateB = b.createdAt?.toMillis?.() || 0;
+      return dateB - dateA;
+    });
+
+    updateStats();
+    renderApplications();
+
+    showMessage(
+      "dashboardMessage",
+      "Applications loaded successfully.",
+      "success"
+    );
+
+  } catch (error) {
+    showMessage(
+      "dashboardMessage",
+      "Could not load applications: " + error.message
+    );
+  }
+}
+
+// COUNTERS
+function updateStats() {
+  $("totalCount").textContent = applications.length;
+  $("newCount").textContent =
+    applications.filter(a => a.status === "new").length;
+  $("shortCount").textContent =
+    applications.filter(a => a.status === "shortlisted").length;
+  $("selectedCount").textContent =
+    applications.filter(a => a.status === "selected").length;
+  $("rejectedCount").textContent =
+    applications.filter(a => a.status === "rejected").length;
+}
+
+// DISPLAY TABLE
+function renderApplications() {
+  const search = $("searchInput").value.toLowerCase().trim();
+  const track = $("trackFilter").value;
+  const status = $("statusFilter").value;
+
+  const filtered = applications.filter(a => {
+    const text = [
+      a.name, a.email, a.phone, a.college,
+      a.qualification, a.track
+    ].join(" ").toLowerCase();
+
+    return text.includes(search)
+      && (!track || a.track === track)
+      && (!status || a.status === status);
+  });
+
+  $("resultCount").textContent =
+    `Showing ${filtered.length} of ${applications.length} applications`;
+
+  if (!filtered.length) {
+    $("applicationsBody").innerHTML =
+      '<tr><td colspan="7">No applications found.</td></tr>';
+    return;
+  }
+
+  $("applicationsBody").innerHTML = filtered.map(a => `
+    <tr>
+      <td>
+        <strong>${safe(a.name)}</strong><br>
+        <span class="muted">${safe(a.college || "")}</span>
+      </td>
+      <td>
+        ${safe(a.phone)}<br>
+        <span class="muted">${safe(a.email)}</span>
+      </td>
+      <td>${safe(a.qualification)}</td>
+      <td>${safe(a.track)}</td>
+      <td>${safe(dateText(a.createdAt))}</td>
+      <td>
+        <select data-status-id="${safe(a.id)}">
+          ${allowedStatuses.map(s => `
+            <option value="${s}" ${a.status === s ? "selected" : ""}>
+              ${s.charAt(0).toUpperCase() + s.slice(1)}
+            </option>
+          `).join("")}
+        </select>
+      </td>
+      <td>
+        <button class="secondary" data-view-id="${safe(a.id)}">
+          View
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+// UPDATE STATUS
+$("applicationsBody").addEventListener("change", async event => {
+  const id = event.target.dataset.statusId;
+  if (!id || !currentAdmin) return;
+
+  const newStatus = event.target.value;
+  if (!allowedStatuses.includes(newStatus)) return;
+
+  event.target.disabled = true;
+
+  try {
+    await updateDoc(
+      doc(db, "internshipApplications", id),
+      { status: newStatus }
+    );
+
+    const item = applications.find(a => a.id === id);
+    if (item) item.status = newStatus;
+
+    updateStats();
+    renderApplications();
+
+    showMessage(
+      "dashboardMessage",
+      "Application status updated successfully.",
+      "success"
+    );
+
+  } catch (error) {
+    showMessage(
+      "dashboardMessage",
+      "Status update failed: " + error.message
+    );
+    await loadApplications();
+  }
+});
+
+// VIEW DETAILS
+$("applicationsBody").addEventListener("click", event => {
+  const id = event.target.dataset.viewId;
+  if (!id) return;
+
+  const a = applications.find(item => item.id === id);
+  if (!a) return;
+
+  const fields = [
+    ["Application ID", a.id],
+    ["Name", a.name],
+    ["Email", a.email],
+    ["Phone", a.phone],
+    ["Qualification", a.qualification],
+    ["College", a.college],
+    ["Internship Track", a.track],
+    ["Current Skills", a.skills],
+    ["Why do you want to join?", a.motivation],
+    ["Application Status", a.status],
+    ["Applied On", dateText(a.createdAt)],
+    ["Duration", a.programDuration],
+    ["Mode", a.programMode],
+    ["Fee Status", a.feeStatus],
+    ["Certificate Policy", a.certificatePolicy]
+  ];
+
+  $("detailsContent").innerHTML = fields.map(([label, value]) => `
+    <p><strong>${safe(label)}:</strong><br>${safe(value || "—")}</p>
+  `).join("");
+
+  $("detailsBox").classList.remove("hidden");
+  $("detailsBox").scrollIntoView({behavior:"smooth"});
+});
+
+$("closeDetails").addEventListener("click", () => {
+  $("detailsBox").classList.add("hidden");
+});
+
+// SEARCH AND FILTER
+["searchInput", "trackFilter", "statusFilter"].forEach(id => {
+  $(id).addEventListener("input", renderApplications);
+  $(id).addEventListener("change", renderApplications);
+});
+
+// REFRESH
+$("refreshBtn").addEventListener("click", loadApplications);
+
+// CSV EXPORT
+$("exportBtn").addEventListener("click", () => {
+  if (!applications.length) {
+    showMessage("dashboardMessage", "No applications available to export.");
+    return;
+  }
+
+  const headers = [
+    "Application ID", "Name", "Email", "Phone",
+    "Qualification", "College", "Track", "Skills",
+    "Motivation", "Status", "Applied On"
+  ];
+
+  const csvSafe = value => {
+    let text = String(value ?? "").replace(/"/g, '""');
+    if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
+    return `"${text}"`;
+  };
+
+  const rows = applications.map(a => [
+    a.id, a.name, a.email, a.phone,
+    a.qualification, a.college, a.track,
+    a.skills, a.motivation, a.status,
+    dateText(a.createdAt)
+  ]);
+
+  const csv = [headers, ...rows]
+    .map(row => row.map(csvSafe).join(","))
+    .join("\r\n");
+
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    {type:"text/csv;charset=utf-8;"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Internship_Applications.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+// LOGOUT
+$("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+});
+</script>
+
+</body>
+</html>
