@@ -1283,3 +1283,51 @@ h1, h2, h3, h4, p, a, span, small, strong, label, button,
   transform: translateY(-2px);
   filter: brightness(1.12);
 }
+
+/* INTERNSHIP PAGE - ALL TEXT RED */
+body,
+body h1,
+body h2,
+body h3,
+body p,
+body a,
+body span,
+body li,
+body label,
+body b,
+body strong,
+body small,
+body .eyebrow,
+body .track,
+body .step,
+body .eligibility,
+body .footer {
+  color: #ff3030 !important;
+}
+
+/* Gradient heading also red */
+.gradient {
+  background: none !important;
+  color: #ff3030 !important;
+}
+
+/* Form text */
+input,
+select,
+textarea {
+  color: #ff3030 !important;
+  caret-color: #ff3030;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #ff7777 !important;
+}
+
+/* Buttons text */
+button,
+.btn {
+  color: #ff3030 !important;
+}
+
+/* Keep backgrounds, cards and layout unchanged */
