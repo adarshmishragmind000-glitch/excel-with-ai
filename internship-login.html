@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internship Student Portal | Excel with AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#080d1d;color:#fff;
+ font-family:Arial,sans-serif;
+}
+header{
+ padding:20px 6%;background:#111b32;
+ border-bottom:1px solid #293858;
+}
+header a{color:#9dbbff;text-decoration:none}
+main{max-width:650px;margin:55px auto;padding:20px}
+.card{
+ background:#111b32;border:1px solid #293858;
+ border-radius:17px;padding:28px;
+}
+h1{margin-top:0}
+p{color:#b8c5dc;line-height:1.6}
+label{display:block;margin-top:17px;font-size:14px}
+input{
+ width:100%;padding:13px;margin-top:8px;
+ border:1px solid #3a4b6c;border-radius:8px;
+ background:#0a1224;color:white;
+}
+button{
+ margin-top:20px;padding:13px 20px;width:100%;
+ border:0;border-radius:9px;
+ background:linear-gradient(110deg,#4387ff,#7958ef);
+ color:white;font-weight:bold;cursor:pointer;
+}
+button:disabled{opacity:.6}
+#message{margin-top:15px;font-size:14px;overflow-wrap:anywhere}
+.status{
+ margin-top:20px;padding:18px;border-radius:12px;
+ background:#0a142a;border:1px solid #35466a;
+}
+.status strong{font-size:21px}
+.hidden{display:none}
+a{color:#8eb5ff}
+</style>
+</head>
+<body>
+
+<header>
+ <h2>Excel with AI</h2>
+ <a href="internship.html">← Back to Internship</a>
+</header>
+
+<main>
+ <section class="card" id="loginCard">
+  <h1>Student Login</h1>
+  <p>Login to check your Internship Application Status.</p>
+
+  <form id="studentLoginForm">
+   <label>Email Address
+    <input type="email" id="email" required autocomplete="username">
+   </label>
+
+   <label>Password
+    <input type="password" id="password" required
+      autocomplete="current-password">
+   </label>
+
+   <button type="submit" id="loginButton">Login to Portal</button>
+  </form>
+
+  <div id="message"></div>
+ </section>
+
+ <section class="card hidden" id="studentDashboard">
+  <h1>My Internship Dashboard</h1>
+  <p id="studentWelcome"></p>
+
+  <div class="status">
+   <p>Application Status</p>
+   <strong id="applicationStatus">Loading...</strong>
+   <p id="statusDescription"></p>
+  </div>
+
+  <div id="applicationDetails"></div>
+
+  <button id="logoutButton">Logout</button>
+ </section>
+</main>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+import {
+ getAuth,
+ signInWithEmailAndPassword,
+ signOut,
+ onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+import {
+ getFirestore,
+ doc,
+ getDoc
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyCTW9W1E2Fcw4CZzMPtyjG1LY0JHK5pmo0",
+ authDomain: "excel-with-ai.firebaseapp.com",
+ projectId: "excel-with-ai",
+ storageBucket: "excel-with-ai.firebasestorage.app",
+ messagingSenderId: "615391443440",
+ appId: "1:615391443440:web:92b3a15f0e4596abc50535"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = id => document.getElementById(id);
+
+function safe(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+function describeStatus(status){
+ const messages = {
+  new:"Your application has been received and is waiting for review.",
+  shortlisted:"Congratulations! Your application has been shortlisted.",
+  selected:"Congratulations! You have been selected. Please wait for further instructions from the institute.",
+  rejected:"Your application was not selected at this time."
+ };
+ return messages[status] || "Please contact the institute for more information.";
+}
+
+async function showStudent(user){
+ const ref = doc(db,"internshipApplications",user.uid);
+ const snap = await getDoc(ref);
+
+ if(!snap.exists()){
+  $("message").textContent =
+   "No internship application is linked to this account. Please contact the institute.";
+  await signOut(auth);
+  return;
+ }
+
+ const data = snap.data();
+ const status = data.status || "new";
+
+ $("loginCard").classList.add("hidden");
+ $("studentDashboard").classList.remove("hidden");
+
+ $("studentWelcome").textContent =
+  "Welcome, " + (data.name || user.email);
+
+ $("applicationStatus").textContent =
+  status.charAt(0).toUpperCase() + status.slice(1);
+
+ $("statusDescription").textContent = describeStatus(status);
+
+ $("applicationDetails").innerHTML = `
+  <p><b>Application ID:</b><br>${safe(snap.id)}</p>
+  <p><b>Name:</b> ${safe(data.name)}</p>
+  <p><b>Email:</b> ${safe(data.email)}</p>
+  <p><b>Qualification:</b> ${safe(data.qualification)}</p>
+  <p><b>Internship Track:</b> ${safe(data.track)}</p>
+  <p><b>College:</b> ${safe(data.college)}</p>
+ `;
+}
+
+$("studentLoginForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+
+ $("loginButton").disabled = true;
+ $("message").textContent = "Checking login...";
+
+ try{
+  const credential = await signInWithEmailAndPassword(
+   auth,
+   $("email").value.trim().toLowerCase(),
+   $("password").value
+  );
+
+  await showStudent(credential.user);
+
+ }catch(error){
+  console.error(error);
+  $("message").textContent =
+   error.code === "auth/invalid-credential"
+    ? "Incorrect email or password."
+    : error.message;
+ }finally{
+  $("loginButton").disabled = false;
+ }
+});
+
+$("logoutButton").addEventListener("click",async()=>{
+ await signOut(auth);
+ $("studentDashboard").classList.add("hidden");
+ $("loginCard").classList.remove("hidden");
+ $("studentLoginForm").reset();
+ $("message").textContent = "You have logged out.";
+});
+
+onAuthStateChanged(auth,async user=>{
+ if(user){
+  try{
+   await showStudent(user);
+  }catch(error){
+   $("message").textContent =
+    "Could not load your application. Please try again.";
+   console.error(error);
+  }
+ }
+});
+</script>
+</body>
+</html>
