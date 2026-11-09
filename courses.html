@@ -492,7 +492,7 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
           <div class="multi-course-box">
             <div class="multi-course-tools"><button type="button" id="selectAllCourses">Select All</button><button type="button" id="clearSelectedCourses">Clear Selection</button></div>
             <div class="multi-course-list" id="multiCourseList"></div>
-            <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div><div id="feeSummary" style="margin-top:12px;padding:12px;border-radius:10px;background:#101d34;border:1px solid #354767;font-weight:800">Total payable: ₹0</div>
+            <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div><div id="feeSummary" style="margin-top:12px;padding:12px;border-radius:10px;background:#101d34;border:1px solid #354767;font-weight:800">Total payable: ₹0</div><div style="margin-top:8px;font-size:12px;color:#16834a;font-weight:700">🎁 Offer: 3 se zyada courses select karein aur ₹3,500 ki special chhoot paayein!</div>
             
           </div>
         </div>
@@ -555,13 +555,24 @@ const courses = [
 
 const grid=document.getElementById("courseGrid");
 const multiCourseList=document.getElementById("multiCourseList");
+let previousSelectedCount = 0;
 function updateSelectedCourseCount(){
  const selected=getSelectedCourses();
  const count=selected.length;
  document.getElementById("selectedCourseCount").textContent=count+(count===1?" course selected":" courses selected");
- const total=selected.reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
+ const subtotal=selected.reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
+ const discount=count>3?3500:0;
+ const total=Math.max(0,subtotal-discount);
  const summary=document.getElementById("feeSummary");
- if(summary) summary.textContent="Total payable: ₹"+total.toLocaleString("en-IN")+" • "+count+" course(s)";
+ if(summary){
+   summary.innerHTML = count>3
+     ? "Course Total: ₹"+subtotal.toLocaleString("en-IN")+"<br><span style='color:#16a34a'>🎉 Special Group Discount: −₹3,500</span><br><strong>Final Payable: ₹"+total.toLocaleString("en-IN")+"</strong> • "+count+" courses"
+     : "Total payable: ₹"+total.toLocaleString("en-IN")+" • "+count+" course(s)";
+ }
+ if(count>3 && previousSelectedCount<=3){
+   alert("🎉 Special Offer! 3 se zyada courses select karne par ₹3,500 ki chhoot milegi. Aapki discount amount total mein automatically minus kar di gayi hai.");
+ }
+ previousSelectedCount=count;
 }
 function addOptions(){
  multiCourseList.replaceChildren();
@@ -641,7 +652,9 @@ document.getElementById("copyUpiIdBtn").addEventListener("click",async()=>{
 document.getElementById("selectAllCourses").addEventListener("click",()=>setSelectedCourses(courses.map(c=>c.name)));
 document.getElementById("clearSelectedCourses").addEventListener("click",()=>setSelectedCourses([]));
 function getSelectedTotal(){
- return getSelectedCourses().reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
+ const selected=getSelectedCourses();
+ const subtotal=selected.reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
+ return Math.max(0,subtotal-(selected.length>3?3500:0));
 }
 document.getElementById("applyForm").addEventListener("submit",e=>{
  e.preventDefault();
