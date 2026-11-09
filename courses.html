@@ -638,14 +638,6 @@ document.getElementById("clearSelectedCourses").addEventListener("click",()=>set
 function getSelectedTotal(){
  return getSelectedCourses().reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
 }
-document.getElementById("payUpiBtn").addEventListener("click",()=>{
- const selected=getSelectedCourses(), status=document.getElementById("formMessage");
- if(!selected.length){status.textContent="Please select at least one course first.";return;}
- const total=getSelectedTotal();
- const upiUrl="upi://pay?pa=9250332217@upi&am="+encodeURIComponent(String(total))+"&cu=INR&tn="+encodeURIComponent("Course fee: "+selected.join(", "));
- window.location.href=upiUrl;
- status.textContent="Complete payment in your UPI app, return here, then enter your UTR below.";
-});
 document.getElementById("applyForm").addEventListener("submit",e=>{
  e.preventDefault();
  const name=document.getElementById("studentName").value.trim();
