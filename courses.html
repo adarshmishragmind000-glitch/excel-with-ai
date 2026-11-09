@@ -277,7 +277,7 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
   <div class="rl-item"><span class="rl-icon">🎥</span><div><strong>Live Online Classes</strong><small>Classes will be conducted online in live interactive sessions.</small></div></div>
 </div>
 <div class="course-grid" id="courseGrid"></div>
-<div class="payment-info-panel"><h3>💳 Course Fee &amp; UPI Payment</h3><p>Choose one or more courses to see the total fee. Pay using UPI ID adarshmishra2217@upi, then submit your UTR for verification. Registration is not confirmed until payment is verified. All classes are Online Live.</p></div>
+<div class="payment-info-panel"><h3>💳 Course Fee &amp; UPI Payment</h3><p>Choose one or more courses to see the total fee. Pay using UPI ID 9250332217@upi, then submit your UTR for verification. Registration is not confirmed until payment is verified. All classes are Online Live.</p></div>
     </div>
   </div>
 </section>
@@ -356,7 +356,7 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
             <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div><div id="feeSummary" style="margin-top:12px;padding:12px;border-radius:10px;background:#101d34;border:1px solid #354767;font-weight:800">Total payable: ₹0</div>
             <div class="payment-action-panel" style="margin-top:12px;padding:14px;border:1px solid #c7d2fe;border-radius:14px;background:#f5f7ff;color:#172554">
               <div style="font-weight:800;margin-bottom:5px">💳 Step 1: Pay course fee</div>
-              <div style="font-size:13px;margin-bottom:10px">UPI ID: <strong>adarshmishra2217@upi</strong><br>Beneficiary: <strong>Adarsh Mishra</strong> · Google Pay / PhonePe / Paytm</div>
+              <div style="font-size:13px;margin-bottom:10px">UPI ID: <strong>9250332217@upi</strong><br>Beneficiary name will be shown by your UPI app · Google Pay / PhonePe / Paytm</div>
               <button class="btn btn-primary form-submit" id="payUpiBtn" type="button" style="width:100%;margin:0">Pay Total via UPI ↗</button>
               <div style="font-size:12px;margin-top:8px;color:#475569">Payment ke baad yahin wapas aakar UTR number bharein. Payment verify hone ke baad hi registration confirm hoga.</div>
             </div>
@@ -492,7 +492,7 @@ document.getElementById("payUpiBtn").addEventListener("click",()=>{
  const selected=getSelectedCourses(), status=document.getElementById("formMessage");
  if(!selected.length){status.textContent="Please select at least one course first.";return;}
  const total=getSelectedTotal();
- const upiUrl="upi://pay?pa=adarshmishra2217@upi&pn="+encodeURIComponent("Adarsh Mishra")+"&am="+total+"&cu=INR&tn="+encodeURIComponent("Course fee: "+selected.join(", "));
+ const upiUrl="upi://pay?pa=9250332217@upi+"&am="+total+"&cu=INR&tn="+encodeURIComponent("Course fee: "+selected.join(", "));
  window.location.href=upiUrl;
  status.textContent="Complete payment in your UPI app, return here, then enter your UTR below.";
 });
@@ -511,7 +511,7 @@ document.getElementById("applyForm").addEventListener("submit",e=>{
  if(!name||!phone||!selectedCourses.length||!utr){status.textContent="Enter your name, mobile, select course(s), complete payment and enter UTR.";return;}
  if(!/^[0-9+() -]{8,16}$/.test(phone)){status.textContent="Please enter a valid mobile number.";return;}
  if(!/^[A-Za-z0-9-]{8,40}$/.test(utr)){status.textContent="Please enter a valid UPI UTR / transaction reference.";return;}
- const text=["🎓 *Course Payment Verification Request*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Selected Course(s):*",...selectedCourses.map((c,i)=>(i+1)+". "+c+" — ₹"+courses.find(x=>x.name===c).price.toLocaleString("en-IN")),"*Total Amount:* ₹"+total.toLocaleString("en-IN"),"*UPI ID:* adarshmishra2217@upi","*UTR / Transaction ID:* "+utr,"*Payment Status:* Submitted — verification pending","*Class Format:* Online Live Classes","*City/Area:* "+(city||"Not provided"),"*Qualification:* "+(qualification||"Not provided"),"*Career Goal:* "+goal,"*Information Needed:* "+support,"*Question:* "+(message||"Please verify my payment and share registration details."),"","Please verify this payment. I understand registration is not confirmed until the institute verifies the transaction."].join("\\n");
+ const text=["🎓 *Course Payment Verification Request*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Selected Course(s):*",...selectedCourses.map((c,i)=>(i+1)+". "+c+" — ₹"+courses.find(x=>x.name===c).price.toLocaleString("en-IN")),"*Total Amount:* ₹"+total.toLocaleString("en-IN"),"*UPI ID:* 9250332217@upi","*UTR / Transaction ID:* "+utr,"*Payment Status:* Submitted — verification pending","*Class Format:* Online Live Classes","*City/Area:* "+(city||"Not provided"),"*Qualification:* "+(qualification||"Not provided"),"*Career Goal:* "+goal,"*Information Needed:* "+support,"*Question:* "+(message||"Please verify my payment and share registration details."),"","Please verify this payment. I understand registration is not confirmed until the institute verifies the transaction."].join("\\n");
  const url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(text);
  const w=window.open(url,"_blank");
  status.textContent=w?"WhatsApp opened. Press Send to submit your payment verification request. Registration is pending until verified.":"Allow pop-ups and submit the UTR through WhatsApp. Registration remains pending until verified.";
