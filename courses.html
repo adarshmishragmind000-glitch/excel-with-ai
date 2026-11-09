@@ -354,6 +354,12 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
             <div class="multi-course-tools"><button type="button" id="selectAllCourses">Select All</button><button type="button" id="clearSelectedCourses">Clear Selection</button></div>
             <div class="multi-course-list" id="multiCourseList"></div>
             <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div><div id="feeSummary" style="margin-top:12px;padding:12px;border-radius:10px;background:#101d34;border:1px solid #354767;font-weight:800">Total payable: ₹0</div>
+            <div class="payment-action-panel" style="margin-top:12px;padding:14px;border:1px solid #c7d2fe;border-radius:14px;background:#f5f7ff;color:#172554">
+              <div style="font-weight:800;margin-bottom:5px">💳 Step 1: Pay course fee</div>
+              <div style="font-size:13px;margin-bottom:10px">UPI ID: <strong>9250332217@upi</strong> · Google Pay / PhonePe / Paytm</div>
+              <button class="btn btn-primary form-submit" id="payUpiBtn" type="button" style="width:100%;margin:0">Pay Total via UPI ↗</button>
+              <div style="font-size:12px;margin-top:8px;color:#475569">Payment ke baad yahin wapas aakar UTR number bharein. Payment verify hone ke baad hi registration confirm hoga.</div>
+            </div>
           </div>
         </div>
         <div class="field"><label for="studentMode">Preferred Mode</label><select id="studentMode"><option selected>Online Live Classes</option><option>Need information</option></select></div>
@@ -361,10 +367,10 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
         <div class="field"><label for="studentQualification">Qualification</label><input id="studentQualification" maxlength="100" placeholder="e.g. B.Com, MBA, Graduate"></div>
         <div class="field"><label for="studentGoal">Career Goal</label><select id="studentGoal"><option value="Not specified">Select your goal</option><option>Data Analyst</option><option>HR Data Analyst / People Analytics</option><option>MIS Executive</option><option>Business Analyst</option><option>Upskilling / Personal learning</option><option>Other</option></select></div>
         <div class="field full"><label for="studentSupport">What would you like to know?</label><select id="studentSupport"><option>Course syllabus, duration and fees</option><option>Individual computer practicals</option><option>Live projects and portfolio guidance</option><option>Demo class availability</option><option>Placement assistance</option><option>All course details</option></select></div>
-        <div class="field full"><label for="studentUtr">UPI Transaction ID / UTR *</label><input id="studentUtr" required maxlength="40" placeholder="Enter UTR after completing payment"></div><div class="field full"><label for="studentMessage">Question (Optional)</label><textarea id="studentMessage" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batch"></textarea></div>
+        <div class="field full"><label for="studentUtr">UPI Transaction ID / UTR * (payment ke baad bharein)</label><input id="studentUtr" required maxlength="40" placeholder="Enter 12-digit UTR / transaction reference"></div><div class="field full"><label for="studentMessage">Question (Optional)</label><textarea id="studentMessage" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batch"></textarea></div>
       </div>
       <p class="form-help">1. Select course(s). 2. Pay the exact total via UPI. 3. Enter UTR and submit. Registration remains pending until payment is verified by the institute.</p>
-      <button class="btn btn-outline form-submit" id="payUpiBtn" type="button">Pay Total via UPI ↗</button><button class="btn btn-primary form-submit" type="submit">Submit Payment for Verification ↗</button>
+      <button class="btn btn-primary form-submit" type="submit">Submit Payment for Verification ↗</button>
       <p id="formMessage" aria-live="polite"></p>
     </form>
   </div>
