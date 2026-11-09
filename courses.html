@@ -179,7 +179,30 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
 @media(max-width:850px){.hero-premium-grid{grid-template-columns:1fr!important}.hero-visual{min-height:270px}.proof-grid{grid-template-columns:repeat(2,1fr)}.career-banner{flex-wrap:wrap}.career-banner>div:nth-child(2){min-width:calc(100% - 90px)}}
 @media(max-width:560px){.hero-premium{padding:40px 0 30px}.hero-premium h1{font-size:44px;letter-spacing:-1.8px}.hero-visual{min-height:235px}.visual-main-card{padding:16px;width:86%}.visual-graph{height:115px}.visual-orbit{width:230px;height:230px}.orbit-two{width:180px;height:180px}.float-skill{font-size:10px;padding:9px 10px}.skill-excel{left:-4px;top:18px}.skill-ai{right:-4px;top:30px}.skill-data{right:-3px;bottom:5px}.proof-grid{gap:14px 6px}.proof-grid>div{justify-content:flex-start;font-size:10px}.catalog-intro{align-items:flex-start;flex-direction:column}.catalog-intro .btn{width:100%}.career-banner{padding:19px;gap:12px}.career-banner h2{font-size:20px}.career-banner>div:nth-child(2){min-width:100%}.career-banner .btn{width:100%}.course-body p{min-height:0}}
 
+
+/* Layout repair: keep filters in the left column and all course content in the right column */
+.catalog-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start;width:100%}
+.catalog-layout>.filter-panel{grid-column:1;grid-row:1;min-width:0}
+.catalog-layout>.catalog-main{grid-column:2;grid-row:1;min-width:0;width:100%}
+.catalog-main>.registration-live-strip{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.catalog-main>.course-grid{display:grid;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+.catalog-main>.payment-info-panel{width:100%;margin:18px 0 0}
+.course-card{min-width:0;width:100%}
+@media(max-width:900px){.catalog-layout{grid-template-columns:190px minmax(0,1fr)}.catalog-main>.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.catalog-layout{grid-template-columns:1fr}.catalog-layout>.filter-panel,.catalog-layout>.catalog-main{grid-column:1;grid-row:auto}.catalog-main>.registration-live-strip{grid-template-columns:1fr}.catalog-main>.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.catalog-main>.course-grid{grid-template-columns:1fr}}
 </style>
+
+<style>
+/* Registration-first and live online class highlights */
+.registration-live-strip{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px auto 28px;padding:16px;border:1px solid #dfe5fb;border-radius:18px;background:linear-gradient(110deg,#f4f5ff,#f0fbff)}
+.registration-live-strip .rl-item{display:flex;align-items:center;gap:12px;color:#24304b}.registration-live-strip .rl-icon{width:42px;height:42px;display:grid;place-items:center;flex:none;border-radius:13px;background:#fff;font-size:21px;box-shadow:0 4px 12px #27345a10}.registration-live-strip strong{display:block;font-size:13px}.registration-live-strip small{display:block;color:#758099;font-size:11px;margin-top:3px}
+.course-payment-note{margin:12px 0 10px;padding:10px 11px;border:1px solid #dcefe7;border-radius:12px;background:#f2fbf6}.course-payment-note strong{display:block;color:#14784b;font-size:11px}.course-payment-note span{display:block;color:#647b70;font-size:10px;margin-top:3px;line-height:1.45}
+.payment-info-panel{margin:20px auto 0;padding:18px 20px;border-radius:18px;border:1px solid #dcefe7;background:linear-gradient(110deg,#f1fbf6,#f5f7ff);color:#24304b}.payment-info-panel h3{margin:0 0 5px;font-size:16px}.payment-info-panel p{margin:0;color:#6d7890;font-size:12px;line-height:1.6}
+.live-class-note{margin:12px 0;padding:12px 14px;border-radius:12px;background:#f1f5ff;border:1px solid #dfe6ff;color:#35436a;font-size:12px;line-height:1.6}.live-class-note strong{color:#493de0}
+@media(max-width:560px){.registration-live-strip{grid-template-columns:1fr;gap:12px}.registration-live-strip{padding:13px}.payment-info-panel{padding:15px}}
+</style>
+
 </head>
 <body>
 
@@ -248,7 +271,14 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
       </div></div>
       <div class="filter-group"><strong>Learning level</strong><span class="filter-hint">Choose a course level from the course cards.</span><button type="button" class="reset-link" id="resetCourseFilters">↻ Reset filters</button></div>
     </aside>
-    <div class="course-grid" id="courseGrid"></div>
+    <div class="catalog-main">
+    <div class="registration-live-strip" aria-label="Registration and class information">
+  <div class="rl-item"><span class="rl-icon">📝</span><div><strong>Register First — No Upfront Payment</strong><small>Submit your registration now. Fee details will be shared separately.</small></div></div>
+  <div class="rl-item"><span class="rl-icon">🎥</span><div><strong>Live Online Classes</strong><small>Classes will be conducted online in live interactive sessions.</small></div></div>
+</div>
+<div class="course-grid" id="courseGrid"></div>
+<div class="payment-info-panel"><h3>💳 Course Fee &amp; UPI Payment</h3><p>Choose one or more courses to see the total fee. Pay using UPI ID 9250332217@upi, then submit your UTR for verification. Registration is not confirmed until payment is verified. All classes are Online Live.</p></div>
+    </div>
   </div>
 </section>
 
@@ -312,8 +342,8 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
 <div class="modal" id="applyModal" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
   <div class="modal-box">
     <button class="modal-close" type="button" data-close="applyModal" aria-label="Close">×</button>
-    <span class="eyebrow">COURSE ENQUIRY</span><h2 id="applyTitle">Apply / Enquire Online</h2>
-    <p>Fill in your details. WhatsApp will open with a ready-to-send enquiry message.</p>
+    <span class="eyebrow">PAY & REGISTER</span><h2 id="applyTitle">Course Registration</h2>
+    <p>Select course(s), pay the total through UPI, then submit your transaction reference for verification.</p><div class="live-class-note">🎥 <strong>All classes: Online Live</strong><br>Registration is confirmed only after the institute verifies the payment. Returning from the UPI app alone does not prove payment.</div>
     <form id="applyForm">
       <div class="form-grid">
         <div class="field"><label for="studentName">Full Name *</label><input id="studentName" required maxlength="80" autocomplete="name" placeholder="Your full name"></div>
@@ -323,18 +353,18 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
           <div class="multi-course-box">
             <div class="multi-course-tools"><button type="button" id="selectAllCourses">Select All</button><button type="button" id="clearSelectedCourses">Clear Selection</button></div>
             <div class="multi-course-list" id="multiCourseList"></div>
-            <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div>
+            <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div><div id="feeSummary" style="margin-top:12px;padding:12px;border-radius:10px;background:#101d34;border:1px solid #354767;font-weight:800">Total payable: ₹0</div>
           </div>
         </div>
-        <div class="field"><label for="studentMode">Preferred Mode</label><select id="studentMode"><option>Need information</option><option>Online</option><option>Offline / Classroom</option></select></div>
+        <div class="field"><label for="studentMode">Preferred Mode</label><select id="studentMode"><option selected>Online Live Classes</option><option>Need information</option></select></div>
         <div class="field"><label for="studentCity">City / Area</label><input id="studentCity" maxlength="80" placeholder="Your city or area"></div>
         <div class="field"><label for="studentQualification">Qualification</label><input id="studentQualification" maxlength="100" placeholder="e.g. B.Com, MBA, Graduate"></div>
         <div class="field"><label for="studentGoal">Career Goal</label><select id="studentGoal"><option value="Not specified">Select your goal</option><option>Data Analyst</option><option>HR Data Analyst / People Analytics</option><option>MIS Executive</option><option>Business Analyst</option><option>Upskilling / Personal learning</option><option>Other</option></select></div>
         <div class="field full"><label for="studentSupport">What would you like to know?</label><select id="studentSupport"><option>Course syllabus, duration and fees</option><option>Individual computer practicals</option><option>Live projects and portfolio guidance</option><option>Demo class availability</option><option>Placement assistance</option><option>All course details</option></select></div>
-        <div class="field full"><label for="studentMessage">Question (Optional)</label><textarea id="studentMessage" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batch"></textarea></div>
+        <div class="field full"><label for="studentUtr">UPI Transaction ID / UTR *</label><input id="studentUtr" required maxlength="40" placeholder="Enter UTR after completing payment"></div><div class="field full"><label for="studentMessage">Question (Optional)</label><textarea id="studentMessage" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batch"></textarea></div>
       </div>
-      <p class="form-help">Your details are added to a WhatsApp message. Review it and press Send in WhatsApp to submit.</p>
-      <button class="btn btn-primary form-submit" type="submit">Continue to WhatsApp ↗</button>
+      <p class="form-help">1. Select course(s). 2. Pay the exact total via UPI. 3. Enter UTR and submit. Registration remains pending until payment is verified by the institute.</p>
+      <button class="btn btn-outline form-submit" id="payUpiBtn" type="button">Pay Total via UPI ↗</button><button class="btn btn-primary form-submit" type="submit">Submit Payment for Verification ↗</button>
       <p id="formMessage" aria-live="polite"></p>
     </form>
   </div>
@@ -344,33 +374,37 @@ footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box
 const WHATSAPP_NUMBER = "919250332217";
 
 const courses = [
- {name:"Excel with AI",category:"Office",icon:"📊",tag:"FEATURED COURSE",level:"Beginner friendly",description:"Learn spreadsheet skills and explore how AI tools can assist with everyday work.",topics:["Excel interface and workbook basics","Formulas and useful functions","Data cleaning, charts and dashboards","AI-assisted productivity and practical projects"]},
- {name:"Advanced Excel",category:"Office",icon:"📈",tag:"OFFICE PRODUCTIVITY",level:"Basic Excel helpful",description:"Build spreadsheet skills for data organisation, reporting and analysis.",topics:["Important formulas and functions","Sorting, filtering and data validation","PivotTables and charts","Dashboards and practical spreadsheet projects"]},
- {name:"AI Tools & Productivity",category:"Technology",icon:"🤖",tag:"ARTIFICIAL INTELLIGENCE",level:"Foundation",description:"Explore AI tools and responsible ways to use them for learning and productivity.",topics:["AI fundamentals","Prompt writing basics","AI-assisted documents and presentations","Practical productivity workflows"]},
- {name:"Python Programming",category:"Development",icon:"🐍",tag:"PROGRAMMING",level:"Beginner to intermediate",description:"Learn programming concepts and build small projects step by step.",topics:["Variables and data types","Conditions, loops and functions","Lists, dictionaries and files","Practice programs and mini projects"]},
- {name:"Web Designing",category:"Development",icon:"🌐",tag:"WEBSITE CREATION",level:"Beginner friendly",description:"Learn the fundamentals of building attractive and responsive web pages.",topics:["HTML structure and semantic elements","CSS layouts, colours and typography","Responsive design for mobile","JavaScript basics and interactive pages"]},
- {name:"Full Stack Development",category:"Development",icon:"⚡",tag:"WEB DEVELOPMENT",level:"Project based",description:"Explore front-end and back-end web development through guided projects.",topics:["HTML, CSS and JavaScript","Front-end development fundamentals","Server and API concepts","Database basics, deployment and projects"]},
- {name:"Tally Prime & GST",category:"Business",icon:"🧾",tag:"ACCOUNTING",level:"Practical learning",description:"Explore accounting workflows and common business bookkeeping tasks.",topics:["Company and ledger creation","Vouchers and accounting entries","Inventory basics","GST concepts and reports, as applicable"]},
- {name:"Computer Fundamentals",category:"Computer",icon:"💻",tag:"COMPUTER BASICS",level:"Beginner",description:"Build a foundation in computer use, operating systems and digital skills.",topics:["Computer hardware and software","Operating system basics","Files, folders and typing practice","Internet, email and digital safety"]},
- {name:"O Level",category:"Computer",icon:"🎓",tag:"EXAM PREPARATION",level:"Structured learning",description:"Study computer topics and practise relevant theory and practical concepts.",topics:["IT tools and network basics","Web design fundamentals","Python programming concepts","IoT concepts and relevant practicals"]},
- {name:"CCC",category:"Computer",icon:"📘",tag:"DIGITAL LITERACY",level:"Beginner",description:"Learn essential digital literacy and common computer tasks.",topics:["Computer and operating system basics","Word processing and spreadsheets","Internet, email and online services","Digital payments and cyber safety"]},
- {name:"Data Analysis",category:"Technology",icon:"📉",tag:"DATA SKILLS",level:"Foundation",description:"Explore data organisation, analysis and visual reporting concepts.",topics:["Organising and cleaning data","Spreadsheet analysis","Charts and visualisation","Reports and practical exercises"]},
- {name:"Cyber Security",category:"Technology",icon:"🛡️",tag:"DIGITAL SAFETY",level:"Foundation",description:"Learn cybersecurity fundamentals and safer digital practices.",topics:["Cybersecurity concepts and threats","Passwords, phishing and account safety","Network and device security basics","Responsible security awareness"]},
- {name:"Advanced Excel with MIS Reporting",category:"Analytics",icon:"📊",tag:"DATA ANALYTICS",level:"Beginner to advanced",description:"Learn advanced spreadsheet analysis, MIS reporting and professional dashboards.",topics:["Advanced formulas and functions","Data cleaning, PivotTables and Power Query concepts","MIS reports and KPI tracking","Interactive Excel dashboards and reporting projects"]},
- {name:"Google Sheets for Analytics",category:"Analytics",icon:"📑",tag:"COLLABORATIVE ANALYTICS",level:"Beginner friendly",description:"Use Google Sheets to organise, analyse and share business data.",topics:["Spreadsheet structure and formulas","Data validation, filters and pivot tables","Charts, reports and dashboards","Collaboration and workflow automation basics"]},
- {name:"SQL for Data Analytics",category:"Analytics",icon:"🗄️",tag:"DATABASE ANALYTICS",level:"Beginner to intermediate",description:"Query structured datasets and extract useful business insights using SQL.",topics:["SELECT, WHERE, ORDER BY and GROUP BY","Aggregate functions and filtering","JOINs and subqueries","Practical employee and business dataset queries"]},
- {name:"Power BI with DAX",category:"Analytics",icon:"📈",tag:"BUSINESS INTELLIGENCE",level:"Beginner to intermediate",description:"Transform data into interactive reports and dashboards with Power BI.",topics:["Importing and transforming data","Data modelling and relationships","DAX measures and calculated columns","Interactive dashboards and report projects"]},
- {name:"Statistics for Data Analytics",category:"Analytics",icon:"📐",tag:"ANALYTICS FOUNDATION",level:"Foundation",description:"Understand the statistical concepts used to interpret and communicate data.",topics:["Mean, median, mode and dispersion","Percentages, distributions and probability basics","Correlation and trend interpretation","Sampling and practical data interpretation"]},
- {name:"Python for Data Analytics",category:"Analytics",icon:"🐍",tag:"PYTHON ANALYTICS",level:"Beginner to intermediate",description:"Use Python libraries to clean, analyse and explore datasets.",topics:["Python foundations for data work","NumPy arrays and numerical operations","Pandas DataFrames and data cleaning","Exploratory analysis and practical datasets"]},
- {name:"HR Analytics / People Analytics",category:"Analytics",icon:"👥",tag:"HR DATA ANALYTICS",level:"Career-focused",description:"Analyse workforce data to understand recruitment, attendance, payroll and employee trends.",topics:["Employee master data and HR metrics","Recruitment funnel and hiring analysis","Attendance, leave and payroll analysis","Attrition, retention and HR dashboards"]},
- {name:"Data Analytics Career Track",category:"Analytics",icon:"🚀",tag:"COMBINED LEARNING PATH",level:"Multi-skill pathway",description:"A combined learning pathway covering key tools used in data analytics. Apply separately for individual courses if you want only selected skills.",topics:["Advanced Excel and Google Sheets","SQL and Statistics foundations","Power BI dashboards with DAX","Python with Pandas and NumPy","Portfolio-oriented analytics project ideas"]}
+ {name:"Excel with AI",category:"Office",price:2499,icon:"📊",tag:"FEATURED COURSE",level:"Beginner friendly",description:"Learn spreadsheet skills and explore how AI tools can assist with everyday work.",topics:["Excel interface and workbook basics","Formulas and useful functions","Data cleaning, charts and dashboards","AI-assisted productivity and practical projects"]},
+ {name:"Advanced Excel",category:"Office",price:2499,icon:"📈",tag:"OFFICE PRODUCTIVITY",level:"Basic Excel helpful",description:"Build spreadsheet skills for data organisation, reporting and analysis.",topics:["Important formulas and functions","Sorting, filtering and data validation","PivotTables and charts","Dashboards and practical spreadsheet projects"]},
+ {name:"AI Tools & Productivity",category:"Technology",price:2499,icon:"🤖",tag:"ARTIFICIAL INTELLIGENCE",level:"Foundation",description:"Explore AI tools and responsible ways to use them for learning and productivity.",topics:["AI fundamentals","Prompt writing basics","AI-assisted documents and presentations","Practical productivity workflows"]},
+ {name:"Python Programming",category:"Development",price:2499,icon:"🐍",tag:"PROGRAMMING",level:"Beginner to intermediate",description:"Learn programming concepts and build small projects step by step.",topics:["Variables and data types","Conditions, loops and functions","Lists, dictionaries and files","Practice programs and mini projects"]},
+ {name:"Web Designing",category:"Development",price:2499,icon:"🌐",tag:"WEBSITE CREATION",level:"Beginner friendly",description:"Learn the fundamentals of building attractive and responsive web pages.",topics:["HTML structure and semantic elements","CSS layouts, colours and typography","Responsive design for mobile","JavaScript basics and interactive pages"]},
+ {name:"Full Stack Development",category:"Development",price:2499,icon:"⚡",tag:"WEB DEVELOPMENT",level:"Project based",description:"Explore front-end and back-end web development through guided projects.",topics:["HTML, CSS and JavaScript","Front-end development fundamentals","Server and API concepts","Database basics, deployment and projects"]},
+ {name:"Tally Prime & GST",category:"Business",price:2499,icon:"🧾",tag:"ACCOUNTING",level:"Practical learning",description:"Explore accounting workflows and common business bookkeeping tasks.",topics:["Company and ledger creation","Vouchers and accounting entries","Inventory basics","GST concepts and reports, as applicable"]},
+ {name:"Computer Fundamentals",category:"Computer",price:2499,icon:"💻",tag:"COMPUTER BASICS",level:"Beginner",description:"Build a foundation in computer use, operating systems and digital skills.",topics:["Computer hardware and software","Operating system basics","Files, folders and typing practice","Internet, email and digital safety"]},
+ {name:"O Level",category:"Computer",price:5999,icon:"🎓",tag:"EXAM PREPARATION",level:"Structured learning",description:"Study computer topics and practise relevant theory and practical concepts.",topics:["IT tools and network basics","Web design fundamentals","Python programming concepts","IoT concepts and relevant practicals"]},
+ {name:"CCC",category:"Computer",price:1099,icon:"📘",tag:"DIGITAL LITERACY",level:"Beginner",description:"Learn essential digital literacy and common computer tasks.",topics:["Computer and operating system basics","Word processing and spreadsheets","Internet, email and online services","Digital payments and cyber safety"]},
+ {name:"Data Analysis",category:"Technology",price:2499,icon:"📉",tag:"DATA SKILLS",level:"Foundation",description:"Explore data organisation, analysis and visual reporting concepts.",topics:["Organising and cleaning data","Spreadsheet analysis","Charts and visualisation","Reports and practical exercises"]},
+ {name:"Cyber Security",category:"Technology",price:2499,icon:"🛡️",tag:"DIGITAL SAFETY",level:"Foundation",description:"Learn cybersecurity fundamentals and safer digital practices.",topics:["Cybersecurity concepts and threats","Passwords, phishing and account safety","Network and device security basics","Responsible security awareness"]},
+ {name:"Advanced Excel with MIS Reporting",category:"Analytics",price:2499,icon:"📊",tag:"DATA ANALYTICS",level:"Beginner to advanced",description:"Learn advanced spreadsheet analysis, MIS reporting and professional dashboards.",topics:["Advanced formulas and functions","Data cleaning, PivotTables and Power Query concepts","MIS reports and KPI tracking","Interactive Excel dashboards and reporting projects"]},
+ {name:"Google Sheets for Analytics",category:"Analytics",price:2499,icon:"📑",tag:"COLLABORATIVE ANALYTICS",level:"Beginner friendly",description:"Use Google Sheets to organise, analyse and share business data.",topics:["Spreadsheet structure and formulas","Data validation, filters and pivot tables","Charts, reports and dashboards","Collaboration and workflow automation basics"]},
+ {name:"SQL for Data Analytics",category:"Analytics",price:2499,icon:"🗄️",tag:"DATABASE ANALYTICS",level:"Beginner to intermediate",description:"Query structured datasets and extract useful business insights using SQL.",topics:["SELECT, WHERE, ORDER BY and GROUP BY","Aggregate functions and filtering","JOINs and subqueries","Practical employee and business dataset queries"]},
+ {name:"Power BI with DAX",category:"Analytics",price:2499,icon:"📈",tag:"BUSINESS INTELLIGENCE",level:"Beginner to intermediate",description:"Transform data into interactive reports and dashboards with Power BI.",topics:["Importing and transforming data","Data modelling and relationships","DAX measures and calculated columns","Interactive dashboards and report projects"]},
+ {name:"Statistics for Data Analytics",category:"Analytics",price:2499,icon:"📐",tag:"ANALYTICS FOUNDATION",level:"Foundation",description:"Understand the statistical concepts used to interpret and communicate data.",topics:["Mean, median, mode and dispersion","Percentages, distributions and probability basics","Correlation and trend interpretation","Sampling and practical data interpretation"]},
+ {name:"Python for Data Analytics",category:"Analytics",price:2499,icon:"🐍",tag:"PYTHON ANALYTICS",level:"Beginner to intermediate",description:"Use Python libraries to clean, analyse and explore datasets.",topics:["Python foundations for data work","NumPy arrays and numerical operations","Pandas DataFrames and data cleaning","Exploratory analysis and practical datasets"]},
+ {name:"HR Analytics / People Analytics",category:"Analytics",price:2499,icon:"👥",tag:"HR DATA ANALYTICS",level:"Career-focused",description:"Analyse workforce data to understand recruitment, attendance, payroll and employee trends.",topics:["Employee master data and HR metrics","Recruitment funnel and hiring analysis","Attendance, leave and payroll analysis","Attrition, retention and HR dashboards"]},
+ {name:"Data Analytics Career Track",category:"Analytics",price:2499,icon:"🚀",tag:"COMBINED LEARNING PATH",level:"Multi-skill pathway",description:"A combined learning pathway covering key tools used in data analytics. Apply separately for individual courses if you want only selected skills.",topics:["Advanced Excel and Google Sheets","SQL and Statistics foundations","Power BI dashboards with DAX","Python with Pandas and NumPy","Portfolio-oriented analytics project ideas"]}
 ];
 
 const grid=document.getElementById("courseGrid");
 const multiCourseList=document.getElementById("multiCourseList");
 function updateSelectedCourseCount(){
- const count=multiCourseList.querySelectorAll('input[type="checkbox"]:checked').length;
- document.getElementById("selectedCourseCount").textContent=count+ (count===1?" course selected":" courses selected");
+ const selected=getSelectedCourses();
+ const count=selected.length;
+ document.getElementById("selectedCourseCount").textContent=count+(count===1?" course selected":" courses selected");
+ const total=selected.reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
+ const summary=document.getElementById("feeSummary");
+ if(summary) summary.textContent="Total payable: ₹"+total.toLocaleString("en-IN")+" • "+count+" course(s)";
 }
 function addOptions(){
  multiCourseList.replaceChildren();
@@ -409,7 +443,7 @@ function renderCourses(filter=activeFilter){
   const actions=document.createElement("div");actions.className="course-actions";
   const details=document.createElement("button");details.className="btn btn-outline";details.type="button";details.textContent="View Details";details.addEventListener("click",()=>openDetails(c.name));
   const apply=document.createElement("button");apply.className="btn btn-primary apply-card-btn";apply.type="button";apply.innerHTML='Apply Now <span aria-hidden="true">↗</span>';apply.addEventListener("click",()=>openApply(c.name));
-  actions.append(details,apply);const applyHint=document.createElement("div");applyHint.className="apply-hint";applyHint.textContent="Enquire about this course";body.append(title,desc,meta,actions,applyHint);card.append(art,body);grid.appendChild(card);
+  actions.append(details,apply);const payment=document.createElement("div");payment.className="course-payment-note";payment.innerHTML=`<strong>₹${c.price.toLocaleString("en-IN")} <small style="font-weight:600">/ course</small></strong><span>Online Live Classes • UPI Payment</span>`;const applyHint=document.createElement("div");applyHint.className="apply-hint";applyHint.textContent="Choose one or multiple courses and register";body.append(title,desc,meta,payment,actions,applyHint);card.append(art,body);grid.appendChild(card);
  });
 }
 function openDetails(name){
@@ -445,25 +479,36 @@ document.getElementById("clearFilters").addEventListener("click",resetCourseFilt
 document.getElementById("resetCourseFilters").addEventListener("click",resetCourseFilters);
 document.getElementById("selectAllCourses").addEventListener("click",()=>setSelectedCourses(courses.map(c=>c.name)));
 document.getElementById("clearSelectedCourses").addEventListener("click",()=>setSelectedCourses([]));
+function getSelectedTotal(){
+ return getSelectedCourses().reduce((sum,name)=>sum+(courses.find(c=>c.name===name)?.price||0),0);
+}
+document.getElementById("payUpiBtn").addEventListener("click",()=>{
+ const selected=getSelectedCourses(), status=document.getElementById("formMessage");
+ if(!selected.length){status.textContent="Please select at least one course first.";return;}
+ const total=getSelectedTotal();
+ const upiUrl="upi://pay?pa=9250332217@upi&pn="+encodeURIComponent("Disha Computer Education")+"&am="+total+"&cu=INR&tn="+encodeURIComponent("Course fee: "+selected.join(", "));
+ window.location.href=upiUrl;
+ status.textContent="Complete payment in your UPI app, return here, then enter your UTR below.";
+});
 document.getElementById("applyForm").addEventListener("submit",e=>{
  e.preventDefault();
  const name=document.getElementById("studentName").value.trim();
  const phone=document.getElementById("studentPhone").value.trim();
- const selectedCourses=getSelectedCourses();
- const mode=document.getElementById("studentMode").value;
+ const selectedCourses=getSelectedCourses(), total=getSelectedTotal();
+ const utr=document.getElementById("studentUtr").value.trim();
  const city=document.getElementById("studentCity").value.trim();
  const qualification=document.getElementById("studentQualification").value.trim();
  const goal=document.getElementById("studentGoal").value;
  const support=document.getElementById("studentSupport").value;
  const message=document.getElementById("studentMessage").value.trim();
  const status=document.getElementById("formMessage");
- if(!name||!phone||selectedCourses.length===0){status.textContent="Please fill in your name, mobile number and select at least one course.";return}
- if(!/^[0-9+() -]{8,16}$/.test(phone)){status.textContent="Please enter a valid mobile number.";return}
- const text=["🎓 *New Course Enquiry — Excel with AI*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Selected Course(s):*",...selectedCourses.map((c,i)=>(i+1)+". "+c),"*Preferred Mode:* "+mode,"*City/Area:* "+(city||"Not provided"),"*Qualification:* "+(qualification||"Not provided"),"*Career Goal:* "+goal,"*Information Needed:* "+support,"*Question:* "+(message||"Please share course details."),"","Please share the course fees, duration, syllabus, practical schedule, live project and portfolio details, demo class availability and placement assistance information (if available)."].join("\n");
+ if(!name||!phone||!selectedCourses.length||!utr){status.textContent="Enter your name, mobile, select course(s), complete payment and enter UTR.";return;}
+ if(!/^[0-9+() -]{8,16}$/.test(phone)){status.textContent="Please enter a valid mobile number.";return;}
+ if(!/^[A-Za-z0-9-]{8,40}$/.test(utr)){status.textContent="Please enter a valid UPI UTR / transaction reference.";return;}
+ const text=["🎓 *Course Payment Verification Request*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Selected Course(s):*",...selectedCourses.map((c,i)=>(i+1)+". "+c+" — ₹"+courses.find(x=>x.name===c).price.toLocaleString("en-IN")),"*Total Amount:* ₹"+total.toLocaleString("en-IN"),"*UPI ID:* 9250332217@upi","*UTR / Transaction ID:* "+utr,"*Payment Status:* Submitted — verification pending","*Class Format:* Online Live Classes","*City/Area:* "+(city||"Not provided"),"*Qualification:* "+(qualification||"Not provided"),"*Career Goal:* "+goal,"*Information Needed:* "+support,"*Question:* "+(message||"Please verify my payment and share registration details."),"","Please verify this payment. I understand registration is not confirmed until the institute verifies the transaction."].join("\\n");
  const url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(text);
  const w=window.open(url,"_blank");
- if(w){status.textContent="WhatsApp opened. Review the message and press Send to submit your enquiry."}
- else{status.textContent="Allow pop-ups, then open this WhatsApp link: "+url}
+ status.textContent=w?"WhatsApp opened. Press Send to submit your payment verification request. Registration is pending until verified.":"Allow pop-ups and submit the UTR through WhatsApp. Registration remains pending until verified.";
 });
 document.getElementById("menuBtn").addEventListener("click",()=>document.getElementById("navLinks").classList.toggle("open"));
 document.querySelectorAll("#navLinks a").forEach(a=>a.addEventListener("click",()=>document.getElementById("navLinks").classList.remove("open")));
