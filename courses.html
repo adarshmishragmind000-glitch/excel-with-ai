@@ -81,6 +81,14 @@ footer{border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 .field{display:flex;flex-direction:column;gap:6px;margin:9px 0}
 .field.full{grid-column:1/-1}
+.multi-course-box{border:1px solid #354767;border-radius:12px;padding:12px;background:#080f20;max-height:230px;overflow:auto}
+.multi-course-tools{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.multi-course-tools button{border:1px solid #536486;background:#17233c;color:#e8edff;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700}
+.multi-course-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.multi-course-option{display:flex;align-items:flex-start;gap:8px;padding:8px;border:1px solid #273a5b;border-radius:8px;font-size:12px;color:#e1e9fb;cursor:pointer}
+.multi-course-option input{accent-color:#a34cff;margin:3px 0 0}
+.multi-course-count{font-size:12px;color:#ff8eaf;font-weight:800;margin-top:9px}
+@media(max-width:560px){.multi-course-list{grid-template-columns:1fr}}
 .field label{font-size:12px;color:#c6d5ee;font-weight:700}
 .field input,.field select,.field textarea{width:100%;min-width:0;padding:12px;color:white;background:#080f20;border:1px solid #354767;border-radius:9px;outline:none}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:#ff4776}
@@ -111,6 +119,66 @@ footer{border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font
 .whatsapp-float{right:10px;bottom:10px;padding:12px 14px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}.reveal{opacity:1;transform:none}}
+
+/* Modern light course catalogue inspired by the supplied reference */
+:root{--bg:#f4f7ff;--card:#fff;--border:#e4e9f4;--text:#17213c;--muted:#68738d;--purple:#5745f5}
+body{background:#f5f7fc;color:#17213c}
+.navbar{background:#ffffffed;border-bottom:1px solid #e7ebf4;box-shadow:0 3px 16px #24345a08}
+.brand{color:#182443}.brand span{color:#5949ef}.brand small{color:#8791a8}
+.nav-links a{color:#45516b}.nav-links a:hover{color:#5848ef}
+.menu-btn{color:#273452;border-color:#dce2ef}
+.btn-primary{background:linear-gradient(110deg,#5a49f4,#7654ed);box-shadow:0 7px 18px #5a49f42b}
+.btn-outline{color:#4c5872;border:1px solid #d8deeb;background:#fff}
+.hero{padding:48px 0 42px;text-align:left;background:linear-gradient(110deg,#f4f6ff,#fff 60%,#eff5ff);border-bottom:1px solid #e8edf7}
+.hero .container{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:28px}
+.hero h1{font-size:clamp(34px,4vw,52px);letter-spacing:-1.6px;margin:13px 0;color:#17213c}
+.hero p{margin:0;max-width:540px;color:#68738d}.hero .eyebrow{border:0;background:#ecebff;color:#5745e9}
+.hero:after{content:'📊 　💻 　🤖';display:flex;align-items:center;justify-content:center;min-height:150px;border-radius:24px;background:linear-gradient(135deg,#e8eaff,#f0f6ff);font-size:48px;box-shadow:inset 0 0 0 1px #e1e7fa}
+.hero-actions{justify-content:flex-start;margin-top:22px}.hero-note{color:#77829a}
+.stats{margin-top:0;padding:18px 0;display:flex;justify-content:flex-start;gap:12px}
+.stat{background:#fff;border:1px solid #e5eaf4;border-radius:12px;padding:12px 22px;min-width:145px;text-align:left;box-shadow:0 5px 18px #24345a08}
+.stat strong{font-size:21px;color:#5849ef}.stat span{color:#748099}
+.section{padding:42px 0}.section-head{margin-bottom:20px}.section-head h2{color:#182442;font-size:32px}.section-head p{color:#748099}
+.eyebrow{color:#5c4bea;border-color:#e4e1ff;background:#f0efff}
+.catalog-toolbar{display:flex;justify-content:space-between;align-items:center;color:#8490a5;font-size:12px;margin:4px 0 13px}
+.catalog-toolbar label{display:flex;align-items:center;gap:9px}.catalog-toolbar select{border:1px solid #e1e6f0;border-radius:8px;padding:8px 28px 8px 10px;background:#fff;color:#34415e}
+.catalog-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start}
+.filter-panel{background:#fff;border:1px solid #e5eaf3;border-radius:13px;padding:17px;box-shadow:0 6px 22px #24345a08;position:sticky;top:90px}
+.filter-title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px;margin-bottom:16px}.filter-title button,.reset-link{border:0;background:none;color:#5b4cf0;font-size:11px;cursor:pointer}
+.search-label,.filter-group strong{display:block;font-size:11px;font-weight:800;color:#394661;margin:13px 0 8px}
+.course-search{width:100%;padding:10px 11px;border:1px solid #e1e6ef;border-radius:8px;outline:0;font-size:12px;color:#273452;background:#fff}.course-search:focus{border-color:#796cf4}
+.filters{display:flex;flex-direction:column;gap:5px;margin:0}.filter{border:0;border-radius:7px;text-align:left;padding:8px 9px;background:transparent;color:#58647c;font-size:11px}.filter.active,.filter:hover{background:#efefff;color:#5142e6;border:0}
+.filter-hint{font-size:11px;color:#8a94a8;display:block;line-height:1.5}.reset-link{padding:10px 0 0}
+.course-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.course-card{background:#fff;border:1px solid #e5eaf3;border-radius:12px;box-shadow:0 5px 16px #24345a0a;animation:appear .35s both}.course-card:hover{border-color:#c9c4ff;box-shadow:0 12px 26px #343d7818}
+.course-art{height:112px;display:flex;align-items:center;justify-content:center;background:linear-gradient(130deg,#e9edff,#dce8ff);padding:14px}.course-icon{font-size:45px;filter:drop-shadow(0 5px 5px #283c6b18)}
+.course-tag{bottom:8px;left:11px;color:#5145c9;background:#ffffffd9;border-radius:5px;padding:3px 6px;font-size:8px}
+.course-body{padding:13px}.course-body h3{font-size:15px;line-height:1.35;color:#1c2946;min-height:40px}.course-body p{font-size:11px;line-height:1.5;color:#78839a;min-height:48px;margin-bottom:10px}
+.course-meta{gap:5px}.chip{background:#f0f2f8;color:#64708a;font-size:9px;padding:4px 6px;border-radius:5px}
+.course-actions{margin-top:12px}.course-actions .btn{font-size:10px;padding:8px 6px;border-radius:7px}
+.benefit{background:#fff;border-color:#e5eaf3;color:#24304b}.benefit p{color:#748099}.cta{background:linear-gradient(120deg,#eeefff,#f8faff);border:1px solid #dfe3fa;color:#1d2946}.cta p{color:#6f7a92}
+footer{border-color:#e4e9f2;color:#7c879e}.modal{background:#17213cc9}.modal-box{background:#fff;color:#1d2946;border-color:#e1e6f0}.modal-box p,.detail-list{color:#65718a}.modal-close{background:#eef0f8;color:#34415e}.field label{color:#4d5973}.field input,.field select,.field textarea{background:#fff;color:#24304b;border-color:#dce2ed}.multi-course-box{background:#f7f8fc;border-color:#dce2ed}.multi-course-option{color:#273653;border-color:#e0e5ef}.multi-course-tools button{background:#fff;color:#35415c;border-color:#dce2ed}.multi-course-count{color:#8a36b8}.field select option{background:#fff}.form-help{color:#738099!important}
+.whatsapp-float{box-shadow:0 8px 25px #143b2a22}
+@media(max-width:1000px){.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.hero .container{grid-template-columns:1fr}.hero:after{min-height:95px;font-size:35px}.catalog-layout{grid-template-columns:1fr}.filter-panel{position:static}.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{flex-wrap:wrap}.nav-links{background:#fff;border-color:#e5eaf3}}
+@media(max-width:520px){.course-grid{grid-template-columns:1fr}.hero{padding:35px 0}.hero h1{font-size:35px}.catalog-toolbar{align-items:flex-start;gap:8px;flex-direction:column}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.stat{min-width:0;padding:10px 7px}.stat strong{font-size:17px}.stat span{font-size:9px}}
+
+
+/* Premium conversion-focused course experience */
+.hero-premium{position:relative;padding:62px 0 58px;background:radial-gradient(circle at 78% 48%,#dfe5ff 0,transparent 30%),linear-gradient(115deg,#f8f9ff 0%,#fff 48%,#f0f4ff 100%);overflow:hidden}
+.hero-premium:before{content:"";position:absolute;width:430px;height:430px;border-radius:50%;border:1px solid #e3e7ff;right:-160px;top:-220px;box-shadow:0 0 0 35px #f0f2ff,0 0 0 70px #f7f8ff;pointer-events:none}
+.hero-premium-grid{display:grid!important;grid-template-columns:1.05fr .95fr!important;gap:30px!important;position:relative;z-index:1}
+.hero-copy{max-width:620px}.hero-kicker{display:inline-flex;align-items:center;gap:8px;margin:18px 0 0;padding:7px 11px;border-radius:30px;background:#edfff6;color:#148653;font-size:10px;font-weight:900;letter-spacing:1px}.live-dot{width:7px;height:7px;background:#20bf78;border-radius:50%;box-shadow:0 0 0 4px #20bf7822}
+.hero-premium h1{font-size:clamp(43px,5.4vw,68px);line-height:1.02;letter-spacing:-2.7px;margin:14px 0 17px}.hero-premium p{font-size:15px;line-height:1.8;max-width:520px}.btn-large{padding:14px 20px;font-size:13px;border-radius:11px}.hero-premium .hero-note{font-size:11px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}.hero-premium .hero-note span{color:#19a66d;font-weight:900}
+.hero-visual{min-height:310px;position:relative;display:flex;align-items:center;justify-content:center}.visual-orbit{position:absolute;border:1px dashed #c9cffb;border-radius:50%;width:310px;height:310px}.orbit-two{width:240px;height:240px;border-style:solid;opacity:.55}.visual-main-card{width:min(390px,88%);position:relative;z-index:2;padding:22px;border:1px solid #e4e8fa;border-radius:22px;background:#ffffffed;box-shadow:0 25px 65px #4755a51c;transform:rotate(-2deg)}.visual-card-top{display:flex;justify-content:space-between;color:#78839d;font-size:9px;font-weight:900;letter-spacing:1px}.visual-live{color:#17a66a}.visual-graph{height:145px;display:flex;align-items:end;justify-content:space-around;gap:13px;padding:20px 12px 0;position:relative;border-bottom:1px solid #edf0f8;background:repeating-linear-gradient(to bottom,transparent 0 35px,#f0f2fa 36px 37px)}.graph-bar{width:34px;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#8277ff,#5147e9);box-shadow:0 6px 12px #6458ef22}.b1{height:38%}.b2{height:60%}.b3{height:48%}.b4{height:82%}.b5{height:100%;background:linear-gradient(180deg,#42c9bb,#2589ce)}.graph-line{position:absolute;right:17px;top:10px;color:#19a66d;font-size:32px;font-weight:900}.visual-bottom{display:flex;justify-content:space-between;gap:5px;padding-top:16px;color:#56617b;font-size:9px;font-weight:800}.float-skill{position:absolute;z-index:3;padding:12px 15px;border-radius:12px;background:#fff;border:1px solid #e8eafa;box-shadow:0 12px 30px #34416d18;font-size:12px;color:#34415e;animation:floaty 4s ease-in-out infinite}.skill-excel{left:0;top:44px}.skill-ai{right:0;top:70px;animation-delay:.6s}.skill-data{right:8px;bottom:25px;animation-delay:1.2s}@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.quick-proof{background:#fff;border-top:1px solid #e9edf7;border-bottom:1px solid #e9edf7}.proof-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:17px 0;gap:12px}.proof-grid>div{display:flex;align-items:center;justify-content:center;gap:10px;color:#596680;font-size:11px;font-weight:700}.proof-grid strong{font-size:20px}
+.catalog-intro{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:0 0 18px;padding:17px 19px;border:1px solid #e3e7fb;border-radius:14px;background:linear-gradient(100deg,#f1f2ff,#fff)}.catalog-intro div{display:flex;flex-direction:column;gap:3px}.catalog-intro b{font-size:14px;color:#283454}.catalog-intro span{font-size:11px;color:#78839b}.catalog-intro .btn{white-space:nowrap;font-size:11px}
+.course-card{position:relative}.course-art{height:130px;background:linear-gradient(135deg,#e9edff,#dfeaff);isolation:isolate}.course-art:before{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-38px;top:-72px;background:#fff8;z-index:-1}.course-art:after{content:"";position:absolute;width:90px;height:90px;border:1px solid #fff9;border-radius:50%;left:-35px;bottom:-55px;z-index:-1}.course-icon{font-size:48px;transition:transform .3s}.course-card:hover .course-icon{transform:scale(1.12) rotate(-5deg)}.course-tag{z-index:2}.course-body h3{min-height:0;margin-bottom:8px;font-size:16px}.course-body p{min-height:50px;font-size:11.5px}.course-meta{min-height:25px}.course-actions{gap:7px}.course-actions .btn{font-size:10px;padding:10px 7px}.apply-card-btn{box-shadow:0 6px 14px #5a49f42b}.apply-hint{text-align:center;color:#929bb0;font-size:9px;margin-top:8px;letter-spacing:.15px}.course-card:hover .apply-hint{color:#5b4cf0}
+.career-banner{display:flex;align-items:center;gap:20px;padding:25px 28px;border:1px solid #dfe4fb;border-radius:20px;background:linear-gradient(110deg,#f0f1ff,#fff 70%);box-shadow:0 12px 30px #34416d0a}.career-banner-icon{width:58px;height:58px;display:grid;place-items:center;flex:none;border-radius:16px;background:#e3e5ff;font-size:29px}.career-banner>div:nth-child(2){flex:1}.banner-label{font-size:9px;letter-spacing:1.5px;font-weight:900;color:#5a4bed}.career-banner h2{margin:4px 0;font-size:23px;color:#1c2946}.career-banner p{margin:0;color:#758099;font-size:12px;max-width:660px}.career-banner .btn{white-space:nowrap}
+.modal-box{box-shadow:0 25px 80px #121c3b25}.modal-box .eyebrow{display:inline-block}.form-submit{padding:15px;font-size:14px;box-shadow:0 10px 24px #5a49f438}.field input:focus,.field select:focus,.field textarea:focus{box-shadow:0 0 0 3px #5d50ef19}
+@media(max-width:850px){.hero-premium-grid{grid-template-columns:1fr!important}.hero-visual{min-height:270px}.proof-grid{grid-template-columns:repeat(2,1fr)}.career-banner{flex-wrap:wrap}.career-banner>div:nth-child(2){min-width:calc(100% - 90px)}}
+@media(max-width:560px){.hero-premium{padding:40px 0 30px}.hero-premium h1{font-size:44px;letter-spacing:-1.8px}.hero-visual{min-height:235px}.visual-main-card{padding:16px;width:86%}.visual-graph{height:115px}.visual-orbit{width:230px;height:230px}.orbit-two{width:180px;height:180px}.float-skill{font-size:10px;padding:9px 10px}.skill-excel{left:-4px;top:18px}.skill-ai{right:-4px;top:30px}.skill-data{right:-3px;bottom:5px}.proof-grid{gap:14px 6px}.proof-grid>div{justify-content:flex-start;font-size:10px}.catalog-intro{align-items:flex-start;flex-direction:column}.catalog-intro .btn{width:100%}.career-banner{padding:19px;gap:12px}.career-banner h2{font-size:20px}.career-banner>div:nth-child(2){min-width:100%}.career-banner .btn{width:100%}.course-body p{min-height:0}}
+
 </style>
 </head>
 <body>
@@ -130,21 +198,30 @@ footer{border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font
 </header>
 
 <main>
-<section class="hero">
-  <div class="container">
-    <span class="eyebrow">✦ SKILLS FOR THE DIGITAL FUTURE</span>
-    <h1>Learn Smarter with <span class="gradient">Excel with AI</span></h1>
-    <p>Explore practical courses in Excel, AI tools, programming, web development, data analysis and digital technology. Choose your course and enquire online.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="#courses">Explore Courses ↓</a>
-      <button class="btn btn-outline" onclick="openApply('General Enquiry')">Ask About Admission</button>
+<section class="hero hero-premium">
+  <div class="container hero-premium-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">✦ YOUR NEXT BIG SKILL STARTS HERE</span>
+      <div class="hero-kicker"><span class="live-dot"></span> COURSE ENQUIRIES OPEN</div>
+      <h1>Learn Skills.<br>Build Your <span class="gradient">Future.</span></h1>
+      <p>Choose a skill that moves you forward — from Advanced Excel and AI to Data Analytics, HR Analytics, Python and Web Development.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-large" href="#courses">Explore All Courses <span>↘</span></a>
+        <button class="btn btn-outline btn-large" onclick="openApply('General Enquiry')">Apply Now <span>↗</span></button>
+      </div>
+      <div class="hero-note"><span>✓</span> Choose your course <span>·</span> <span>✓</span> Submit your enquiry <span>·</span> <span>✓</span> Get course guidance</div>
     </div>
-    <div class="hero-note">Practical Skills · Guided Learning · Project-Based Practice</div>
+    <div class="hero-visual" aria-label="Learning and career skills illustration">
+      <div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div>
+      <div class="visual-main-card"><div class="visual-card-top"><span>YOUR LEARNING JOURNEY</span><span class="visual-live">● LIVE</span></div><div class="visual-graph"><div class="graph-bar b1"></div><div class="graph-bar b2"></div><div class="graph-bar b3"></div><div class="graph-bar b4"></div><div class="graph-bar b5"></div><div class="graph-line">↗</div></div><div class="visual-bottom"><span>📊 Data Skills</span><span>🤖 AI Tools</span><span>💼 Career Growth</span></div></div>
+      <div class="float-skill skill-excel">📈 <b>Excel + MIS</b></div><div class="float-skill skill-ai">🤖 <b>AI Skills</b></div><div class="float-skill skill-data">🧠 <b>Data Analytics</b></div>
+    </div>
   </div>
 </section>
+<section class="quick-proof"><div class="container proof-grid"><div><strong>🎯</strong><span>Choose your own course</span></div><div><strong>🧩</strong><span>Explore practical topics</span></div><div><strong>📲</strong><span>Quick WhatsApp enquiry</span></div><div><strong>🙌</strong><span>Get personal course guidance</span></div></div></section>
 
 <div class="container stats">
-  <div class="stat"><strong>11+</strong><span>Course Options</span></div>
+  <div class="stat"><strong>20+</strong><span>Course Options</span></div>
   <div class="stat"><strong>Projects</strong><span>Learn by Practising</span></div>
   <div class="stat"><strong>Online</strong><span>Easy Admission Enquiry</span></div>
 </div>
@@ -152,18 +229,44 @@ footer{border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font
 <section class="section container" id="courses">
   <div class="section-head">
     <div><span class="eyebrow">FIND YOUR LEARNING PATH</span><h2>Explore Our <span class="gradient">Courses</span></h2></div>
-    <p>Open a course to see its learning topics, then send an enquiry on WhatsApp to ask about duration, fees and available batches.</p>
+    <p>Find the right skill, explore what you will learn, and apply directly. Every course has its own separate enquiry.</p>
   </div>
 
-  <div class="filters" id="filters">
-    <button class="filter active" data-filter="All">All Courses</button>
-    <button class="filter" data-filter="Office">Excel & Office</button>
-    <button class="filter" data-filter="Development">Development</button>
-    <button class="filter" data-filter="Business">Business Skills</button>
-    <button class="filter" data-filter="Technology">AI & Technology</button>
-    <button class="filter" data-filter="Computer">Computer Fundamentals</button>
+  <div class="catalog-intro"><div><b>Not sure where to begin?</b><span>Search a skill or choose a category. Tap <b>Apply Now</b> on the course you want.</span></div><button class="btn btn-primary" type="button" onclick="openApply('General Enquiry')">Help Me Choose ↗</button></div>
+  <div class="catalog-toolbar"><span id="resultCount">Showing all course options</span><label>Sort by <select id="courseSort"><option value="popular">Recommended</option><option value="az">Name: A to Z</option></select></label></div>
+  <div class="catalog-layout">
+    <aside class="filter-panel"><div class="filter-title">Filters <button type="button" id="clearFilters">Clear all</button></div>
+      <label class="search-label" for="courseSearch">Search</label><input id="courseSearch" class="course-search" type="search" placeholder="Search courses...">
+      <div class="filter-group"><strong>Category</strong><div class="filters" id="filters">
+        <button class="filter active" data-filter="All">All Categories</button>
+        <button class="filter" data-filter="Office">Excel &amp; Office</button>
+        <button class="filter" data-filter="Development">Web Development</button>
+        <button class="filter" data-filter="Business">Business Skills</button>
+        <button class="filter" data-filter="Analytics">Data &amp; HR Analytics</button>
+        <button class="filter" data-filter="Technology">AI &amp; Technology</button>
+        <button class="filter" data-filter="Computer">Computer Fundamentals</button>
+      </div></div>
+      <div class="filter-group"><strong>Learning level</strong><span class="filter-hint">Choose a course level from the course cards.</span><button type="button" class="reset-link" id="resetCourseFilters">↻ Reset filters</button></div>
+    </aside>
+    <div class="course-grid" id="courseGrid"></div>
   </div>
-  <div class="course-grid" id="courseGrid"></div>
+</section>
+
+
+<section class="career-banner container" aria-label="Course application information"><div class="career-banner-icon">🚀</div><div><span class="banner-label">TAKE THE FIRST STEP</span><h2>One skill can open a new direction.</h2><p>Select the course that matches your goal. Our team can guide you about syllabus, fees, duration and upcoming batches.</p></div><button class="btn btn-primary" type="button" onclick="openApply('General Enquiry')">Start My Enquiry ↗</button></section>
+
+<section class="section container" id="career-analytics">
+  <div class="section-head">
+    <div><span class="eyebrow">CAREER-FOCUSED LEARNING</span><h2>Data Analytics &amp; <span class="gradient">People Analytics</span></h2></div>
+    <p>Choose the exact skill you want to learn. Select one course or choose multiple courses in a single enquiry. Our team can guide you about each selected course.</p>
+  </div>
+  <div class="benefits">
+    <article class="benefit"><div>📊</div><strong>Business Data Analytics</strong><p>Excel, MIS reporting, SQL, Power BI and data interpretation.</p></article>
+    <article class="benefit"><div>👥</div><strong>HR / People Analytics</strong><p>Work with employee, recruitment, payroll and attendance datasets.</p></article>
+    <article class="benefit"><div>🧩</div><strong>Practical Portfolio</strong><p>Enquire about guided projects and portfolio-building activities for your chosen course.</p></article>
+  </div>
+  <p class="hero-note" style="text-align:center;margin-top:20px">You can select multiple courses in one enquiry. Fees, duration, practical schedule, demo availability and placement assistance are confirmed by the course team.</p>
+  <div style="text-align:center;margin-top:18px"><button class="btn btn-primary" type="button" onclick="openApply('HR Analytics / People Analytics')">Apply for HR Analytics ↗</button></div>
 </section>
 
 <section class="section container" id="benefits">
@@ -215,9 +318,19 @@ footer{border-top:1px solid var(--border);padding:27px 0;color:var(--muted);font
       <div class="form-grid">
         <div class="field"><label for="studentName">Full Name *</label><input id="studentName" required maxlength="80" autocomplete="name" placeholder="Your full name"></div>
         <div class="field"><label for="studentPhone">Mobile Number *</label><input id="studentPhone" required type="tel" maxlength="16" autocomplete="tel" placeholder="Your mobile number"></div>
-        <div class="field full"><label for="studentCourse">Select Course *</label><select id="studentCourse" required></select></div>
+        <div class="field full">
+          <label>Select Course(s) * — You can choose multiple courses together</label>
+          <div class="multi-course-box">
+            <div class="multi-course-tools"><button type="button" id="selectAllCourses">Select All</button><button type="button" id="clearSelectedCourses">Clear Selection</button></div>
+            <div class="multi-course-list" id="multiCourseList"></div>
+            <div class="multi-course-count" id="selectedCourseCount" aria-live="polite">0 courses selected</div>
+          </div>
+        </div>
         <div class="field"><label for="studentMode">Preferred Mode</label><select id="studentMode"><option>Need information</option><option>Online</option><option>Offline / Classroom</option></select></div>
         <div class="field"><label for="studentCity">City / Area</label><input id="studentCity" maxlength="80" placeholder="Your city or area"></div>
+        <div class="field"><label for="studentQualification">Qualification</label><input id="studentQualification" maxlength="100" placeholder="e.g. B.Com, MBA, Graduate"></div>
+        <div class="field"><label for="studentGoal">Career Goal</label><select id="studentGoal"><option value="Not specified">Select your goal</option><option>Data Analyst</option><option>HR Data Analyst / People Analytics</option><option>MIS Executive</option><option>Business Analyst</option><option>Upskilling / Personal learning</option><option>Other</option></select></div>
+        <div class="field full"><label for="studentSupport">What would you like to know?</label><select id="studentSupport"><option>Course syllabus, duration and fees</option><option>Individual computer practicals</option><option>Live projects and portfolio guidance</option><option>Demo class availability</option><option>Placement assistance</option><option>All course details</option></select></div>
         <div class="field full"><label for="studentMessage">Question (Optional)</label><textarea id="studentMessage" rows="3" maxlength="500" placeholder="Ask about fees, duration, syllabus or batch"></textarea></div>
       </div>
       <p class="form-help">Your details are added to a WhatsApp message. Review it and press Send in WhatsApp to submit.</p>
@@ -242,33 +355,61 @@ const courses = [
  {name:"O Level",category:"Computer",icon:"🎓",tag:"EXAM PREPARATION",level:"Structured learning",description:"Study computer topics and practise relevant theory and practical concepts.",topics:["IT tools and network basics","Web design fundamentals","Python programming concepts","IoT concepts and relevant practicals"]},
  {name:"CCC",category:"Computer",icon:"📘",tag:"DIGITAL LITERACY",level:"Beginner",description:"Learn essential digital literacy and common computer tasks.",topics:["Computer and operating system basics","Word processing and spreadsheets","Internet, email and online services","Digital payments and cyber safety"]},
  {name:"Data Analysis",category:"Technology",icon:"📉",tag:"DATA SKILLS",level:"Foundation",description:"Explore data organisation, analysis and visual reporting concepts.",topics:["Organising and cleaning data","Spreadsheet analysis","Charts and visualisation","Reports and practical exercises"]},
- {name:"Cyber Security",category:"Technology",icon:"🛡️",tag:"DIGITAL SAFETY",level:"Foundation",description:"Learn cybersecurity fundamentals and safer digital practices.",topics:["Cybersecurity concepts and threats","Passwords, phishing and account safety","Network and device security basics","Responsible security awareness"]}
+ {name:"Cyber Security",category:"Technology",icon:"🛡️",tag:"DIGITAL SAFETY",level:"Foundation",description:"Learn cybersecurity fundamentals and safer digital practices.",topics:["Cybersecurity concepts and threats","Passwords, phishing and account safety","Network and device security basics","Responsible security awareness"]},
+ {name:"Advanced Excel with MIS Reporting",category:"Analytics",icon:"📊",tag:"DATA ANALYTICS",level:"Beginner to advanced",description:"Learn advanced spreadsheet analysis, MIS reporting and professional dashboards.",topics:["Advanced formulas and functions","Data cleaning, PivotTables and Power Query concepts","MIS reports and KPI tracking","Interactive Excel dashboards and reporting projects"]},
+ {name:"Google Sheets for Analytics",category:"Analytics",icon:"📑",tag:"COLLABORATIVE ANALYTICS",level:"Beginner friendly",description:"Use Google Sheets to organise, analyse and share business data.",topics:["Spreadsheet structure and formulas","Data validation, filters and pivot tables","Charts, reports and dashboards","Collaboration and workflow automation basics"]},
+ {name:"SQL for Data Analytics",category:"Analytics",icon:"🗄️",tag:"DATABASE ANALYTICS",level:"Beginner to intermediate",description:"Query structured datasets and extract useful business insights using SQL.",topics:["SELECT, WHERE, ORDER BY and GROUP BY","Aggregate functions and filtering","JOINs and subqueries","Practical employee and business dataset queries"]},
+ {name:"Power BI with DAX",category:"Analytics",icon:"📈",tag:"BUSINESS INTELLIGENCE",level:"Beginner to intermediate",description:"Transform data into interactive reports and dashboards with Power BI.",topics:["Importing and transforming data","Data modelling and relationships","DAX measures and calculated columns","Interactive dashboards and report projects"]},
+ {name:"Statistics for Data Analytics",category:"Analytics",icon:"📐",tag:"ANALYTICS FOUNDATION",level:"Foundation",description:"Understand the statistical concepts used to interpret and communicate data.",topics:["Mean, median, mode and dispersion","Percentages, distributions and probability basics","Correlation and trend interpretation","Sampling and practical data interpretation"]},
+ {name:"Python for Data Analytics",category:"Analytics",icon:"🐍",tag:"PYTHON ANALYTICS",level:"Beginner to intermediate",description:"Use Python libraries to clean, analyse and explore datasets.",topics:["Python foundations for data work","NumPy arrays and numerical operations","Pandas DataFrames and data cleaning","Exploratory analysis and practical datasets"]},
+ {name:"HR Analytics / People Analytics",category:"Analytics",icon:"👥",tag:"HR DATA ANALYTICS",level:"Career-focused",description:"Analyse workforce data to understand recruitment, attendance, payroll and employee trends.",topics:["Employee master data and HR metrics","Recruitment funnel and hiring analysis","Attendance, leave and payroll analysis","Attrition, retention and HR dashboards"]},
+ {name:"Data Analytics Career Track",category:"Analytics",icon:"🚀",tag:"COMBINED LEARNING PATH",level:"Multi-skill pathway",description:"A combined learning pathway covering key tools used in data analytics. Apply separately for individual courses if you want only selected skills.",topics:["Advanced Excel and Google Sheets","SQL and Statistics foundations","Power BI dashboards with DAX","Python with Pandas and NumPy","Portfolio-oriented analytics project ideas"]}
 ];
 
 const grid=document.getElementById("courseGrid");
-const courseSelect=document.getElementById("studentCourse");
-
-function addOptions(){
- courseSelect.replaceChildren();
- courses.forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;courseSelect.appendChild(o)});
- const g=document.createElement("option");g.value="General Enquiry";g.textContent="General Enquiry";courseSelect.appendChild(g);
+const multiCourseList=document.getElementById("multiCourseList");
+function updateSelectedCourseCount(){
+ const count=multiCourseList.querySelectorAll('input[type="checkbox"]:checked').length;
+ document.getElementById("selectedCourseCount").textContent=count+ (count===1?" course selected":" courses selected");
 }
-function renderCourses(filter="All"){
+function addOptions(){
+ multiCourseList.replaceChildren();
+ courses.forEach((c,i)=>{
+  const label=document.createElement("label");label.className="multi-course-option";
+  const checkbox=document.createElement("input");checkbox.type="checkbox";checkbox.value=c.name;checkbox.id="courseChoice"+i;checkbox.addEventListener("change",updateSelectedCourseCount);
+  const name=document.createElement("span");name.textContent=c.name;
+  label.append(checkbox,name);multiCourseList.appendChild(label);
+ });
+ updateSelectedCourseCount();
+}
+function getSelectedCourses(){return [...multiCourseList.querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value)}
+function setSelectedCourses(names=[]){
+ const wanted=new Set(names);
+ multiCourseList.querySelectorAll('input[type="checkbox"]').forEach(x=>{x.checked=wanted.has(x.value)});
+ updateSelectedCourseCount();
+}
+let activeFilter="All";
+function renderCourses(filter=activeFilter){
+ activeFilter=filter;
  grid.replaceChildren();
- courses.filter(c=>filter==="All"||c.category===filter).forEach((c,i)=>{
+ let visible=courses.filter(c=>(filter==="All"||c.category===filter) && (c.name+" "+c.description+" "+c.tag).toLowerCase().includes((document.getElementById("courseSearch")?.value||"").toLowerCase().trim()));
+ if(document.getElementById("courseSort")?.value==="az") visible.sort((a,b)=>a.name.localeCompare(b.name));
+ document.getElementById("resultCount").textContent=`Showing ${visible.length} of ${courses.length} course options`;
+ visible.forEach((c,i)=>{
   const card=document.createElement("article");card.className="course-card";card.style.animationDelay=Math.min(i*45,240)+"ms";
   const art=document.createElement("div");art.className="course-art";
   const icon=document.createElement("div");icon.className="course-icon";icon.textContent=c.icon;
   const tag=document.createElement("div");tag.className="course-tag";tag.textContent=c.tag;art.append(icon,tag);
+  const artGlow=document.createElement("div");artGlow.className="art-glow";art.appendChild(artGlow);
   const body=document.createElement("div");body.className="course-body";
   const title=document.createElement("h3");title.textContent=c.name;
   const desc=document.createElement("p");desc.textContent=c.description;
   const meta=document.createElement("div");meta.className="course-meta";
   [c.level,c.category].forEach(t=>{const chip=document.createElement("span");chip.className="chip";chip.textContent=t;meta.appendChild(chip)});
   const actions=document.createElement("div");actions.className="course-actions";
-  const details=document.createElement("button");details.className="btn btn-outline";details.type="button";details.textContent="Details";details.addEventListener("click",()=>openDetails(c.name));
-  const apply=document.createElement("button");apply.className="btn btn-primary";apply.type="button";apply.textContent="Apply ↗";apply.addEventListener("click",()=>openApply(c.name));
-  actions.append(details,apply);body.append(title,desc,meta,actions);card.append(art,body);grid.appendChild(card);
+  const details=document.createElement("button");details.className="btn btn-outline";details.type="button";details.textContent="View Details";details.addEventListener("click",()=>openDetails(c.name));
+  const apply=document.createElement("button");apply.className="btn btn-primary apply-card-btn";apply.type="button";apply.innerHTML='Apply Now <span aria-hidden="true">↗</span>';apply.addEventListener("click",()=>openApply(c.name));
+  actions.append(details,apply);const applyHint=document.createElement("div");applyHint.className="apply-hint";applyHint.textContent="Enquire about this course";body.append(title,desc,meta,actions,applyHint);card.append(art,body);grid.appendChild(card);
  });
 }
 function openDetails(name){
@@ -284,7 +425,7 @@ function openDetails(name){
  openModal("courseModal");
 }
 function openApply(name="General Enquiry"){
- courseSelect.value=courses.some(c=>c.name===name)?name:"General Enquiry";
+ setSelectedCourses(courses.some(c=>c.name===name)?[name]:[]);
  document.getElementById("formMessage").textContent="";
  openModal("applyModal");
 }
@@ -297,18 +438,28 @@ document.getElementById("filters").addEventListener("click",e=>{
  const b=e.target.closest("[data-filter]");if(!b)return;
  document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderCourses(b.dataset.filter);
 });
+document.getElementById("courseSearch").addEventListener("input",()=>renderCourses());
+document.getElementById("courseSort").addEventListener("change",()=>renderCourses());
+function resetCourseFilters(){document.getElementById("courseSearch").value="";document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x.dataset.filter==="All"));document.getElementById("courseSort").value="popular";renderCourses("All");}
+document.getElementById("clearFilters").addEventListener("click",resetCourseFilters);
+document.getElementById("resetCourseFilters").addEventListener("click",resetCourseFilters);
+document.getElementById("selectAllCourses").addEventListener("click",()=>setSelectedCourses(courses.map(c=>c.name)));
+document.getElementById("clearSelectedCourses").addEventListener("click",()=>setSelectedCourses([]));
 document.getElementById("applyForm").addEventListener("submit",e=>{
  e.preventDefault();
  const name=document.getElementById("studentName").value.trim();
  const phone=document.getElementById("studentPhone").value.trim();
- const course=courseSelect.value;
+ const selectedCourses=getSelectedCourses();
  const mode=document.getElementById("studentMode").value;
  const city=document.getElementById("studentCity").value.trim();
+ const qualification=document.getElementById("studentQualification").value.trim();
+ const goal=document.getElementById("studentGoal").value;
+ const support=document.getElementById("studentSupport").value;
  const message=document.getElementById("studentMessage").value.trim();
  const status=document.getElementById("formMessage");
- if(!name||!phone||!course){status.textContent="Please fill in your name, mobile number and course.";return}
+ if(!name||!phone||selectedCourses.length===0){status.textContent="Please fill in your name, mobile number and select at least one course.";return}
  if(!/^[0-9+() -]{8,16}$/.test(phone)){status.textContent="Please enter a valid mobile number.";return}
- const text=["🎓 *New Course Enquiry — Excel with AI*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Course:* "+course,"*Preferred Mode:* "+mode,"*City/Area:* "+(city||"Not provided"),"*Question:* "+(message||"Please share course details."),"","Please share the fees, duration, syllabus and next batch details."].join("\n");
+ const text=["🎓 *New Course Enquiry — Excel with AI*","","*Student Name:* "+name,"*Mobile:* "+phone,"*Selected Course(s):*",...selectedCourses.map((c,i)=>(i+1)+". "+c),"*Preferred Mode:* "+mode,"*City/Area:* "+(city||"Not provided"),"*Qualification:* "+(qualification||"Not provided"),"*Career Goal:* "+goal,"*Information Needed:* "+support,"*Question:* "+(message||"Please share course details."),"","Please share the course fees, duration, syllabus, practical schedule, live project and portfolio details, demo class availability and placement assistance information (if available)."].join("\n");
  const url="https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(text);
  const w=window.open(url,"_blank");
  if(w){status.textContent="WhatsApp opened. Review the message and press Send to submit your enquiry."}
@@ -318,6 +469,10 @@ document.getElementById("menuBtn").addEventListener("click",()=>document.getElem
 document.querySelectorAll("#navLinks a").forEach(a=>a.addEventListener("click",()=>document.getElementById("navLinks").classList.remove("open")));
 document.getElementById("year").textContent=new Date().getFullYear();
 addOptions();renderCourses();
+const requestedCourse = new URLSearchParams(window.location.search).get("course");
+if (requestedCourse && courses.some(c => c.name === requestedCourse)) {
+  openApply(requestedCourse);
+}
 </script>
 </body>
 </html>
